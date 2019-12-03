@@ -1,4 +1,4 @@
-name: tiger-gpu-env
+name: tiger_gpu_env
 channels:
   - defaults
 dependencies:
@@ -105,4 +105,4 @@ dependencies:
   - zeromq=4.3.1=he6710b0_3
   - zipp=0.6.0=py_0
   - zlib=1.2.11=h7b6447c_3
-prefix: /home/tmarcu/.conda/envs/tiger-gpu-env
+prefix: /home/tmarcu/.conda/envs/tiger_gpu_env
