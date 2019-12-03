@@ -1,4 +1,4 @@
-name: tiger_gpu_env
+name: tiger-gpu-env
 channels:
   - defaults
 dependencies:
