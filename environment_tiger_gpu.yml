@@ -2,7 +2,7 @@
 # $ conda create --name <env> --file <this file>
 # platform: linux-64
 name:
-    tiger-gpu-env-eric
+    tiger-gpu-env
 channels:
     - defaults
 dependencies:

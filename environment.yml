@@ -1,4 +1,4 @@
-name: tiger-gpu-env
+name: base_tmarcu
 channels:
   - defaults
 dependencies:
@@ -106,4 +106,3 @@ dependencies:
   - zipp=0.6.0=py_0
   - zlib=1.2.11=h7b6447c_3
 prefix: /home/tmarcu/.conda/envs/tiger-gpu-env
-
