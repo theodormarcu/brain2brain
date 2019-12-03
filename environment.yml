@@ -1,4 +1,4 @@
-name: base_tmarcu
+name: tiger_gpu_env
 channels:
   - defaults
 dependencies:
