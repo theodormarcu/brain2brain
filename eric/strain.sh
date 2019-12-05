@@ -17,6 +17,6 @@ conda activate tiger_gpu_env
 
 echo 'Start time:' `date`
 echo "$@"
-python bash_style_train_tcn.py "$@"
-python get_data.py "$@"
+# python bash_style_train_tcn.py "$@"
+# python get_data.py "$@"
 echo 'End time:' `date`
