@@ -1,4 +1,3 @@
-
 #import pdb; pdb.set_trace() <--- debugging.
 
 import argparse
@@ -109,7 +108,7 @@ adj_lag = sampling_multiple*lag
 
 
 																		##added
-args_file = open(save_dir + 'model_info_file.txt', 'w')	
+args_file = open(save_dir + 'model_info_file.txt', 'w')
 args_file.write(str(args) + '\n')
 args_file.close()
 
@@ -136,8 +135,8 @@ val_data_gen.standardize_data(train_mean, train_std)
 #es_vrsquare = EarlyStopping(monitor='val_r_square', mode = 'max', min_delta = .01, patience = 5)
 #es_trsquare = EarlyStopping(monitor='pearson_r', mode = 'max', min_delta = .01, patience = patience_val)
 #add model checkpoint to save best model if applicable in future
-			
-#in_to_pred_mse = InToPredMSE()	
+
+#in_to_pred_mse = InToPredMSE()
 rmsprop = optimizers.RMSprop(lr=learning_rate)
 
 ##uncomment below.
@@ -152,11 +151,11 @@ elif model_type == 'tcn':
 elif model_type == 'tcn_d':
 	print('tcn_d')
 	model = TCN_model_w_Dense_Layer(filter_size, num_electrodes, in_len)
-	#model = tcn_minimalist_10(filter_size, num_electrodes, in_len) 
+	#model = tcn_minimalist_10(filter_size, num_electrodes, in_len)
 
 
 #Instatiation thing. 500 to 1000 times.
-#get initial pearson r. 
+#get initial pearson r.
 '''
 ip_init_vals = []
 pt_init_vals = []
@@ -164,7 +163,7 @@ for i in range(0, 500):
 	if model_type == 'linear':
 		model = linear_model(num_electrodes, in_len, out_len)
 		i_to_p_init, _, p_to_t_init = plot_pearson_graph(model, val_data_gen, 'linear', electrode, file_id, False) #assumes only 1 electrode
-	else: 
+	else:
 		model = TCN_model_w_Dense_Layer(filter_size, num_electrodes, in_len)
 		i_to_p_init, _, p_to_t_init = plot_pearson_graph(model, val_data_gen, 'tcn_d', electrode, file_id, False) #assumes only 1 electrode
 	ip_init_vals.append(i_to_p_init)
@@ -182,7 +181,7 @@ model.summary() #added
 #import pdb; pdb.set_trace()
 #Train the Model
 history = model.fit_generator(train_data_gen, steps_per_epoch= train_steps, epochs = num_epochs, validation_data = val_data_gen, validation_steps = val_steps, shuffle = shuffle_model)#, callbacks=[es_trsquare])
-			
+
 
 #Evaluation.
 model.save(save_dir + 'MODEL_' + file_id + '.h5')
@@ -191,18 +190,18 @@ with open(save_dir + file_id + '_history.json', 'w') as f:	#added
 '''
 if model_type == 'linear':
 	i_to_p, i_to_t, p_to_t = plot_pearson_graph(model, val_data_gen, 'linear', electrode, file_id, True) #assumes only 1 electrode
-else: 
+else:
 	i_to_p, i_to_t, p_to_t = plot_pearson_graph(model, val_data_gen, 'tcn_d', electrode, file_id, True) #assumes only 1 electrode
 
 ip_file = open(save_dir + file_id + '_ip_vals.txt','w')
 ip_file.write(str(i_to_p))
 ip_file.close()
 
-it_file = open(save_dir + file_id + '_it_vals.txt','w') 
+it_file = open(save_dir + file_id + '_it_vals.txt','w')
 it_file.write(str(i_to_t))
 it_file.close()
 
-pt_file = open(save_dir + file_id + '_pt_vals.txt','w') 
+pt_file = open(save_dir + file_id + '_pt_vals.txt','w')
 pt_file.write(str(p_to_t))
 pt_file.close()
 
@@ -210,7 +209,7 @@ pt_file.close()
 #chance_file.write(str(chance))
 #chance_file.close()
 
-final_mse_file = open(save_dir + file_id + '_final_mse.txt','w') 
+final_mse_file = open(save_dir + file_id + '_final_mse.txt','w')
 final_mse_file.write(str(history.history['val_mean_squared_error'][-1]))
 final_mse_file.close()
 
@@ -226,7 +225,3 @@ plt.close()
 #add MSE/pearson R Plot.
 
 '''
-
-
-
-

@@ -2,7 +2,7 @@
 #Running: bash run_model.sh --model_type tcn_d --model_name new_model
 
 module load anaconda
-source activate tiger_gpu_env
+conda activate tiger_gpu_env
 
 for electrode in 13; do
 	for num_conversations in 6; do
@@ -16,10 +16,9 @@ for electrode in 13; do
 						--lag "$lag" \
 						--input_length "$window_size" \
 						"$@"-e"$electrode"-w"$window_size"-n"$num_conversations"-r"$learning_rate"-l"$lag"
-				
+
 				done
 			done
 		done
 	done
 done
-

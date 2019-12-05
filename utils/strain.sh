@@ -13,11 +13,10 @@
 module load anaconda
 #module load cudatoolkit/9.2
 #module load cudnn/cuda-9.2
-source activate tiger_gpu_env
+conda activate tiger_gpu_env
 
 echo 'Start time:' `date`
 echo "$@"
 python bash_style_train_tcn.py "$@"
 python get_data.py "$@"
 echo 'End time:' `date`
-
