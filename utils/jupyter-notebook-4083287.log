@@ -1,0 +1,14 @@
+
+Command to create ssh tunnel:
+ssh -N -f -L 8889:tiger-i21g11:8889 tmarcu@tigergpu.princeton.edu
+
+Use a Browser on your local machine to go to:
+localhost:8889  (prefix w/ https:// if using password)
+
+[I 21:05:06.933 LabApp] JupyterLab extension loaded from /home/tmarcu/.conda/envs/brain2brain_env/lib/python3.7/site-packages/jupyterlab
+[I 21:05:06.933 LabApp] JupyterLab application directory is /home/tmarcu/.conda/envs/brain2brain_env/share/jupyter/lab
+[I 21:05:06.936 LabApp] Serving notebooks from local directory: /home/tmarcu/brain2brain/utils
+[I 21:05:06.936 LabApp] The Jupyter Notebook is running at:
+[I 21:05:06.936 LabApp] http://tiger-i21g11:8889/
+[I 21:05:06.936 LabApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+slurmstepd: error: *** JOB 4083287 ON tiger-i21g11 CANCELLED AT 2019-12-08T21:08:02 ***

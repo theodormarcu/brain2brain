@@ -2,3 +2,6 @@
 
 # Ignore environment folder.
 tiger-gpu-env/
+
+# Ignore Jena weather data.
+learning/jena_climate/

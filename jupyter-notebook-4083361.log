@@ -1,0 +1,93 @@
+
+Command to create ssh tunnel:
+ssh -N -f -L 8001:tiger-i19g9:8001 tmarcu@tigergpu.princeton.edu
+
+Use a Browser on your local machine to go to:
+localhost:8001  (prefix w/ https:// if using password)
+
+[I 22:25:45.265 LabApp] JupyterLab extension loaded from /home/tmarcu/.conda/envs/brain2brain_env/lib/python3.7/site-packages/jupyterlab
+[I 22:25:45.265 LabApp] JupyterLab application directory is /home/tmarcu/.conda/envs/brain2brain_env/share/jupyter/lab
+[I 22:25:45.268 LabApp] Serving notebooks from local directory: /home/tmarcu/brain2brain
+[I 22:25:45.268 LabApp] The Jupyter Notebook is running at:
+[I 22:25:45.268 LabApp] http://tiger-i19g9:8001/
+[I 22:25:45.268 LabApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[I 22:27:08.457 LabApp] 302 GET / (10.36.16.7) 0.41ms
+[W 22:27:09.497 LabApp] Could not determine jupyterlab build status without nodejs
+[I 22:27:10.455 LabApp] New terminal with automatic name: 1
+TermSocket.open: 1
+TermSocket.open: Opened 1
+[W 22:27:10.555 LabApp] Notebook learning/Keras_Learning.ipynb is not trusted
+[I 22:27:11.149 LabApp] Kernel started: ab80bbf3-a6ed-44a6-86c0-522694e6f987
+[I 22:27:11.160 LabApp] Kernel started: a1e1b3d1-e68e-4a52-96f9-a610befe8947
+2019-12-08 22:27:19.338504: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcuda.so.1
+2019-12-08 22:27:19.412041: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1618] Found device 0 with properties: 
+name: Tesla P100-PCIE-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.3285
+pciBusID: 0000:03:00.0
+2019-12-08 22:27:19.413229: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1618] Found device 1 with properties: 
+name: Tesla P100-PCIE-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.3285
+pciBusID: 0000:04:00.0
+2019-12-08 22:27:19.414228: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1618] Found device 2 with properties: 
+name: Tesla P100-PCIE-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.3285
+pciBusID: 0000:82:00.0
+2019-12-08 22:27:19.415252: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1618] Found device 3 with properties: 
+name: Tesla P100-PCIE-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.3285
+pciBusID: 0000:83:00.0
+2019-12-08 22:27:19.416945: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.0
+2019-12-08 22:27:19.434988: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10.0
+2019-12-08 22:27:19.457342: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcufft.so.10.0
+2019-12-08 22:27:19.496268: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcurand.so.10.0
+2019-12-08 22:27:19.520711: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusolver.so.10.0
+2019-12-08 22:27:19.537443: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusparse.so.10.0
+2019-12-08 22:27:19.578858: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+2019-12-08 22:27:19.587347: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1746] Adding visible gpu devices: 0, 1, 2, 3
+2019-12-08 22:27:19.587961: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+2019-12-08 22:27:19.595576: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2399825000 Hz
+2019-12-08 22:27:19.595821: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x55cf2aba9aa0 executing computations on platform Host. Devices:
+2019-12-08 22:27:19.595843: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): Host, Default Version
+2019-12-08 22:27:19.983043: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1618] Found device 0 with properties: 
+name: Tesla P100-PCIE-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.3285
+pciBusID: 0000:03:00.0
+2019-12-08 22:27:19.984117: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1618] Found device 1 with properties: 
+name: Tesla P100-PCIE-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.3285
+pciBusID: 0000:04:00.0
+2019-12-08 22:27:19.985161: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1618] Found device 2 with properties: 
+name: Tesla P100-PCIE-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.3285
+pciBusID: 0000:82:00.0
+2019-12-08 22:27:19.986194: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1618] Found device 3 with properties: 
+name: Tesla P100-PCIE-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.3285
+pciBusID: 0000:83:00.0
+2019-12-08 22:27:19.986247: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.0
+2019-12-08 22:27:19.986265: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10.0
+2019-12-08 22:27:19.986280: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcufft.so.10.0
+2019-12-08 22:27:19.986295: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcurand.so.10.0
+2019-12-08 22:27:19.986310: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusolver.so.10.0
+2019-12-08 22:27:19.986324: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusparse.so.10.0
+2019-12-08 22:27:19.986339: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+2019-12-08 22:27:19.994507: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1746] Adding visible gpu devices: 0, 1, 2, 3
+2019-12-08 22:27:19.994547: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.0
+2019-12-08 22:27:19.999319: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1159] Device interconnect StreamExecutor with strength 1 edge matrix:
+2019-12-08 22:27:19.999336: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1165]      0 1 2 3 
+2019-12-08 22:27:19.999347: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1178] 0:   N Y N N 
+2019-12-08 22:27:19.999353: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1178] 1:   Y N N N 
+2019-12-08 22:27:19.999358: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1178] 2:   N N N Y 
+2019-12-08 22:27:19.999363: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1178] 3:   N N Y N 
+2019-12-08 22:27:20.005596: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1304] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 15216 MB memory) -> physical GPU (device: 0, name: Tesla P100-PCIE-16GB, pci bus id: 0000:03:00.0, compute capability: 6.0)
+2019-12-08 22:27:20.007999: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1304] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:1 with 15216 MB memory) -> physical GPU (device: 1, name: Tesla P100-PCIE-16GB, pci bus id: 0000:04:00.0, compute capability: 6.0)
+2019-12-08 22:27:20.010274: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1304] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:2 with 15216 MB memory) -> physical GPU (device: 2, name: Tesla P100-PCIE-16GB, pci bus id: 0000:82:00.0, compute capability: 6.0)
+2019-12-08 22:27:20.012631: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1304] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:3 with 15216 MB memory) -> physical GPU (device: 3, name: Tesla P100-PCIE-16GB, pci bus id: 0000:83:00.0, compute capability: 6.0)
+2019-12-08 22:27:20.014815: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x55cf2c1a9e30 executing computations on platform CUDA. Devices:
+2019-12-08 22:27:20.014834: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): Tesla P100-PCIE-16GB, Compute Capability 6.0
+2019-12-08 22:27:20.014844: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (1): Tesla P100-PCIE-16GB, Compute Capability 6.0
+2019-12-08 22:27:20.014850: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (2): Tesla P100-PCIE-16GB, Compute Capability 6.0
+2019-12-08 22:27:20.014856: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (3): Tesla P100-PCIE-16GB, Compute Capability 6.0
+2019-12-08 22:27:21.220417: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10.0
+[I 22:28:17.597 LabApp] Kernel interrupted: a1e1b3d1-e68e-4a52-96f9-a610befe8947
+[I 22:29:11.898 LabApp] Saving file at /learning/advanced_rnn.ipynb
+[I 22:32:05.876 LabApp] Kernel interrupted: a1e1b3d1-e68e-4a52-96f9-a610befe8947
+[I 22:33:11.963 LabApp] Saving file at /learning/advanced_rnn.ipynb
+[I 22:35:12.020 LabApp] Saving file at /learning/advanced_rnn.ipynb
+[I 22:37:12.203 LabApp] Saving file at /learning/advanced_rnn.ipynb
+[I 22:39:12.254 LabApp] Saving file at /learning/advanced_rnn.ipynb
+[I 22:45:13.329 LabApp] Saving file at /learning/advanced_rnn.ipynb
+[I 22:45:18.826 LabApp] Saving file at /learning/advanced_rnn.ipynb
+[I 22:45:30.227 LabApp] Saving file at /learning/advanced_rnn.ipynb

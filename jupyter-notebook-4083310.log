@@ -1,0 +1,24 @@
+
+Command to create ssh tunnel:
+ssh -N -f -L 8001:tiger-i21g11:8001 tmarcu@tigergpu.princeton.edu
+
+Use a Browser on your local machine to go to:
+localhost:8001  (prefix w/ https:// if using password)
+
+[I 21:17:11.459 LabApp] JupyterLab extension loaded from /home/tmarcu/.conda/envs/brain2brain_env/lib/python3.7/site-packages/jupyterlab
+[I 21:17:11.459 LabApp] JupyterLab application directory is /home/tmarcu/.conda/envs/brain2brain_env/share/jupyter/lab
+[I 21:17:11.462 LabApp] Serving notebooks from local directory: /home/tmarcu/brain2brain
+[I 21:17:11.462 LabApp] The Jupyter Notebook is running at:
+[I 21:17:11.462 LabApp] http://tiger-i21g11:8001/
+[I 21:17:11.462 LabApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[I 21:18:15.437 LabApp] 302 GET / (10.36.16.7) 0.42ms
+[I 21:18:15.964 LabApp] 301 GET /lab/workspaces/auto-H/?clone (10.36.16.7) 0.38ms
+[W 21:18:16.605 LabApp] Could not determine jupyterlab build status without nodejs
+[W 21:18:23.585 LabApp] Notebook learning/Keras_Learning.ipynb is not trusted
+[I 21:18:24.422 LabApp] Kernel started: ae3b3efb-dd00-48d1-94b9-4e192876aec9
+[I 21:20:24.131 LabApp] Saving file at /learning/Keras_Learning.ipynb
+[W 21:20:24.132 LabApp] Notebook learning/Keras_Learning.ipynb is not trusted
+[I 21:22:24.955 LabApp] Saving file at /learning/Keras_Learning.ipynb
+[W 21:22:24.956 LabApp] Notebook learning/Keras_Learning.ipynb is not trusted
+[I 21:24:00.062 LabApp] Starting buffering for ae3b3efb-dd00-48d1-94b9-4e192876aec9:78074cf2-9891-4f97-820e-d19b3109354b
+slurmstepd: error: *** JOB 4083310 ON tiger-i21g11 CANCELLED AT 2019-12-08T21:26:32 ***
