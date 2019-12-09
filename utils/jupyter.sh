@@ -18,7 +18,7 @@ XDG_RUNTIME_DIR=""
 node=$(hostname -s)
 user=$(whoami)
 cluster="tigergpu"
-port=8889
+port=8001
 
 # print tunneling instructions jupyter-log
 echo -e "
@@ -37,3 +37,6 @@ conda activate brain2brain_env
 
 # Run Jupyter
 jupyter-lab --no-browser --port=${port} --ip=${node}
+
+# List Running Notebooks
+jupyter notebook list
