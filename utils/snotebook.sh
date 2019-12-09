@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH --time 01:10:00
+#SBATCH --time 02:10:00
 #SBATCH -N 1
 #SBATCH --cpus-per-task=4
 #SBATCH --ntasks-per-node=1
 #SBATCH --ntasks-per-socket=1
-#SBATCH --job-name=snote
+#SBATCH --job-name=jupyter
 #SBATCH -o 'jupyter-%A.log'
 #none --gres=gpu:1
 
@@ -23,7 +23,6 @@ echo -e "
     ------------------------------------------------------------------
     "
 
-module load anaconda
-source activate kerasgpu
-jupyter-notebook --no-browser --port=$ipnport --ip=$ipnip
-
+module load anaconda3
+conda activate brain2brain_env
+jupyter notebook --no-browser --port=$ipnport --ip=$ipnip
