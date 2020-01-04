@@ -4,7 +4,7 @@
 #SBATCH --mem-per-cpu=4G
 #SBATCH --ntasks-per-socket=2
 #SBATCH --gres=gpu:4
-#SBATCH --time 03:05:00
+#SBATCH --time 01:05:00
 #SBATCH --job-name jupyter-notebook-tmarcu
 #SBATCH --output jupyter-notebook-%J.log
 # sends mail when process begins, and
