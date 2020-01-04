@@ -75,7 +75,7 @@ class Utils:
         '''
         # This is where the conversations are stored.
         top_of_path = "/projects/HASSON/247/data/"
-        conversations_path = top_of_path + patient_number + "-conversations/"
+        conversations_path = top_of_path + str(patient_number) + "-conversations/"
         # Getting all the numpy arrays .npy files based on matching pattern (*.npy)
         file_paths = glob.glob(os.path.join(conversations_path, '*.npy'))
         print(file_paths)
