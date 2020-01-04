@@ -5,3 +5,6 @@ tiger-gpu-env/
 
 # Ignore Jena weather data.
 learning/jena_climate/
+
+# Ignore .vscode
+/.vscode
