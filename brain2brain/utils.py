@@ -1,7 +1,10 @@
 '''
 This module contains utilities for the brain2brain project.
 '''
+import os
 import numpy as np
+import glob
+
 
 class Utils:
     '''
@@ -65,14 +68,14 @@ class Utils:
                 targets[j] = data[rows[j] + delay][1]
             yield samples, targets
 
-    '''
-    TODO: Add pearson.
-    '''
-
-    '''
-    TODO: Get data function.
-    '''
-
     @staticmethod
-    def getdata(patient_number: int):
-        
+    def get_data(patient_number: int):
+        '''
+        TODO: Add description.
+        '''
+        # This is where the conversations are stored.
+        top_of_path = "/projects/HASSON/247/data/"
+        conversations_path = top_of_path + patient_number + "-conversations/"
+        # Getting all the numpy arrays .npy files based on matching pattern (*.npy)
+        file_paths = glob.glob(os.path.join(conversations_path, '*.npy'))
+        print(file_paths)
