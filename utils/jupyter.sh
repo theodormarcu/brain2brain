@@ -39,4 +39,4 @@ conda activate brain2brain_env
 jupyter-lab --no-browser --port=${port} --ip=${node}
 
 # List Running Notebooks
-jupyter notebook list
+jupyter-lab list
