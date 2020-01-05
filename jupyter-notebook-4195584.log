@@ -1,0 +1,24 @@
+
+Command to create ssh tunnel:
+ssh -N -f -L 8001:tiger-i20g11:8001 tmarcu@tigergpu.princeton.edu
+
+Use a Browser on your local machine to go to:
+localhost:8001  (prefix w/ https:// if using password)
+
+[I 05:27:54.014 LabApp] JupyterLab extension loaded from /home/tmarcu/.conda/envs/brain2brain_env/lib/python3.7/site-packages/jupyterlab
+[I 05:27:54.014 LabApp] JupyterLab application directory is /home/tmarcu/.conda/envs/brain2brain_env/share/jupyter/lab
+[I 05:27:54.017 LabApp] Serving notebooks from local directory: /home/tmarcu/brain2brain
+[I 05:27:54.017 LabApp] The Jupyter Notebook is running at:
+[I 05:27:54.017 LabApp] http://tiger-i20g11:8001/
+[I 05:27:54.017 LabApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[I 05:28:07.881 LabApp] Saving file at /tcn/tcn.ipynb
+[W 05:28:38.353 LabApp] Could not determine jupyterlab build status without nodejs
+[I 05:28:40.412 LabApp] New terminal with automatic name: 1
+[I 05:28:40.513 LabApp] New terminal with automatic name: 2
+TermSocket.open: 1
+TermSocket.open: Opened 1
+[W 05:28:40.921 LabApp] Notebook learning/deep_learning_text_sequences.ipynb is not trusted
+TermSocket.open: 2
+TermSocket.open: Opened 2
+[I 05:28:41.965 LabApp] Kernel started: a1adf2df-16c4-473d-8ead-cba2fcd66f1b
+[I 05:28:42.101 LabApp] Kernel started: bb0ca912-63a5-4a83-be02-68170b5e2ba0
