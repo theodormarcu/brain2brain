@@ -4,7 +4,7 @@ This module contains utilities for the brain2brain project.
 import os
 import numpy as np
 import glob
-
+import keras
 
 def generator(data: np.ndarray, lookback: int, delay: int,
               min_index: int, max_index: int, batch_size: int, step: int, shuffle: bool = False):
@@ -57,8 +57,10 @@ def generator(data: np.ndarray, lookback: int, delay: int,
 
         targets = np.zeros((len(rows), ))
         for j, _ in enumerate(rows):
+            # Get these timesteps from the data.
             indices = range(rows[j] - lookback, rows[j], step)
             samples[j] = data[indices]
+            # Multiple electrodes? Only one here. [1]
             targets[j] = data[rows[j] + delay][1]
         yield samples, targets
 
@@ -79,7 +81,8 @@ def get_file_paths(patient_number: int, shuffle: bool = True):
 
 def create_ecog_array(file_paths: list, verbose: bool = True):
     '''
-    Create
+    Create an array from .npy files. Does not work if the dataset
+    cannot fit into memory. Refer to the Generator function if that is the case.
     '''
     # Read each numpy array and append it to the ecogs list.
     ecogs = []
@@ -102,3 +105,120 @@ def create_ecog_array(file_paths: list, verbose: bool = True):
 def vprint(istring, verbose: bool = True):
     if verbose:
         print(istring)
+
+class Generator(keras.utils.Sequence):
+    '''
+    Generator class that creates batches so Keras can load them into memory.
+    Inspiration: Eric Ham, 
+    https://medium.com/@mrgarg.rajat/training-on-large-datasets-that-dont-fit-in-memory-in-keras-60a974785d71
+    '''
+
+    def __init__(self, file_paths: list, lookback: int, delay: int,
+                 min_index: int, max_index: int, batch_size: int,
+                 step: int, num_electrodes: int, shuffle: bool = False):
+        ''' Initialization function for the object. Call when Generator() is called.
+
+        :param file_paths: List of file paths created by `get_file_paths`.
+        :type data: list
+        :param lookback: The number of timesteps the input data should go back.
+        :type lookback: int
+        :param delay: How many timesteps in the future the target should be.
+        :type delay: int
+        :param shuffle: Whether to shuffle the samples or draw them  in chronological order,
+        defaults to False.
+        :type shuffle: bool
+        :param batch_size: The number of samples per batch.
+        :type batch_size: int
+        :param step: The period, in timesteps, at which you sample data. 
+        :type step: int
+
+        :return: A generator object.
+        :rtype: generator
+        '''
+        self.file_paths = file_paths
+        self.lookback = lookback
+        self.delay = delay
+        self.shuffle = shuffle
+        self.batch_size = batch_size
+        self.step = step
+        self.num_electrodes = num_electrodes
+        # The on_epoch_end method gets triggered at the very
+        # beginning and the very end of each epoch.
+        self.on_epoch_end()
+
+    def __len__(self):
+        ''' Called by len(a = Generator(...)).
+
+        This function computes the number of batches that this
+        generator is supposed to produce. So, we divide the 
+        number of total samples by the batch_size and return that value. 
+        '''
+        # Load data using mmap so that we only load the file header to
+        # get array shapes and datatype. We can use this to calculate 
+        # the number of timesteps per 
+        batch_count = 0
+        for path in self.file_paths:
+            try:
+                with open(path, 'r') as npy_file:
+                    data = np.load(npy_file, mmap_mode='r')
+                    # Get the number of rows (i.e. timesteps)
+                    timestep_count = data.shape[0]
+                    # Divide it by the step size and then batch_size
+                    file_batch_count = np.ceil(timestep_count // self.step // self.batch_size)
+                    assert(type(file_batch_count) == int)
+                    batch_count += file_batch_count
+            except IOError:
+                print(f"IOError: {path} cannot be opened. Reading will STOP")
+
+        return batch_count
+
+    def on_epoch_end():
+        ''' Update indices after each epoch.
+        '''
+        self.indices = np.arange(len(self.file_paths))
+        if self.shuffle = True
+            np.random.shuffle(self.indices)
+
+    def __data_generation(self, file_paths_tmp: list):
+        '''
+        Generates data containing batch_size samples.
+        ''' 
+        # X : (n_samples, *dim, n_channels)
+        # Initialization
+        samples = np.empty(self.batch_size,
+                           self.lookback // self.step,
+                           self.num_electrodes))
+        targets = np.empty((self.batch_size), dtype=int)
+
+        # Generate data from each file. 
+        # Each file is not equivalent to one datum, instead
+        # it is equivalent to multiple steps of data,
+        # where a step is the period, in timesteps,
+        # at which the data is sampled.
+        for i, path in enumerate(file_paths_tmp):
+            # Open the file
+            try:
+                with open(path, 'r') as npy_file:
+                    # Load data into memory.
+                    data = np.load(npy_file)
+            except IOError:
+                print(f"IOError: {path} cannot be opened. Reading will STOP")
+            
+            
+
+            # Store sample
+            samples[i,] = np.load(path)
+
+            # Store class
+            y[i] = self.labels[ID]
+
+        return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
+
+    def __getitem__(self, idx: int):
+        ''' Given batch number idx, create a list of data.
+        
+        :param idx: Batch number.
+        :type idx: int
+        '''
+
+        file_batch = self.file_paths[idx * self.batch_size:(idx + 1) * self.batch_size]
