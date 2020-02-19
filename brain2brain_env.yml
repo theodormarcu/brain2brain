@@ -1,0 +1,8 @@
+name: brain2brain_env
+channels:
+  - defaults
+dependencies:
+  - anaconda
+  - tensorflow-gpu
+prefix: /home/tmarcu/.conda/envs/brain2brain_env
+
