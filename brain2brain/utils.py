@@ -1,5 +1,9 @@
 '''
 This module contains utilities for the brain2brain project.
+
+Created by Theodor Marcu 2019-2020
+tmarcu@princeton.edu
+
 '''
 import os
 import random
@@ -152,6 +156,8 @@ def get_total_sample_count(file_paths: list, lookback: int, delay: int, length: 
         file_timestep_count = data.shape[0]
         # Calculate the number of total samples in this file.
         file_sample_count = file_timestep_count // (lookback + delay + length)
+        print(file_sample_count)
+        total_sample_count += file_sample_count
     return total_sample_count
 
 def print_file_shape(file_paths: list):
@@ -189,126 +195,3 @@ def create_ecog_array(file_paths: list, verbose: bool = True):
     np_ecogs = np.asarray(ecogs)
     vprint(f"Reading DONE! Final shape: {np_ecogs.shape}")
     return np_ecogs
-
-class Generator(keras.utils.Sequence):
-    '''
-    Generator class that creates batches so Keras can load them into memory.
-    Inspiration: Eric Ham, 
-    https://medium.com/@mrgarg.rajat/training-on-large-datasets-that-dont-fit-in-memory-in-keras-60a974785d71
-    '''
-
-    def __init__(self, file_paths: list, lookback: int, length: int, delay: int,
-                 batch_size: int, sample_period: int, num_electrodes: int,
-                 shuffle: bool = False):
-        ''' 
-        
-        Initialization function for the object. Call when Generator() is called.
-
-        Args:
-            file_paths (list): List of file paths.
-            lookback (int): The number of timesteps the input data should go back.
-            delay (int): The number of timesteps the input data should predict in the future.
-            length (int): The number of timesteps in the future we should predict.
-            shuffle (bool): Shuffle the samples or draw them in chronological order.
-            batch_size (int): The number of samples per batch.
-            sample_period (int): The period, in timesteps, at which you sample data. 
-                                E.g. If you set this to 256, it will sample 256 timesteps from the interval.
-        Returns:
-            A generator object.
-        
-        The ecog signals are sampled at 512Hz. This means we have 512 values per second.
-        This means that a second of data is equal to 512 timesteps.
-        
-        How this generator works:
-        Each batch of samples contains `batch_size` sets of samples and targets.
-        A sample contains timesteps between an index i and i + `lookback`. The number 
-        of timesteps is based on the `sample_period`.
-        
-        Since the data is spread across multiple files, a generator might have
-        to extract batches from a file repeatedly or from multiple files.
-        
-        This means we need a way to map sample indices to files and then create batches
-        based on this.
-        
-        E.g. Batch 1 refers to file A and indices x through z. 
-        
-        We can do this on the fly, but we need a way to remember where we stopped and
-        also the case when the rest of the file does not contain enough timesteps for 
-        a new sample.
-        '''
-        self.file_paths = file_paths
-        self.lookback = int(lookback)
-        self.delay = int(delay)
-        self.shuffle = shuffle
-        self.length = int(length)
-        self.batch_size = int(batch_size)
-        self.sample_period = int(sample_period)
-        self.file_map, self.total_sample_count = self.__get_file_map()
-        # At the very beginning and very end of each epoch 
-        # we generate list of indices for the files.
-        self.__on_epoch_end()
-        # TODO: Better way to select electrodes
-        self.num_electrodes = num_electrodes
-    
-    def __len__(self):
-        ''' Called by len(a = Generator(...)).
-
-        This function computes the number of batches that this
-        generator is supposed to produce. So, we divide the 
-        number of total samples by the batch_size and return that value. 
-        '''
-        # Calculate the total sample count and divide it by the batch_size.
-        total_sample_count = self.total_sample_count
-        return total_sample_count // self.batch_size
-
-    def __get_file_map(self):
-        '''
-        Calculate the number of total samples and create a map between samples and files.
-        '''
-        file_map = dict()
-        total_sample_count = 0
-        for file_ix, path in enumerate(self.file_paths):
-            # Open the file to only read the header
-            data = np.load(path, mmap_mode='r')
-            # Get the number of rows (i.e. timesteps)
-            file_timestep_count = data.shape[0]
-            # Calculate the number of total samples in this file.
-            file_sample_count = int(file_timestep_count // (self.lookback + self.delay + self.length))
-            for ix in np.arange(total_sample_count, total_sample_count + file_sample_count):
-                file_map[ix] = (file_ix, ix - total_sample_count)
-            total_sample_count += file_sample_count
-        return file_map, total_sample_count
-    
-    def __on_epoch_end(self):
-        ''' Update indices after each epoch.
-        
-        This function creates a list of indices that
-        we can use to refer to files in order.
-        
-        '''
-        self.sample_indices = np.arange(self.total_sample_count)
-        if self.shuffle == True:
-            np.random.shuffle(self.sample_indices)
-
-    def __getitem__(self, index: int):
-        ''' 
-        Given batch number idx, create a list of data.
-        X, y: (batch_size, self.lookback, num_electrodes)
-        '''
-        indices = self.sample_indices[index * self.batch_size : (index+1) * self.batch_size]
-        sample_length = int(self.lookback + self.delay + self.length)
-        X = np.empty((self.batch_size, self.lookback, self.num_electrodes))
-        y = np.empty((self.batch_size, self.length, self.num_electrodes))
-
-        for ix, k in enumerate(indices):
-            file_ix = self.file_map[k][0]
-            sample_ix = self.file_map[k][1]
-            filename = self.file_paths[file_ix]
-            file_contents = np.load(filename)
-            sample = file_contents[sample_ix * sample_length : (sample_ix+1) * sample_length]
-            X[ix, ] = sample[:sample_length - self.length - self.delay]
-            y[ix,] = sample[sample_length - self.length:]
-        
-        return X, y
-
-

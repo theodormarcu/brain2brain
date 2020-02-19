@@ -1,5 +1,9 @@
 '''
 This module contains brain2brain experiments.
+
+
+Created by Theodor Marcu 2019-2020
+tmarcu@princeton.edu
 '''
 
 from brain2brain.utils import Utils
