@@ -33,6 +33,8 @@ from tensorflow.keras.layers import Dense
 sys.path.append('../')
 
 ####################################################################################################
+
+
 def tcn_experiment2():
     """
     Testing TCN on 1 electrode for patient 676.
@@ -42,10 +44,10 @@ def tcn_experiment2():
     """
 
     # Description (For printing.)
-    experiment_description="GRU on 1 electrode for patient 676. No activation."
+    experiment_description = "GRU on 1 electrode for patient 676. No activation."
     # Debug Mode (for the generator to use less data.) => Reduces training time.
     debug_mode = False
-    
+
     file_prefix = "experiment_test_676_bs128_gru_"
     # wandb.init(project=file_prefix+"wandb")
     # Read saved paths for training.
@@ -57,13 +59,13 @@ def tcn_experiment2():
     train_676, val_676 = utils.split_file_paths(saved_paths_676, 0.8)
     total_electrode_count = 114
     # The time we look back.
-    lookback_window = 512 * 5 # 5 seconds
+    lookback_window = 512 * 5  # 5 seconds
     # Length of sequence predicted.
-    length_pred = 1 # 1 timestep
+    length_pred = 1  # 1 timestep
     # Delay between lookback and length.
-    delay_pred = 0 # No delay.
+    delay_pred = 0  # No delay.
     # Sampling of electrodes.
-    samples_per_second = 1 # Samples Per Second
+    samples_per_second = 1  # Samples Per Second
     timesteps_per_sample = int(lookback_window // samples_per_second)
     # Electrodes
     electrode_selection = [0]
@@ -82,21 +84,22 @@ def tcn_experiment2():
           f"electrode_count: {electrode_count}")
 
     # Training Generator
-    train_676_generator = generators.FGenerator(file_paths = train_676,
-                                                lookback=lookback_window, length = length_pred, delay = delay_pred,
-                                                batch_size = batch_size, sample_period = samples_per_second,
-                                                electrodes= electrode_selection, shuffle = True, debug=debug_mode)
+    train_676_generator = generators.FGenerator(file_paths=train_676,
+                                                lookback=lookback_window, length=length_pred, delay=delay_pred,
+                                                batch_size=batch_size, sample_period=samples_per_second,
+                                                electrodes=electrode_selection, shuffle=True, debug=debug_mode)
     # Validation Generator
-    val_676_generator = generators.FGenerator(file_paths = val_676,
-                                            lookback=lookback_window, length = length_pred, delay = delay_pred,
-                                            batch_size = batch_size, sample_period = samples_per_second,
-                                            electrodes= electrode_selection, shuffle = False, debug=debug_mode)
+    val_676_generator = generators.FGenerator(file_paths=val_676,
+                                              lookback=lookback_window, length=length_pred, delay=delay_pred,
+                                              batch_size=batch_size, sample_period=samples_per_second,
+                                              electrodes=electrode_selection, shuffle=False, debug=debug_mode)
 
     train_steps = len(train_676_generator)
     val_steps = len(val_676_generator)
 
     # TCN
-    i = Input(shape=(timesteps_per_sample, electrode_count), batch_size=batch_size)
+    i = Input(shape=(timesteps_per_sample, electrode_count),
+              batch_size=batch_size)
     m = TCN()(i)
     # No activation.
     m = Dense(1)(m)
@@ -163,38 +166,39 @@ def tcn_experiment1():
     Data is normalized.
     02/23/2020
     """
-    
+
     file_prefix = "experiment_test_676_bs128_2_debug_"
     # wandb.init(project=file_prefix+"wandb")
     # Read saved paths for training.
-    saved_paths_676 = utils.get_file_paths("../brain2brain/train_676_norm_files.txt")
+    saved_paths_676 = utils.get_file_paths(
+        "../brain2brain/train_676_norm_files.txt")
 
     # Split the train files into a training and validation set.
     train_676, val_676 = utils.split_file_paths(saved_paths_676, 0.8)
     total_electrode_count = 114
     # The time we look back.
-    lookback_window = 512 * 5 # 5 seconds
+    lookback_window = 512 * 5  # 5 seconds
     # Length of sequence predicted.
-    length_pred = 1 # 1 timestep
+    length_pred = 1  # 1 timestep
     # Delay between lookback and length.
-    delay_pred = 0 # No delay.
+    delay_pred = 0  # No delay.
     # Sampling of electrodes.
-    samples_per_second = 4 # Samples Per Second
+    samples_per_second = 4  # Samples Per Second
     timesteps_per_sample = int(lookback_window // samples_per_second)
     # Electrodes
     electrode_selection = [0]
     electrode_count = len(electrode_selection)
 
     # Training Generator
-    train_676_generator = generators.FGenerator(file_paths = train_676,
-                                                lookback=lookback_window, length = length_pred, delay = delay_pred,
-                                                batch_size = 128, sample_period = samples_per_second,
-                                                electrodes= electrode_selection, shuffle = True)
+    train_676_generator = generators.FGenerator(file_paths=train_676,
+                                                lookback=lookback_window, length=length_pred, delay=delay_pred,
+                                                batch_size=128, sample_period=samples_per_second,
+                                                electrodes=electrode_selection, shuffle=True)
     # Validation Generator
-    val_676_generator = generators.FGenerator(file_paths = val_676,
-                                            lookback=lookback_window, length = length_pred, delay = delay_pred,
-                                            batch_size = 128, sample_period = samples_per_second,
-                                            electrodes= electrode_selection, shuffle = False, debug=True)
+    val_676_generator = generators.FGenerator(file_paths=val_676,
+                                              lookback=lookback_window, length=length_pred, delay=delay_pred,
+                                              batch_size=128, sample_period=samples_per_second,
+                                              electrodes=electrode_selection, shuffle=False, debug=True)
 
     train_steps = len(train_676_generator)
     val_steps = len(val_676_generator)
@@ -246,6 +250,7 @@ def tcn_experiment1():
 
 def main():
     tcn_experiment2()
+
 
 if __name__ == '__main__':
     main()

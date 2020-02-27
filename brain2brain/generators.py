@@ -11,6 +11,7 @@ import tensorflow.keras as keras
 import math
 import time
 
+
 class FGenerator(keras.utils.Sequence):
     '''
     Generator class that creates batches so Keras can load them into memory.
@@ -41,7 +42,7 @@ class FGenerator(keras.utils.Sequence):
                          Debug mode limits the number of batches to 1/4.
         Returns:
             A generator object.
-        
+
         The ecog signals are sampled at 512Hz. This means we have 512 values per second.
         This means that a second of data is equal to 512 timesteps.
 
@@ -60,10 +61,10 @@ class FGenerator(keras.utils.Sequence):
         # Calculate the total sample count and create a map
         # of files to samples.
         self.file_map, self.total_sample_count = self.__get_file_map()
-        # At the very beginning and very end of each epoch 
+        # At the very beginning and very end of each epoch
         # we generate list of indices for the files.
         self.__on_epoch_end()
-    
+
     def __len__(self):
         ''' Called by len(a = Generator(...)).
 
@@ -90,15 +91,16 @@ class FGenerator(keras.utils.Sequence):
             # Get the number of rows (i.e. timesteps)
             file_timestep_count = data.shape[0]
             # Calculate the number of total samples in this file.
-            file_sample_count = int(file_timestep_count // (self.lookback + self.delay + self.length))
+            file_sample_count = int(
+                file_timestep_count // (self.lookback + self.delay + self.length))
             file_map[file_ix] = file_sample_count
             total_sample_count += file_sample_count
         return file_map, total_sample_count
-    
+
     def __on_epoch_end(self):
         ''' 
         Update indices after each epoch.
-        
+
         This function creates a list of indices that
         we can use to refer to files in order.
         '''
@@ -106,7 +108,7 @@ class FGenerator(keras.utils.Sequence):
         if self.shuffle == True:
             np.random.shuffle(self.sample_indices)
 
-        # Map batches to files and samples. This reduces the number of 
+        # Map batches to files and samples. This reduces the number of
         # file open operations when the generator produces a batch.
         self.batch_map = dict()
         # Remainder store
@@ -122,17 +124,20 @@ class FGenerator(keras.utils.Sequence):
                 if delta > 0:
                     # If there are samples left in a previous file.
                     current_batch_sample_count += delta
-                    self.batch_map[batch_index][file_ix] = (self.file_map[file_ix] - delta, self.file_map[file_ix] - 1)
+                    self.batch_map[batch_index][file_ix] = (
+                        self.file_map[file_ix] - delta, self.file_map[file_ix] - 1)
                 else:
                     # Add new file samples.
                     current_batch_sample_count += self.file_map[file_ix]
-                    self.batch_map[batch_index][file_ix] = (0, self.file_map[file_ix] - 1)
+                    self.batch_map[batch_index][file_ix] = (
+                        0, self.file_map[file_ix] - 1)
 
                 if current_batch_sample_count > self.batch_size:
                     # Overflow. Save delta (remaining samples) for next batch.
                     delta = current_batch_sample_count - self.batch_size
                     prev_start = self.batch_map[batch_index][file_ix][0]
-                    self.batch_map[batch_index][file_ix] = (prev_start, self.file_map[file_ix] - delta - 1)
+                    self.batch_map[batch_index][file_ix] = (
+                        prev_start, self.file_map[file_ix] - delta - 1)
                 else:
                     # Exact match or underflow.
                     delta = 0
@@ -144,8 +149,10 @@ class FGenerator(keras.utils.Sequence):
         Given batch number idx, create a list of data.
         X, y: (batch_size, self.lookback, num_electrodes)
         '''
-        X = np.empty((self.batch_size, self.lookback // self.sample_period, len(self.electrodes)))
-        y = np.empty((self.batch_size, math.ceil(self.length / self.sample_period), len(self.electrodes)))
+        X = np.empty((self.batch_size, self.lookback //
+                      self.sample_period, len(self.electrodes)))
+        y = np.empty((self.batch_size, math.ceil(
+            self.length / self.sample_period), len(self.electrodes)))
 
         # Get files from batch_map
         batch = self.batch_map[index]
@@ -166,12 +173,15 @@ class FGenerator(keras.utils.Sequence):
             #         file_contents[:, electrode] = (file_contents[:, electrode] - mean)/std
             #     print(f"Elapsed time: {time.time() - start_time}")
             for sample_ix in range(batch[file_ix][0], batch[file_ix][1]):
-                sample = file_contents[sample_ix * sample_length : (sample_ix + 1) * sample_length]
+                sample = file_contents[sample_ix *
+                                       sample_length: (sample_ix + 1) * sample_length]
                 # Sample at sample_period.
-                sampled_indices_data = range(0, len(sample) - self.length - self.delay, self.sample_period)
+                sampled_indices_data = range(
+                    0, len(sample) - self.length - self.delay, self.sample_period)
                 # X[curr_ix, ] = sample[:sample_length - self.length - self.delay]
                 X[curr_ix, ] = sample[sampled_indices_data]
-                sampled_indices_target = range(len(sample) - self.length, len(sample), self.sample_period)
+                sampled_indices_target = range(
+                    len(sample) - self.length, len(sample), self.sample_period)
                 # y[curr_ix, ] = sample[sample_length - self.length:]
                 y[curr_ix, ] = sample[sampled_indices_target]
                 curr_ix += 1
@@ -189,7 +199,7 @@ class Generator(keras.utils.Sequence):
                  batch_size: int, sample_period: int, num_electrodes: int,
                  shuffle: bool = False):
         ''' 
-        
+
         Initialization function for the object. Call when Generator() is called.
 
         Args:
@@ -203,7 +213,7 @@ class Generator(keras.utils.Sequence):
                                 E.g. If you set this to 256, it will sample 256 timesteps from the interval.
         Returns:
             A generator object.
-        
+
         The ecog signals are sampled at 512Hz. This means we have 512 values per second.
         This means that a second of data is equal to 512 timesteps.
         '''
@@ -215,12 +225,12 @@ class Generator(keras.utils.Sequence):
         self.batch_size = int(batch_size)
         self.sample_period = int(sample_period)
         self.file_map, self.total_sample_count = self.__get_file_map()
-        # At the very beginning and very end of each epoch 
+        # At the very beginning and very end of each epoch
         # we generate list of indices for the files.
         self.__on_epoch_end()
         # TODO: Better way to select electrodes
         self.num_electrodes = num_electrodes
-    
+
     def __len__(self):
         ''' Called by len(a = Generator(...)).
 
@@ -244,18 +254,19 @@ class Generator(keras.utils.Sequence):
             # Get the number of rows (i.e. timesteps)
             file_timestep_count = data.shape[0]
             # Calculate the number of total samples in this file.
-            file_sample_count = int(file_timestep_count // (self.lookback + self.delay + self.length))
+            file_sample_count = int(
+                file_timestep_count // (self.lookback + self.delay + self.length))
             for ix in np.arange(total_sample_count, total_sample_count + file_sample_count):
                 file_map[ix] = (file_ix, ix - total_sample_count)
             total_sample_count += file_sample_count
         return file_map, total_sample_count
-    
+
     def __on_epoch_end(self):
         ''' Update indices after each epoch.
-        
+
         This function creates a list of indices that
         we can use to refer to files in order.
-        
+
         '''
         self.sample_indices = np.arange(self.total_sample_count)
         if self.shuffle == True:
@@ -266,20 +277,22 @@ class Generator(keras.utils.Sequence):
         Given batch number idx, create a list of data.
         X, y: (batch_size, self.lookback, num_electrodes)
         '''
-        indices = self.sample_indices[index * self.batch_size : (index+1) * self.batch_size]
+        indices = self.sample_indices[index *
+                                      self.batch_size: (index+1) * self.batch_size]
         sample_length = int(self.lookback + self.delay + self.length)
         X = np.empty((self.batch_size, self.lookback, self.num_electrodes))
         y = np.empty((self.batch_size, self.length, self.num_electrodes))
 
         for ix, k in enumerate(indices):
-            # Very expensive implementation. 
+            # Very expensive implementation.
             # Opens a file per sample!
             file_ix = self.file_map[k][0]
             sample_ix = self.file_map[k][1]
             filename = self.file_paths[file_ix]
             file_contents = np.load(filename)
-            sample = file_contents[sample_ix * sample_length : (sample_ix+1) * sample_length]
+            sample = file_contents[sample_ix *
+                                   sample_length: (sample_ix+1) * sample_length]
             X[ix, ] = sample[:sample_length - self.length - self.delay]
-            y[ix,] = sample[sample_length - self.length:]
-        
+            y[ix, ] = sample[sample_length - self.length:]
+
         return X, y

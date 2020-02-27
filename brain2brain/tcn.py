@@ -18,8 +18,10 @@ from tensorflow.keras import layers
 from tensorflow.keras.layers import Activation, SpatialDropout1D, Lambda
 from tensorflow.keras.layers import Layer, Conv1D, Dense, BatchNormalization, LayerNormalization
 
+
 def is_power_of_two(num):
     return num != 0 and ((num & (num - 1)) == 0)
+
 
 def adjust_dilations(dilations: list):
     if all([is_power_of_two(i) for i in dilations]):
@@ -28,20 +30,20 @@ def adjust_dilations(dilations: list):
         new_dilations = [2 ** i for i in dilations]
         return new_dilations
 
+
 class ResidualBlock(Layer):
-    def __init__(self, 
+    def __init__(self,
                  dilation_rate: int,
                  nb_filters: int,
                  kernel_size: int,
                  padding: str,
-                 activation: str='relu',
-                 dropout_rate: float=0.0,
-                 kernel_initializer: str='he_normal',
-                 use_batch_norm: bool=False,
-                 use_layer_norm: bool=False,
-                 last_block: bool=True,
+                 activation: str = 'relu',
+                 dropout_rate: float = 0.0,
+                 kernel_initializer: str = 'he_normal',
+                 use_batch_norm: bool = False,
+                 use_layer_norm: bool = False,
+                 last_block: bool = True,
                  **kwargs):
-
         """
         Defines the residual block for the WaveNet TCN.
 
@@ -93,7 +95,8 @@ class ResidualBlock(Layer):
         """
         self.layers.append(layer)
         self.layers[-1].build(self.res_output_shape)
-        self.res_output_shape = self.layers[-1].compute_output_shape(self.res_output_shape)
+        self.res_output_shape = self.layers[-1].compute_output_shape(
+            self.res_output_shape)
 
     def build(self, input_shape):
         """
@@ -101,7 +104,7 @@ class ResidualBlock(Layer):
         """
         # name scope used to make sure weights get unique names
         with K.name_scope(self.name):
-            self.layers=[]
+            self.layers = []
             self.res_output_shape = input_shape
 
             # Add two layers, like in the paper An Empirical Evaluation...
@@ -124,32 +127,36 @@ class ResidualBlock(Layer):
                 # Add a ReLU Activation Layer
                 self._add_and_activate_layer(Activation('relu'))
                 # Add a Dropout Layer
-                self._add_and_activate_layer(SpatialDropout1D(rate=self.dropout_rate))
+                self._add_and_activate_layer(
+                    SpatialDropout1D(rate=self.dropout_rate))
             if not self.last_block:
                 # 1x1 conv to match the shapes (channel dimension).
                 name = 'conv1D_{}'.format(k+1)
                 with K.name_scope(name):
-                    # make and build this layer separately because it 
+                    # make and build this layer separately because it
                     # directly uses input_shape
                     self.shape_match_conv = Conv1D(filters=self.nb_filters,
-                                                    kernel_size=1,
-                                                    padding='same',
-                                                    name=name,
-                                                    kernel_initializer=self.kernel_initializer)
+                                                   kernel_size=1,
+                                                   padding='same',
+                                                   name=name,
+                                                   kernel_initializer=self.kernel_initializer)
             else:
-                self.shape_match_conv=Lambda(lambda x : x, name='identity')
-            
+                self.shape_match_conv = Lambda(lambda x: x, name='identity')
+
             self.shape_match_conv.build(input_shape)
-            self.res_output_shape = self.shape_match_conv.compute_output_shape(input_shape)
+            self.res_output_shape = self.shape_match_conv.compute_output_shape(
+                input_shape)
 
             self.final_activation = Activation(self.activation)
-            self.final_activation.build(self.res_output_shape)  # probably isn't necessary
+            # probably isn't necessary
+            self.final_activation.build(self.res_output_shape)
 
             # this is done to force Keras to add the layers in the list to self._layers
             for layer in self.layers:
                 self.__setattr__(layer.name, layer)
 
-            super(ResidualBlock, self).build(input_shape)  # done to make sure self.built is set True
+            # done to make sure self.built is set True
+            super(ResidualBlock, self).build(input_shape)
 
     def call(self, inputs, training=None):
         """
@@ -162,7 +169,8 @@ class ResidualBlock(Layer):
         self.layers_outputs = [x]
         for layer in self.layers:
             # TODO: What is this doing?
-            training_flag = "training" in dict(inspect.signature(layer.call).parameters)
+            training_flag = "training" in dict(
+                inspect.signature(layer.call).parameters)
             x = layer(x, training=training) if training_flag else layer(x)
             self.layers_outputs.append(x)
         x2 = self.shape_match_conv(inputs)
@@ -176,6 +184,7 @@ class ResidualBlock(Layer):
 
     def compute_output_shape(self, input_shape):
         return [self.res_output_shape, self.res_output_shape]
+
 
 class TCN(Layer):
     '''
@@ -212,8 +221,8 @@ class TCN(Layer):
                  kernel_size: int = 2,
                  dilations: list = [1, 2, 4, 8, 16, 32],
                  nb_stacks: int = 1,
-                 padding = 'causal',
-                 use_skip_connections = True,
+                 padding='causal',
+                 use_skip_connections=True,
                  return_sequences: bool = False,
                  activation: str = "linear",
                  dropout_rate: float = 0.0,
@@ -244,14 +253,16 @@ class TCN(Layer):
         self.lambda_ouput_shape = None
 
         if padding != 'causal' and padding != 'same':
-            raise ValueError("Only 'causal' or 'same' padding are compatible for this layer.")
+            raise ValueError(
+                "Only 'causal' or 'same' padding are compatible for this layer.")
         if not isinstance(nb_filters, int):
             print('An interface change occurred after the version 2.1.2.')
             print('Before: tcn.TCN(x, return_sequences=False, ...)')
             print('Now should be: tcn.TCN(return_sequences=False, ...)(x)')
-            print('The alternative is to downgrade to 2.1.2 (pip install keras-tcn==2.1.2).')
+            print(
+                'The alternative is to downgrade to 2.1.2 (pip install keras-tcn==2.1.2).')
             raise Exception()
-        
+
         # Initialize parent class with kwargs.
         super().__init__(**kwargs)
 
@@ -260,7 +271,7 @@ class TCN(Layer):
         assert_msg = 'The receptive field formula works only with power of two dilations.'
         assert all([is_power_of_two(i) for i in self.dilations]), assert_msg
         return self.kernel_size * self.nb_stacks * self.dilations[-1]
-    
+
     def build(self, input_shape):
         '''
         Builds the TCN Layer for the input_shape.
@@ -275,16 +286,17 @@ class TCN(Layer):
                                   kernel_initializer=self.kernel_initializer)
         self.main_conv1D.build(input_shape)
         # Member to hold current output shape of the layer for building purposes.
-        self.build_output_shape = self.main_conv1D.compute_output_shape(input_shape)
+        self.build_output_shape = self.main_conv1D.compute_output_shape(
+            input_shape)
 
         # List to hold all the member Residual Blocks.
         self.residual_blocks = []
         # TODO: Why do this?
         total_num_blocks = self.nb_stacks * len(self.dilations)
         if not self.use_skip_connections:
-            total_num_blocks += 1 # Cheap way to false case for below.
+            total_num_blocks += 1  # Cheap way to false case for below.
 
-        for s in range (self.nb_stacks):
+        for s in range(self.nb_stacks):
             for d in self.dilations:
                 self.residual_blocks.append(ResidualBlock(dilation_rate=d,
                                                           nb_filters=self.nb_filters,
@@ -295,22 +307,25 @@ class TCN(Layer):
                                                           use_batch_norm=self.use_batch_norm,
                                                           use_layer_norm=self.use_layer_norm,
                                                           kernel_initializer=self.kernel_initializer,
-                                                          last_block=len(self.residual_blocks) + 1 == total_num_blocks,
+                                                          last_block=len(
+                                                              self.residual_blocks) + 1 == total_num_blocks,
                                                           name="residual_block_{}".format(len(self.residual_blocks))))
                 # Build the newest residual block.
                 self.residual_blocks[-1].build(self.build_output_shape)
                 self.build_output_shape = self.residual_blocks[-1].res_output_shape
-        
+
         # Force Keras to add the layers to the list to self._layers
         for layer in self.residual_blocks:
             self.__setattr__(layer.name, layer)
-        
+
         # Author: @karolbadowski.
         # TODO: What does this mean?
-        output_slice_index = int(self.build_output_shape.as_list()[1] / 2) if self.padding == 'same' else -1
+        output_slice_index = int(self.build_output_shape.as_list()[
+                                 1] / 2) if self.padding == 'same' else -1
         self.lambda_layer = Lambda(lambda tt: tt[:, output_slice_index, :])
-        self.lambda_ouput_shape = self.lambda_layer.compute_output_shape(self.build_output_shape)
-    
+        self.lambda_ouput_shape = self.lambda_layer.compute_output_shape(
+            self.build_output_shape)
+
     def compute_output_shape(self, input_shape):
         '''
         Compute the output shape.
@@ -323,7 +338,6 @@ class TCN(Layer):
         else:
             return self.build_output_shape
 
-
     def call(self, inputs, training=None):
         '''
         TODO: Add docstring.
@@ -334,13 +348,14 @@ class TCN(Layer):
             x = self.main_conv1D(x)
             self.layers_outputs.append(x)
         except AttributeError:
-            print('The backend of keras-tcn>2.8.3 has changed from keras to tensorflow.keras.')
+            print(
+                'The backend of keras-tcn>2.8.3 has changed from keras to tensorflow.keras.')
             print('Either update your imports:\n- From "from keras.layers import <LayerName>" '
                   '\n- To "from tensorflow.keras.layers import <LayerName>"')
             print('Or downgrade to 2.8.3 by running "pip install keras-tcn==2.8.3"')
             import sys
             sys.exit(0)
-        
+
         self.skip_connections = []
         for layer in self.residual_blocks:
             x, skip_out = layer(x, training=training)
@@ -374,7 +389,8 @@ class TCN(Layer):
         config['use_layer_norm'] = self.use_layer_norm
         config['kernel_initializer'] = self.kernel_initializer
         return config
-                
+
+
 def compiled_tcn(num_feat: int,
                  num_classes: int,
                  nb_filters: int,
@@ -383,7 +399,7 @@ def compiled_tcn(num_feat: int,
                  nb_stacks: int,
                  max_len: int,
                  output_len: int = 1,
-                 padding: str ='causal',
+                 padding: str = 'causal',
                  use_skip_connections: bool = True,
                  return_sequences: bool = True,
                  regression: bool = False,
@@ -393,8 +409,8 @@ def compiled_tcn(num_feat: int,
                  activation: str = "linear",
                  opt: str = 'adam',
                  lr: float = 0.0001,
-                 use_batch_norm = False,
-                 use_layer_norm = False):
+                 use_batch_norm=False,
+                 use_layer_norm=False):
     # type(...) -> Model
     """
     Creates a compiled TCN model for a given task (i.e. regression or classification).
@@ -435,7 +451,7 @@ def compiled_tcn(num_feat: int,
 
     x = TCN(nb_filters, kernel_size, nb_stacks, dilations, padding,
             use_skip_connections, dropout_rate, return_sequences,
-            activation, kernel_initializer, use_batch_norm, 
+            activation, kernel_initializer, use_batch_norm,
             use_layer_norm, name=name)(input_layer)
     print("x.shape=", x.shape)
 
@@ -446,7 +462,7 @@ def compiled_tcn(num_feat: int,
             return optimizers.RMSprop(lr=lr, clipnorm=1.0)
         else:
             raise Exception("Only Adam and RMSProp are available here.")
-    
+
     if not regression:
         # Classification.
         x = Dense(num_classes)(x)
@@ -456,6 +472,7 @@ def compiled_tcn(num_feat: int,
         # https://github.com/keras-team/keras/pull/11373
         # It's now in Keras@master but still not available with pip.
         # TODO remove later.
+
         def accuracy(y_true, y_pred):
             # reshape in case it's in shape (num_samples, 1) instead of (num_samples,)
             if K.ndim(y_true) == K.ndim(y_pred):
@@ -465,7 +482,8 @@ def compiled_tcn(num_feat: int,
             y_pred_labels = K.cast(y_pred_labels, K.floatx())
             return K.cast(K.equal(y_true, y_pred_labels), K.floatx())
 
-        model.compile(get_opt(), loss='sparse_categorical_crossentropy', metrics=[accuracy])
+        model.compile(
+            get_opt(), loss='sparse_categorical_crossentropy', metrics=[accuracy])
     else:
         # regression
         x = Dense(output_len)(x)

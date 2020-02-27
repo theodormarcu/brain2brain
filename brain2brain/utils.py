@@ -23,17 +23,17 @@ def get_file_paths(filename: str):
         (list): List of file paths.
 
     The format of the file is:
-    
+
     path1
     path2
     path3
-    
+
     (One path per line.)
     '''
     with open(filename) as f:
         content = f.readlines()
     # Remove whitespace characters (like '\n') at the end of the lines.
-    content = [x.strip() for x in content] 
+    content = [x.strip() for x in content]
     return content
 
 
@@ -52,8 +52,9 @@ def get_file_paths_from_root(patient_number: int, sort: bool = False, shuffle: b
     # This is where the conversations are stored.
     top_of_path = "/projects/HASSON/247/data/"
     conversations_path = os.path.join(top_of_path,
-                                      str(patient_number) + "-conversations/**/",
-                                       "*.npy")
+                                      str(patient_number) +
+                                      "-conversations/**/",
+                                      "*.npy")
     # Getting all the numpy arrays .npy files based on matching pattern (*.npy)
     file_paths = glob.glob(conversations_path, recursive=True)
     # Sort the file paths.
@@ -62,6 +63,7 @@ def get_file_paths_from_root(patient_number: int, sort: bool = False, shuffle: b
     if shuffle:
         random.shuffle(file_paths)
     return file_paths
+
 
 def get_file_paths_from_dir(dir: str, sort: bool = False, shuffle: bool = False):
     '''
@@ -88,6 +90,7 @@ def get_file_paths_from_dir(dir: str, sort: bool = False, shuffle: bool = False)
         random.shuffle(file_paths)
     return file_paths
 
+
 def split_file_paths(file_paths: list, split_ratio: float = 0.8):
     ''' 
     Split the list of file paths into a training and test list based on the split_ratio.
@@ -97,7 +100,7 @@ def split_file_paths(file_paths: list, split_ratio: float = 0.8):
     Args:
         file_paths (list): A list of file paths (shuffled or not).
         split_ratio (float): The split for the training set. (Default=0.8)
-    
+
     Returns:
         list, list: Two lists that represent the training and testing datasets, respectively.
     '''
@@ -120,6 +123,7 @@ def split_file_paths(file_paths: list, split_ratio: float = 0.8):
 
     return training_file_paths, testing_file_paths
 
+
 def get_total_timestep_count(file_paths: list):
     '''
     Returns total sample count for the given file paths.
@@ -137,6 +141,7 @@ def get_total_timestep_count(file_paths: list):
         file_timestep_count = data.shape[0]
         total_timestep_count += file_timestep_count
     return total_timestep_count
+
 
 def get_total_sample_count(file_paths: list, lookback: int, delay: int, length: int):
     '''
@@ -161,6 +166,7 @@ def get_total_sample_count(file_paths: list, lookback: int, delay: int, length: 
         total_sample_count += file_sample_count
     return total_sample_count
 
+
 def print_file_shape(file_paths: list):
     '''
     Prints the shape of each file in file_paths.
@@ -173,6 +179,7 @@ def print_file_shape(file_paths: list):
         data = np.load(path, mmap_mode='r')
         shape = data.shape
         print(shape)
+
 
 def create_ecog_array(file_paths: list, verbose: bool = True):
     '''
@@ -193,7 +200,8 @@ def create_ecog_array(file_paths: list, verbose: bool = True):
         try:
             with open(path, 'r') as file:
                 data = np.load(path)
-                vprint(f"Finished reading {path}. Loaded into numpy array of shape {data.shape}", verbose)
+                vprint(
+                    f"Finished reading {path}. Loaded into numpy array of shape {data.shape}", verbose)
         except IOError:
             print(f"IOError: {path} cannot be opened. Reading will continue")
             continueß
@@ -214,7 +222,7 @@ def normalize_files(file_paths: list, output_directory: str = "/tmp/tmarcu/norma
         files_paths (list): List of one or more file paths.
         output_directory (str): Path to the output directory. (Default = "/tmp/tmarcu/normalized-conversations/")
         file_prefix (str): Prefix to add to directories and files. (Default = "norm_")
-    
+
     '''
     n_files = len(file_paths)
     for ix, old_path in enumerate(file_paths):
@@ -222,7 +230,8 @@ def normalize_files(file_paths: list, output_directory: str = "/tmp/tmarcu/norma
         start_time = time.time()
         data = np.load(old_path)
         electrode_means = np.mean(data, axis=0)
-        _, broadcast_electrode_means = np.broadcast_arrays(data, electrode_means)
+        _, broadcast_electrode_means = np.broadcast_arrays(
+            data, electrode_means)
         new_data = data - broadcast_electrode_means
         electrode_stds = np.std(data, axis=0)
         _, broadcast_electrode_stds = np.broadcast_arrays(data, electrode_stds)

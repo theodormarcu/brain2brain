@@ -5,6 +5,7 @@ import argparse
 from brain2brain.experiments import Experiments
 from brain2brain.utils import Utils
 
+
 def main():
     '''
     Main function for __main__.py. This is the entry point in the CLI.
@@ -32,6 +33,7 @@ def main():
     # # Print JSON to CLI.
     # json_object = json.loads(json_output)
     # print(json.dumps(json_object, indent=4))
+
 
 if __name__ == '__main__':
     main()
