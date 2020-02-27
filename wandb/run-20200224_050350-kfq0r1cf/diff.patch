@@ -1,0 +1,1452 @@
+diff --git a/brain2brain/__pycache__/generators.cpython-37.pyc b/brain2brain/__pycache__/generators.cpython-37.pyc
+index 1fad330..6ea02d5 100644
+Binary files a/brain2brain/__pycache__/generators.cpython-37.pyc and b/brain2brain/__pycache__/generators.cpython-37.pyc differ
+diff --git a/brain2brain/__pycache__/utils.cpython-37.pyc b/brain2brain/__pycache__/utils.cpython-37.pyc
+index 55f3c5d..4f3a084 100644
+Binary files a/brain2brain/__pycache__/utils.cpython-37.pyc and b/brain2brain/__pycache__/utils.cpython-37.pyc differ
+diff --git a/brain2brain/experiments.py b/brain2brain/experiments.py
+index 4d1b224..da34752 100644
+--- a/brain2brain/experiments.py
++++ b/brain2brain/experiments.py
+@@ -5,22 +5,114 @@ This module contains brain2brain experiments.
+ Created by Theodor Marcu 2019-2020
+ tmarcu@princeton.edu
+ '''
++# Imports
++import sys
++import time
++import string
++import json
++# General
++import numpy as np
++import pandas as pd
++import numpy as np
++import tensorflow as tf
++import matplotlib.pyplot as plt
++# brain2brain
++from brain2brain import utils
++from brain2brain import generators
++# TCN
++from brain2brain.tcn import TCN
++# TF
++from tensorflow.keras.models import Sequential
++from tensorflow.keras import layers
++from tensorflow.keras.optimizers import RMSprop
++from tensorflow.keras import Input, Model
++from tensorflow.keras.layers import Dense
+ 
+-from brain2brain.utils import utils
++import wandb
+ 
+-class Experiments:
+-    '''
+-    TODO: Add class description.
+-    '''
++sys.path.append('../')
+ 
+-    @staticmethod
+-    def baseline():
+-        ''' Basic TCN experiment.
+-        '''
+-        # Preparing the training, validation, and test generators
+-        lookback = 5120 # Observations will go back 10s.
+-        step = 128 # Observations will be sampled at 4 data points per second.
+-        delay = 256 # Targets are 0.5s in the future.
+-        batch_size = 64 # Number of samples per batch.
++def tcn_experiment1():
++    """
++    Testing TCN on 1 electrode for patient 676.
++    Data is normalized.
++    02/23/2020
++    """
++    
++    file_prefix = "experiment_test_676_"
++    wandb.init(project=file_prefix+"wandb")
++    # Read saved paths for training.
++    saved_paths_676 = utils.get_file_paths("./brain2brain/train_676_norm_files_projects.txt")
+ 
+-        
++    # Split the train files into a training and validation set.
++    train_676, val_676 = utils.split_file_paths(saved_paths_676, 0.8)
++    total_electrode_count = 114
++    # The time we look back.
++    lookback_window = 512 * 5 # 5 seconds
++    # Length of sequence predicted.
++    length_pred = 1 # 1 timestep
++    # Delay between lookback and length.
++    delay_pred = 0 # No delay.
++    # Sampling of electrodes.
++    samples_per_second = 512 / 128 # Samples Per Second
++    timesteps_per_sample = int(lookback_window // samples_per_second)
++    # Electrodes
++    electrode_selection = [0]
++    electrode_count = len(electrode_selection)
++
++    # Training Generator
++    train_676_generator = generators.FGenerator(file_paths = train_676,
++                                                lookback=lookback_window, length = length_pred, delay = delay_pred,
++                                                batch_size = 32, sample_period = samples_per_second,
++                                                electrodes= electrode_selection, shuffle = True)
++    # Validation Generator
++    val_676_generator = generators.FGenerator(file_paths = val_676,
++                                            lookback=lookback_window, length = length_pred, delay = delay_pred,
++                                            batch_size = 32, sample_period = samples_per_second,
++                                            electrodes= electrode_selection, shuffle = False)
++
++    train_steps = len(train_676_generator)
++    val_steps = len(val_676_generator)
++
++    # TCN
++    i = Input(shape=(timesteps_per_sample, electrode_count))
++    m = TCN()(i)
++    m = Dense(1, activation='linear')(m)
++
++    model = Model(inputs=[i], outputs=[m])
++    # Save Summary
++    summary = model.summary()
++    model.compile('adam', 'mae')
++    # Save Model Config and Architecture
++    model_config = model.get_config()
++    model_config_file_path = file_prefix + "model_config.json"
++    with open(model_config_file_path, 'w') as outfile:
++        json.dump(model_config, outfile)
++
++    model_architecture = model.to_json()
++    model_architecture_file_path = file_prefix + "model_architecture.json"
++    with open(model_architecture_file_path, 'w') as outfile:
++        json.dump(model_architecture, outfile)
++
++    model.fit_generator(generator=train_676_generator,
++                        steps_per_epoch=train_steps,
++                        epochs=20,
++                        validation_data=val_676_generator,
++                        validation_steps=val_steps)
++    model.save(file_prefix + "model.h5")
++    p = model.predict_generator(val_676_generator, steps=val_steps,
++                                callbacks=None, max_queue_size=10, workers=1,
++                                use_multiprocessing=False, verbose=1)
++    plt.plot(p)
++    targets = []
++    for i in range(len(val_676_generator)):
++        x, y = val_676_generator[i]
++        for target in y:
++            targets.append(target[0][0])
++    plt.plot(targets)
++    plt.title('TCN pred on 1 electrode for patient 676.')
++    plt.legend(['predicted', 'actual'])
++    plt.savefig(file_prefix + "plot.png")
++    wandb.save(file_prefix + "wandb.h5")
++
++tcn_experiment1()
+\ No newline at end of file
+diff --git a/brain2brain/tcn.py b/brain2brain/tcn.py
+index 8269643..ab3c357 100644
+--- a/brain2brain/tcn.py
++++ b/brain2brain/tcn.py
+@@ -35,7 +35,7 @@ class ResidualBlock(Layer):
+                  kernel_size: int,
+                  padding: str,
+                  activation: str='relu',
+-                 drouput_rate: float=0.0,
++                 dropout_rate: float=0.0,
+                  kernel_initializer: str='he_normal',
+                  use_batch_norm: bool=False,
+                  use_layer_norm: bool=False,
+@@ -82,75 +82,75 @@ class ResidualBlock(Layer):
+ 
+         super(ResidualBlock, self).__init__(**kwargs)
+ 
+-        def _add_and_activate_layer(self, layer):
+-            """
+-            Helper function for building layer.
+-
+-            Args:
+-                layer: Appens layer to internal layer list and builds it based
+-                      on the current output shape of ResidualBlock. Updates current
+-                      output shape.
+-            """
+-            self.layers.append(layer)
+-            self.layers[-1].build(self.res_output_shape)
+-            self.res_output_shape = self.layers[-1].compute_output_shape(self.res_output_shape)
+-
+-        def build(self, input_shape):
+-            """
+-            TODO: Add docstring.
+-            """
+-            # name scope used to make sure weights get unique names
+-            with K.name_scope(self.name):
+-                self.layers=[]
+-                self.res_output_shape = input_shape
+-
+-                # Add two layers, like in the paper An Empirical Evaluation...
+-                for k in range(2):
+-                    # Add a Dilated Causal Convolution Layer
+-                    name = "conv1D_{}".format(k)
+-                    with K.name_scope(name):
+-                        self._add_and_activate_layer(Conv1D(filters=self.nb_filters,
+-                                                            kernel_size=self.kernel_size,
+-                                                            dilation_rate=self.dilation_rate,
+-                                                            padding=self.padding,
+-                                                            name=name,
+-                                                            kernel_initializer=self.kernel_initializer))
+-                    # Add a Weight Normalization Layer
+-                    if self.use_batch_norm:
+-                        self._add_and_activate_layer(BatchNormalization())
+-                    elif self.use_layer_norm:
+-                        self._add_and_activate_layer(LayerNormalization())
+-
+-                    # Add a ReLU Activation Layer
+-                    self._add_and_activate_layer(Activation('relu'))
+-                    # Add a Dropout Layer
+-                    self._add_and_activate_layer(SpatialDropout1D(rate=self.dropout_rate))
+-                if not self.last_block:
+-                    # 1x1 conv to match the shapes (channel dimension).
+-                    name = 'conv1D_{}'.format(k+1)
+-                    with K.name_scope(name):
+-                        # make and build this layer separately because it 
+-                        # directly uses input_shape
+-                        self.shape_match_conv = Conv1D(filters=self.nb_filters,
+-                                                       kernel_size=1,
+-                                                       padding='same',
+-                                                       name=name,
+-                                                       kernel_initializer=self.kernel_initializer)
+-                else:
+-                    self.shape_match_conv=Lambda(lambda x : x, name='identity')
+-                
+-                self.shape_match_conv.build(input_shape)
+-                self.res_output_shape = self.shape_match_conv.compute_output_shape(input_shape)
++    def _add_and_activate_layer(self, layer):
++        """
++        Helper function for building layer.
+ 
+-                self.final_activation = Activation(self.activation)
+-                self.final_activation.build(self.res_output_shape)  # probably isn't necessary
++        Args:
++            layer: Appens layer to internal layer list and builds it based
++                    on the current output shape of ResidualBlock. Updates current
++                    output shape.
++        """
++        self.layers.append(layer)
++        self.layers[-1].build(self.res_output_shape)
++        self.res_output_shape = self.layers[-1].compute_output_shape(self.res_output_shape)
+ 
+-                # this is done to force Keras to add the layers in the list to self._layers
+-                for layer in self.layers:
+-                    self.__setattr__(layer.name, layer)
++    def build(self, input_shape):
++        """
++        TODO: Add docstring.
++        """
++        # name scope used to make sure weights get unique names
++        with K.name_scope(self.name):
++            self.layers=[]
++            self.res_output_shape = input_shape
++
++            # Add two layers, like in the paper An Empirical Evaluation...
++            for k in range(2):
++                # Add a Dilated Causal Convolution Layer
++                name = "conv1D_{}".format(k)
++                with K.name_scope(name):
++                    self._add_and_activate_layer(Conv1D(filters=self.nb_filters,
++                                                        kernel_size=self.kernel_size,
++                                                        dilation_rate=self.dilation_rate,
++                                                        padding=self.padding,
++                                                        name=name,
++                                                        kernel_initializer=self.kernel_initializer))
++                # Add a Weight Normalization Layer
++                if self.use_batch_norm:
++                    self._add_and_activate_layer(BatchNormalization())
++                elif self.use_layer_norm:
++                    self._add_and_activate_layer(LayerNormalization())
++
++                # Add a ReLU Activation Layer
++                self._add_and_activate_layer(Activation('relu'))
++                # Add a Dropout Layer
++                self._add_and_activate_layer(SpatialDropout1D(rate=self.dropout_rate))
++            if not self.last_block:
++                # 1x1 conv to match the shapes (channel dimension).
++                name = 'conv1D_{}'.format(k+1)
++                with K.name_scope(name):
++                    # make and build this layer separately because it 
++                    # directly uses input_shape
++                    self.shape_match_conv = Conv1D(filters=self.nb_filters,
++                                                    kernel_size=1,
++                                                    padding='same',
++                                                    name=name,
++                                                    kernel_initializer=self.kernel_initializer)
++            else:
++                self.shape_match_conv=Lambda(lambda x : x, name='identity')
++            
++            self.shape_match_conv.build(input_shape)
++            self.res_output_shape = self.shape_match_conv.compute_output_shape(input_shape)
++
++            self.final_activation = Activation(self.activation)
++            self.final_activation.build(self.res_output_shape)  # probably isn't necessary
++
++            # this is done to force Keras to add the layers in the list to self._layers
++            for layer in self.layers:
++                self.__setattr__(layer.name, layer)
++
++            super(ResidualBlock, self).build(input_shape)  # done to make sure self.built is set True
+ 
+-                super(ResidualBlock, self).build(input_shape)  # done to make sure self.built is set True
+-    
+     def call(self, inputs, training=None):
+         """
+         Returns:
+@@ -195,7 +195,7 @@ class TCN(Layer):
+         return_sequences (bool): Whether to return the last output 
+                                  in the output sequence, or the full sequence.
+         activation (str): The activation used in the residual blocks o = Activation(x + F(x)).
+-        drouput_rate (float): Between 0 and 1. Fraction of the input units to drop.
++        dropout_rate (float): Between 0 and 1. Fraction of the input units to drop.
+         kernel_initializer (str): Initializer for the kernel weights matrix (Conv1D).
+         use_batch_norm (bool): Whether to use batch normalization 
+                                in the residual layers or not.
+@@ -216,11 +216,12 @@ class TCN(Layer):
+                  use_skip_connections = True,
+                  return_sequences: bool = False,
+                  activation: str = "linear",
+-                 drouput_rate: float = 0.0,
++                 dropout_rate: float = 0.0,
+                  kernel_initializer: str = 'he_normal',
+                  use_batch_norm: bool = False,
+                  use_layer_norm: bool = False,
+                  **kwargs):
++
+         self.nb_filters = nb_filters
+         self.kernel_size = kernel_size
+         self.dilations = dilations
+@@ -252,7 +253,7 @@ class TCN(Layer):
+             raise Exception()
+         
+         # Initialize parent class with kwargs.
+-        super(TCN, self).__init__(**kwargs)
++        super().__init__(**kwargs)
+ 
+     @property
+     def receptive_field(self):
+@@ -290,15 +291,15 @@ class TCN(Layer):
+                                                           kernel_size=self.kernel_size,
+                                                           padding=self.padding,
+                                                           activation=self.activation,
+-                                                          drouput_rate=self.dropout_rate,
++                                                          dropout_rate=self.dropout_rate,
+                                                           use_batch_norm=self.use_batch_norm,
+                                                           use_layer_norm=self.use_layer_norm,
+                                                           kernel_initializer=self.kernel_initializer,
+                                                           last_block=len(self.residual_blocks) + 1 == total_num_blocks,
+                                                           name="residual_block_{}".format(len(self.residual_blocks))))
+-                    # Build the newest residual block.
+-                    self.residual_blocks[-1].build(self.build_output_shape)
+-                    self.build_output_shape = self.residual_blocks[-1].res_output_shape
++                # Build the newest residual block.
++                self.residual_blocks[-1].build(self.build_output_shape)
++                self.build_output_shape = self.residual_blocks[-1].res_output_shape
+         
+         # Force Keras to add the layers to the list to self._layers
+         for layer in self.residual_blocks:
+@@ -386,7 +387,7 @@ def compiled_tcn(num_feat: int,
+                  use_skip_connections: bool = True,
+                  return_sequences: bool = True,
+                  regression: bool = False,
+-                 drouput_rate: float = 0.05,
++                 dropout_rate: float = 0.05,
+                  name: str = 'tcn',
+                  kernel_initializer: str = "he_normal",
+                  activation: str = "linear",
+diff --git a/experiments/.ipynb_checkpoints/File_Save-checkpoint.ipynb b/experiments/.ipynb_checkpoints/File_Save-checkpoint.ipynb
+index 10f7717..030d144 100644
+--- a/experiments/.ipynb_checkpoints/File_Save-checkpoint.ipynb
++++ b/experiments/.ipynb_checkpoints/File_Save-checkpoint.ipynb
+@@ -24,7 +24,7 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 9,
++   "execution_count": 2,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+@@ -64,31 +64,53 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 26,
++   "execution_count": 48,
++   "metadata": {},
++   "outputs": [
++    {
++     "name": "stdout",
++     "output_type": "stream",
++     "text": [
++      "676 Total Timestep Count: 70518637\n",
++      "676 TRAIN Total Timestep Count: 54031966\n",
++      "676 TEST Total Timestep Count: 16486671\n"
++     ]
++    }
++   ],
++   "source": [
++    "# Load Normalized Files for a Patient\n",
++    "files_676_norm = utils.get_file_paths_from_dir(\"/projects/HASSON/247/data/normalized-conversations/\", \n",
++    "                                               sort=True, shuffle=True)\n",
++    "# Split them into train and test\n",
++    "train_676_norm, test_676_norm = utils.split_file_paths(file_paths = files_676_norm, split_ratio=0.8)\n",
++    "print(f\"676 Total Timestep Count: {utils.get_total_timestep_count(files_676_norm)}\")\n",
++    "print(f\"676 TRAIN Total Timestep Count: {utils.get_total_timestep_count(train_676_norm)}\")\n",
++    "print(f\"676 TEST Total Timestep Count: {utils.get_total_timestep_count(test_676_norm)}\")"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 50,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+-    "files_676_norm = utils.get_file_paths_from_dir(\"/tmp/tmarcu/normalized-conversations/676-conversations-normalized/\", \n",
+-    "                                               sort=True, shuffle=True)"
++    "# # Save the files\n",
++    "# with open('train_676_norm_files.txt', 'w') as filehandle:\n",
++    "#     for path in train_676_norm:\n",
++    "#         filehandle.write('%s\\n' % path)"
+    ]
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 27,
++   "execution_count": 51,
+    "metadata": {},
+-   "outputs": [
+-    {
+-     "data": {
+-      "text/plain": [
+-       "168"
+-      ]
+-     },
+-     "execution_count": 27,
+-     "metadata": {},
+-     "output_type": "execute_result"
+-    }
+-   ],
+-   "source": []
++   "outputs": [],
++   "source": [
++    "# # Save the files\n",
++    "# with open('test_676_norm_files.txt', 'w') as filehandle:\n",
++    "#     for path in test_676_norm:\n",
++    "#         filehandle.write('%s\\n' % path)"
++   ]
+   },
+   {
+    "cell_type": "code",
+@@ -96,7 +118,7 @@
+    "metadata": {},
+    "outputs": [],
+    "source": [
+-    "# Load Normalized Files for a Patient\n",
++    "# Load Files for a Patient\n",
+     "files_676 = utils.get_file_paths_from_root(patient_number = 676, sort=True, shuffle=True)"
+    ]
+   },
+@@ -177,7 +199,7 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 6,
++   "execution_count": 47,
+    "metadata": {},
+    "outputs": [
+     {
+@@ -185,178 +207,178 @@
+      "output_type": "stream",
+      "text": [
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_616_Part1_conversation5/norm_NY676_616_Part1_conversation5.npy\n",
+-      "Elapsed time: 1.43s 1/84 done\n",
++      "Elapsed time: 1.61s 1/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part7_conversation6/norm_NY676_618_Part7_conversation6.npy\n",
+-      "Elapsed time: 1.14s 2/84 done\n",
++      "Elapsed time: 1.23s 2/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part4_conversation7/norm_NY676_618_Part4_conversation7.npy\n",
+-      "Elapsed time: 0.30s 3/84 done\n",
++      "Elapsed time: 0.35s 3/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_617_Part1_conversation5/norm_NY676_617_Part1_conversation5.npy\n",
+-      "Elapsed time: 0.37s 4/84 done\n",
++      "Elapsed time: 0.42s 4/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part4_conversation5/norm_NY676_618_Part4_conversation5.npy\n",
+-      "Elapsed time: 2.23s 5/84 done\n",
++      "Elapsed time: 2.39s 5/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part5-one_conversation5/norm_NY676_620_Part5-one_conversation5.npy\n",
+-      "Elapsed time: 2.25s 6/84 done\n",
++      "Elapsed time: 2.33s 6/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_619_Part6_conversation1/norm_NY676_619_Part6_conversation1.npy\n",
+       "Elapsed time: 0.32s 7/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_619_Part2_conversation3/norm_NY676_619_Part2_conversation3.npy\n",
+-      "Elapsed time: 1.76s 8/84 done\n",
++      "Elapsed time: 1.84s 8/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part6_conversation3/norm_NY676_620_Part6_conversation3.npy\n",
+-      "Elapsed time: 4.53s 9/84 done\n",
++      "Elapsed time: 4.74s 9/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part4_conversation8/norm_NY676_618_Part4_conversation8.npy\n",
+       "Elapsed time: 0.12s 10/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part2_conversation2/norm_NY676_620_Part2_conversation2.npy\n",
+-      "Elapsed time: 4.44s 11/84 done\n",
++      "Elapsed time: 4.92s 11/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_619_Part2_conversation2/norm_NY676_619_Part2_conversation2.npy\n",
+-      "Elapsed time: 3.11s 12/84 done\n",
++      "Elapsed time: 3.83s 12/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part3-one_conversation1/norm_NY676_620_Part3-one_conversation1.npy\n",
+-      "Elapsed time: 2.26s 13/84 done\n",
++      "Elapsed time: 2.62s 13/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_619_Part7_conversation1/norm_NY676_619_Part7_conversation1.npy\n",
+-      "Elapsed time: 0.38s 14/84 done\n",
++      "Elapsed time: 0.47s 14/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_617_Part2_conversation6/norm_NY676_617_Part2_conversation6.npy\n",
+       "Elapsed time: 0.90s 15/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part2_conversation3/norm_NY676_620_Part2_conversation3.npy\n",
+-      "Elapsed time: 1.16s 16/84 done\n",
++      "Elapsed time: 1.48s 16/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part7_conversation2/norm_NY676_618_Part7_conversation2.npy\n",
+-      "Elapsed time: 0.80s 17/84 done\n",
++      "Elapsed time: 1.00s 17/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part5-one_conversation2/norm_NY676_620_Part5-one_conversation2.npy\n",
+-      "Elapsed time: 3.35s 18/84 done\n",
++      "Elapsed time: 4.43s 18/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_616_Part2-one_conversation1/norm_NY676_616_Part2-one_conversation1.npy\n",
+-      "Elapsed time: 1.34s 19/84 done\n",
++      "Elapsed time: 1.81s 19/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_616_Part2-two_conversation2/norm_NY676_616_Part2-two_conversation2.npy\n",
+-      "Elapsed time: 0.87s 20/84 done\n",
++      "Elapsed time: 1.36s 20/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_617_Part1_conversation1/norm_NY676_617_Part1_conversation1.npy\n",
+-      "Elapsed time: 1.71s 21/84 done\n",
++      "Elapsed time: 11.83s 21/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_619_Part4_conversation2/norm_NY676_619_Part4_conversation2.npy\n",
+-      "Elapsed time: 0.10s 22/84 done\n",
++      "Elapsed time: 0.18s 22/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_619_Part5-two_conversation2/norm_NY676_619_Part5-two_conversation2.npy\n",
+-      "Elapsed time: 0.22s 23/84 done\n",
++      "Elapsed time: 0.43s 23/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part4_conversation6/norm_NY676_618_Part4_conversation6.npy\n",
+-      "Elapsed time: 0.15s 24/84 done\n",
++      "Elapsed time: 0.27s 24/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_617_Part1_conversation4/norm_NY676_617_Part1_conversation4.npy\n",
+-      "Elapsed time: 0.85s 25/84 done\n",
++      "Elapsed time: 1.08s 25/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_616_Part1_conversation1/norm_NY676_616_Part1_conversation1.npy\n",
+-      "Elapsed time: 2.62s 26/84 done\n",
++      "Elapsed time: 3.38s 26/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_619_Part5-two_conversation3/norm_NY676_619_Part5-two_conversation3.npy\n",
+-      "Elapsed time: 0.58s 27/84 done\n",
++      "Elapsed time: 0.83s 27/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part6_conversation1/norm_NY676_618_Part6_conversation1.npy\n",
+-      "Elapsed time: 1.70s 28/84 done\n",
++      "Elapsed time: 2.12s 28/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part3-one_conversation4/norm_NY676_620_Part3-one_conversation4.npy\n",
+-      "Elapsed time: 0.17s 29/84 done\n",
++      "Elapsed time: 0.27s 29/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part4_conversation10/norm_NY676_618_Part4_conversation10.npy\n",
+-      "Elapsed time: 0.24s 30/84 done\n",
++      "Elapsed time: 0.42s 30/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part6_conversation2/norm_NY676_618_Part6_conversation2.npy\n",
+-      "Elapsed time: 5.81s 31/84 done\n",
++      "Elapsed time: 7.95s 31/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_617_Part2_conversation1/norm_NY676_617_Part2_conversation1.npy\n",
+-      "Elapsed time: 0.17s 32/84 done\n",
++      "Elapsed time: 0.45s 32/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_616_Part1_conversation4/norm_NY676_616_Part1_conversation4.npy\n",
+-      "Elapsed time: 0.86s 33/84 done\n",
++      "Elapsed time: 1.16s 33/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part7_conversation5/norm_NY676_618_Part7_conversation5.npy\n",
+-      "Elapsed time: 0.86s 34/84 done\n",
++      "Elapsed time: 0.99s 34/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part4_conversation1/norm_NY676_618_Part4_conversation1.npy\n",
+-      "Elapsed time: 0.52s 35/84 done\n",
++      "Elapsed time: 0.71s 35/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_619_Part4_conversation1/norm_NY676_619_Part4_conversation1.npy\n",
+-      "Elapsed time: 3.96s 36/84 done\n",
++      "Elapsed time: 5.65s 36/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_619_Part2_conversation1/norm_NY676_619_Part2_conversation1.npy\n",
+-      "Elapsed time: 0.35s 37/84 done\n",
++      "Elapsed time: 0.53s 37/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_617_Part2_conversation5/norm_NY676_617_Part2_conversation5.npy\n",
+-      "Elapsed time: 0.35s 38/84 done\n",
++      "Elapsed time: 0.32s 38/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_617_Part0_conversation1/norm_NY676_617_Part0_conversation1.npy\n",
+-      "Elapsed time: 0.08s 39/84 done\n",
++      "Elapsed time: 0.10s 39/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part4_conversation4/norm_NY676_618_Part4_conversation4.npy\n",
+-      "Elapsed time: 0.10s 40/84 done\n",
++      "Elapsed time: 0.09s 40/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_619_Part5-one_conversation1/norm_NY676_619_Part5-one_conversation1.npy\n",
+-      "Elapsed time: 0.33s 41/84 done\n",
++      "Elapsed time: 0.35s 41/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part4_conversation3/norm_NY676_618_Part4_conversation3.npy\n",
+-      "Elapsed time: 0.19s 42/84 done\n",
++      "Elapsed time: 0.37s 42/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_621_Part2-two_conversation1/norm_NY676_621_Part2-two_conversation1.npy\n",
+-      "Elapsed time: 2.62s 43/84 done\n",
++      "Elapsed time: 3.51s 43/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_616_Part2-two_conversation3/norm_NY676_616_Part2-two_conversation3.npy\n",
+-      "Elapsed time: 0.88s 44/84 done\n",
++      "Elapsed time: 1.35s 44/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_617_Part1_conversation3/norm_NY676_617_Part1_conversation3.npy\n",
+-      "Elapsed time: 1.01s 45/84 done\n",
++      "Elapsed time: 1.34s 45/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_619_Part3_conversation3/norm_NY676_619_Part3_conversation3.npy\n",
+-      "Elapsed time: 2.05s 46/84 done\n",
++      "Elapsed time: 2.97s 46/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_619_Part5-two_conversation1/norm_NY676_619_Part5-two_conversation1.npy\n",
+-      "Elapsed time: 2.41s 47/84 done\n",
++      "Elapsed time: 2.94s 47/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part7_conversation3/norm_NY676_618_Part7_conversation3.npy\n",
+-      "Elapsed time: 1.59s 48/84 done\n",
++      "Elapsed time: 1.88s 48/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part5-two_conversation1/norm_NY676_620_Part5-two_conversation1.npy\n",
+-      "Elapsed time: 1.00s 49/84 done\n",
++      "Elapsed time: 1.25s 49/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_619_Part3_conversation1/norm_NY676_619_Part3_conversation1.npy\n",
+-      "Elapsed time: 1.11s 50/84 done\n",
++      "Elapsed time: 1.20s 50/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part7_conversation4/norm_NY676_618_Part7_conversation4.npy\n",
+-      "Elapsed time: 1.29s 51/84 done\n",
++      "Elapsed time: 1.34s 51/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_619_Part3_conversation2/norm_NY676_619_Part3_conversation2.npy\n",
+-      "Elapsed time: 7.00s 52/84 done\n",
++      "Elapsed time: 6.84s 52/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_617_Part2_conversation2/norm_NY676_617_Part2_conversation2.npy\n",
+-      "Elapsed time: 6.48s 53/84 done\n",
++      "Elapsed time: 6.62s 53/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_617_Part1_conversation2/norm_NY676_617_Part1_conversation2.npy\n",
+-      "Elapsed time: 0.27s 54/84 done\n",
++      "Elapsed time: 0.36s 54/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_621_Part2-one_conversation1/norm_NY676_621_Part2-one_conversation1.npy\n",
+-      "Elapsed time: 1.58s 55/84 done\n",
++      "Elapsed time: 2.00s 55/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part3-one_conversation3/norm_NY676_620_Part3-one_conversation3.npy\n",
+-      "Elapsed time: 0.74s 56/84 done\n",
++      "Elapsed time: 1.09s 56/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part4_conversation1/norm_NY676_620_Part4_conversation1.npy\n",
+-      "Elapsed time: 3.85s 57/84 done\n",
++      "Elapsed time: 4.04s 57/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part6_conversation1/norm_NY676_620_Part6_conversation1.npy\n",
+-      "Elapsed time: 5.98s 58/84 done\n",
++      "Elapsed time: 6.28s 58/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_621_Part1_conversation1/norm_NY676_621_Part1_conversation1.npy\n",
+-      "Elapsed time: 0.30s 59/84 done\n",
++      "Elapsed time: 0.43s 59/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_621_Part2-two_conversation2/norm_NY676_621_Part2-two_conversation2.npy\n",
+-      "Elapsed time: 4.68s 60/84 done\n",
++      "Elapsed time: 4.79s 60/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part5-one_conversation3/norm_NY676_620_Part5-one_conversation3.npy\n",
+-      "Elapsed time: 0.29s 61/84 done\n",
++      "Elapsed time: 0.28s 61/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_616_Part3_conversation1/norm_NY676_616_Part3_conversation1.npy\n",
+-      "Elapsed time: 4.94s 62/84 done\n",
++      "Elapsed time: 4.41s 62/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part5-two_conversation3/norm_NY676_620_Part5-two_conversation3.npy\n",
+-      "Elapsed time: 1.07s 63/84 done\n",
++      "Elapsed time: 0.87s 63/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_616_Part2-two_conversation1/norm_NY676_616_Part2-two_conversation1.npy\n",
+-      "Elapsed time: 2.58s 64/84 done\n",
++      "Elapsed time: 2.25s 64/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_619_Part6_conversation2/norm_NY676_619_Part6_conversation2.npy\n",
+-      "Elapsed time: 2.79s 65/84 done\n",
++      "Elapsed time: 2.16s 65/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part4_conversation2/norm_NY676_618_Part4_conversation2.npy\n",
+-      "Elapsed time: 0.15s 66/84 done\n",
++      "Elapsed time: 0.25s 66/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part8_conversation1/norm_NY676_618_Part8_conversation1.npy\n",
+-      "Elapsed time: 0.26s 67/84 done\n",
++      "Elapsed time: 0.21s 67/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part5-one_conversation1/norm_NY676_620_Part5-one_conversation1.npy\n",
+       "Elapsed time: 1.33s 68/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_617_Part2_conversation4/norm_NY676_617_Part2_conversation4.npy\n",
+-      "Elapsed time: 0.57s 69/84 done\n",
++      "Elapsed time: 0.35s 69/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part7_conversation1/norm_NY676_620_Part7_conversation1.npy\n",
+-      "Elapsed time: 1.94s 70/84 done\n",
++      "Elapsed time: 1.82s 70/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part6_conversation3/norm_NY676_618_Part6_conversation3.npy\n",
+-      "Elapsed time: 1.46s 71/84 done\n",
++      "Elapsed time: 1.47s 71/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part3-one_conversation5/norm_NY676_620_Part3-one_conversation5.npy\n",
+-      "Elapsed time: 0.47s 72/84 done\n",
++      "Elapsed time: 0.67s 72/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part7_conversation1/norm_NY676_618_Part7_conversation1.npy\n",
+-      "Elapsed time: 0.59s 73/84 done\n",
++      "Elapsed time: 0.60s 73/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_616_Part3_conversation2/norm_NY676_616_Part3_conversation2.npy\n",
+-      "Elapsed time: 0.46s 74/84 done\n",
++      "Elapsed time: 0.62s 74/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part8_conversation2/norm_NY676_618_Part8_conversation2.npy\n",
+-      "Elapsed time: 0.19s 75/84 done\n",
++      "Elapsed time: 0.38s 75/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part5-one_conversation4/norm_NY676_620_Part5-one_conversation4.npy\n",
+       "Elapsed time: 0.07s 76/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part5-one_conversation2/norm_NY676_618_Part5-one_conversation2.npy\n",
+-      "Elapsed time: 0.82s 77/84 done\n",
++      "Elapsed time: 0.96s 77/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_619_Part4_conversation3/norm_NY676_619_Part4_conversation3.npy\n",
+-      "Elapsed time: 7.85s 78/84 done\n",
++      "Elapsed time: 5.52s 78/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part5-one_conversation1/norm_NY676_618_Part5-one_conversation1.npy\n",
+-      "Elapsed time: 9.36s 79/84 done\n",
++      "Elapsed time: 7.85s 79/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_618_Part5-two_conversation1/norm_NY676_618_Part5-two_conversation1.npy\n",
+-      "Elapsed time: 0.81s 80/84 done\n",
++      "Elapsed time: 0.69s 80/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_617_Part2_conversation3/norm_NY676_617_Part2_conversation3.npy\n",
+-      "Elapsed time: 0.75s 81/84 done\n",
++      "Elapsed time: 0.92s 81/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_616_Part1_conversation3/norm_NY676_616_Part1_conversation3.npy\n",
+-      "Elapsed time: 0.26s 82/84 done\n",
++      "Elapsed time: 0.20s 82/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_616_Part1_conversation2/norm_NY676_616_Part1_conversation2.npy\n",
+-      "Elapsed time: 1.30s 83/84 done\n",
++      "Elapsed time: 1.46s 83/84 done\n",
+       "Normalized file and saved at /tmp/tmarcu/normalized-conversations/676-conversations-normalized/norm_NY676_620_Part5-two_conversation2/norm_NY676_620_Part5-two_conversation2.npy\n",
+-      "Elapsed time: 0.49s 84/84 done\n"
++      "Elapsed time: 0.46s 84/84 done\n"
+      ]
+     }
+    ],
+    "source": [
+-    "# utils.normalize_files(files_676, output_directory=\"/tmp/tmarcu/normalized-conversations/676-conversations-normalized/\")"
++    "utils.normalize_files(files_676, output_directory=\"/tmp/tmarcu/normalized-conversations/676-conversations-normalized/\")"
+    ]
+   },
+   {
+diff --git a/experiments/.ipynb_checkpoints/TCN_Experiments-checkpoint.ipynb b/experiments/.ipynb_checkpoints/TCN_Experiments-checkpoint.ipynb
+index 2fd6442..d18d940 100644
+--- a/experiments/.ipynb_checkpoints/TCN_Experiments-checkpoint.ipynb
++++ b/experiments/.ipynb_checkpoints/TCN_Experiments-checkpoint.ipynb
+@@ -1,6 +1,180 @@
+ {
+- "cells": [],
+- "metadata": {},
++ "cells": [
++  {
++   "cell_type": "markdown",
++   "metadata": {},
++   "source": [
++    "# TCN Experiments\n",
++    "\n",
++    "Theodor Marcu\n",
++    "tmarcu@"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 1,
++   "metadata": {},
++   "outputs": [],
++   "source": [
++    "# Autoreload\n",
++    "%load_ext autoreload\n",
++    "%autoreload 2"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 2,
++   "metadata": {},
++   "outputs": [],
++   "source": [
++    "# Imports\n",
++    "import numpy as np\n",
++    "import pandas as pd\n",
++    "import numpy as np\n",
++    "import time\n",
++    "import string\n",
++    "from matplotlib import pyplot as plt\n",
++    "import tensorflow as tf\n",
++    "import sys\n",
++    "sys.path.append('../')\n",
++    "from brain2brain import utils\n",
++    "from brain2brain import generators\n",
++    "%matplotlib inline\n",
++    "\n",
++    "# TF\n",
++    "from tensorflow.keras.models import Sequential\n",
++    "from tensorflow.keras import layers\n",
++    "from tensorflow.keras.optimizers import RMSprop\n",
++    "# TCN\n",
++    "from brain2brain.tcn import TCN\n",
++    "from tensorflow.keras import Input, Model\n",
++    "from tensorflow.keras.layers import Dense"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 6,
++   "metadata": {},
++   "outputs": [],
++   "source": [
++    "# Read saved paths for training.\n",
++    "saved_paths_676 = utils.get_file_paths(\"../brain2brain/train_676_norm_files.txt\")"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 7,
++   "metadata": {},
++   "outputs": [],
++   "source": [
++    "# Split the train files into a training and validation set.\n",
++    "train_676, test_676 = utils.split_file_paths(saved_paths_676, 0.8)"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 8,
++   "metadata": {},
++   "outputs": [
++    {
++     "name": "stdout",
++     "output_type": "stream",
++     "text": [
++      "16455\n"
++     ]
++    }
++   ],
++   "source": [
++    "# Print the number of samples.\n",
++    "print(utils.get_total_sample_count(train_676, lookback=512 * 5, length = 1, delay = 512 * 0))"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 9,
++   "metadata": {},
++   "outputs": [],
++   "source": [
++    "electrode_count = np.load(train_676[0]).shape[1]"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 10,
++   "metadata": {},
++   "outputs": [
++    {
++     "name": "stdout",
++     "output_type": "stream",
++     "text": [
++      "114\n"
++     ]
++    }
++   ],
++   "source": [
++    "print(electrode_count)"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 13,
++   "metadata": {},
++   "outputs": [],
++   "source": [
++    "# The time we look back.\n",
++    "lookback_window = 512 * 5 # 5 seconds\n",
++    "# Length of sequence predicted.\n",
++    "length_pred = 1 # 1 timestep\n",
++    "# Delay between lookback and length.\n",
++    "delay_pred = 0 # No delay.\n",
++    "# Sampling of electrodes.\n",
++    "samples_per_second = 512 / 64 # 8 Samples Per Second\n",
++    "# Electrodes\n",
++    "electrode_selection = np.arange(0, electrode_count)"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 14,
++   "metadata": {},
++   "outputs": [],
++   "source": [
++    "train_676_generator = generators.FGenerator(file_paths = train_676,\n",
++    "                                            lookback=lookback_window, length = length_pred, delay = delay_pred,\n",
++    "                                            batch_size = 32, sample_period = samples_per_second,\n",
++    "                                            electrodes= electrode_selection, shuffle = True)"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": null,
++   "metadata": {},
++   "outputs": [],
++   "source": [
++    "# TCN\n",
++    "i = "
++   ]
++  }
++ ],
++ "metadata": {
++  "kernelspec": {
++   "display_name": "Python 3",
++   "language": "python",
++   "name": "python3"
++  },
++  "language_info": {
++   "codemirror_mode": {
++    "name": "ipython",
++    "version": 3
++   },
++   "file_extension": ".py",
++   "mimetype": "text/x-python",
++   "name": "python",
++   "nbconvert_exporter": "python",
++   "pygments_lexer": "ipython3",
++   "version": "3.7.5"
++  }
++ },
+  "nbformat": 4,
+- "nbformat_minor": 2
++ "nbformat_minor": 4
+ }
+diff --git a/experiments/File_Save.ipynb b/experiments/File_Save.ipynb
+index 781358b..22333e6 100644
+--- a/experiments/File_Save.ipynb
++++ b/experiments/File_Save.ipynb
+@@ -24,7 +24,7 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 9,
++   "execution_count": 2,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+@@ -64,7 +64,7 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 48,
++   "execution_count": 17,
+    "metadata": {},
+    "outputs": [
+     {
+@@ -72,14 +72,14 @@
+      "output_type": "stream",
+      "text": [
+       "676 Total Timestep Count: 70518637\n",
+-      "676 TRAIN Total Timestep Count: 54031966\n",
+-      "676 TEST Total Timestep Count: 16486671\n"
++      "676 TRAIN Total Timestep Count: 53585585\n",
++      "676 TEST Total Timestep Count: 16933052\n"
+      ]
+     }
+    ],
+    "source": [
+     "# Load Normalized Files for a Patient\n",
+-    "files_676_norm = utils.get_file_paths_from_dir(\"/tmp/tmarcu/normalized-conversations/676-conversations-normalized/\", \n",
++    "files_676_norm = utils.get_file_paths_from_dir(\"/projects/HASSON/247/data/normalized-conversations/\", \n",
+     "                                               sort=True, shuffle=True)\n",
+     "# Split them into train and test\n",
+     "train_676_norm, test_676_norm = utils.split_file_paths(file_paths = files_676_norm, split_ratio=0.8)\n",
+@@ -90,26 +90,26 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 50,
++   "execution_count": 18,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+-    "# # Save the files\n",
+-    "# with open('train_676_norm_files.txt', 'w') as filehandle:\n",
+-    "#     for path in train_676_norm:\n",
+-    "#         filehandle.write('%s\\n' % path)"
++    "# Save the files\n",
++    "with open('train_676_norm_files_projects.txt', 'w') as filehandle:\n",
++    "    for path in train_676_norm:\n",
++    "        filehandle.write('%s\\n' % path)"
+    ]
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 51,
++   "execution_count": 19,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+-    "# # Save the files\n",
+-    "# with open('test_676_norm_files.txt', 'w') as filehandle:\n",
+-    "#     for path in test_676_norm:\n",
+-    "#         filehandle.write('%s\\n' % path)"
++    "# Save the files\n",
++    "with open('test_676_norm_files_projects.txt', 'w') as filehandle:\n",
++    "    for path in test_676_norm:\n",
++    "        filehandle.write('%s\\n' % path)"
+    ]
+   },
+   {
+diff --git a/experiments/TCN_Experiments.ipynb b/experiments/TCN_Experiments.ipynb
+index f9f2950..0e913ef 100644
+--- a/experiments/TCN_Experiments.ipynb
++++ b/experiments/TCN_Experiments.ipynb
+@@ -12,7 +12,7 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 1,
++   "execution_count": 21,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+@@ -23,31 +23,38 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 3,
++   "execution_count": 134,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+     "# Imports\n",
+     "import numpy as np\n",
++    "import json\n",
+     "import pandas as pd\n",
+     "import numpy as np\n",
+     "import time\n",
+     "import string\n",
+     "from matplotlib import pyplot as plt\n",
+-    "from tensorflow.keras.models import Sequential\n",
+-    "from tensorflow.keras import layers\n",
+-    "from tensorflow.keras.optimizers import RMSprop\n",
+     "import tensorflow as tf\n",
+     "import sys\n",
+     "sys.path.append('../')\n",
+     "from brain2brain import utils\n",
+     "from brain2brain import generators\n",
+-    "%matplotlib inline"
++    "%matplotlib inline\n",
++    "\n",
++    "# TF\n",
++    "from tensorflow.keras.models import Sequential\n",
++    "from tensorflow.keras import layers\n",
++    "from tensorflow.keras.optimizers import RMSprop\n",
++    "# TCN\n",
++    "from brain2brain.tcn import TCN\n",
++    "from tensorflow.keras import Input, Model\n",
++    "from tensorflow.keras.layers import Dense"
+    ]
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 4,
++   "execution_count": 44,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+@@ -57,17 +64,17 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 5,
++   "execution_count": 45,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+     "# Split the train files into a training and validation set.\n",
+-    "train_676, test_676 = utils.split_file_paths(saved_paths_676, 0.8)"
++    "train_676, val_676 = utils.split_file_paths(saved_paths_676, 0.8)"
+    ]
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 6,
++   "execution_count": 46,
+    "metadata": {},
+    "outputs": [
+     {
+@@ -85,49 +92,378 @@
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 7,
++   "execution_count": 91,
++   "metadata": {},
++   "outputs": [],
++   "source": [
++    "total_electrode_count = 114"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 121,
++   "metadata": {},
++   "outputs": [],
++   "source": [
++    "# The time we look back.\n",
++    "lookback_window = 512 * 5 # 5 seconds\n",
++    "# Length of sequence predicted.\n",
++    "length_pred = 1 # 1 timestep\n",
++    "# Delay between lookback and length.\n",
++    "delay_pred = 0 # No delay.\n",
++    "# Sampling of electrodes.\n",
++    "samples_per_second = 512 / 128 # Samples Per Second\n",
++    "timesteps_per_sample = int(lookback_window // samples_per_second)\n",
++    "# Electrodes\n",
++    "electrode_selection = [0]\n",
++    "electrode_count = len(electrode_selection)"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 122,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+-    "electrode_count = np.load(train_676[0]).shape[1]"
++    "train_676_generator = generators.FGenerator(file_paths = train_676,\n",
++    "                                            lookback=lookback_window, length = length_pred, delay = delay_pred,\n",
++    "                                            batch_size = 32, sample_period = samples_per_second,\n",
++    "                                            electrodes= electrode_selection, shuffle = True)"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 123,
++   "metadata": {},
++   "outputs": [
++    {
++     "data": {
++      "text/plain": [
++       "514"
++      ]
++     },
++     "execution_count": 123,
++     "metadata": {},
++     "output_type": "execute_result"
++    }
++   ],
++   "source": [
++    "len(train_676_generator)"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 124,
++   "metadata": {},
++   "outputs": [
++    {
++     "data": {
++      "text/plain": [
++       "640"
++      ]
++     },
++     "execution_count": 124,
++     "metadata": {},
++     "output_type": "execute_result"
++    }
++   ],
++   "source": [
++    "timesteps_per_sample"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 115,
++   "metadata": {},
++   "outputs": [
++    {
++     "data": {
++      "text/plain": [
++       "(32, 640, 1)"
++      ]
++     },
++     "execution_count": 115,
++     "metadata": {},
++     "output_type": "execute_result"
++    }
++   ],
++   "source": [
++    "x, y = train_676_generator[0]\n",
++    "x.shape"
+    ]
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": 8,
++   "execution_count": 125,
+    "metadata": {},
+    "outputs": [
+     {
+      "name": "stdout",
+      "output_type": "stream",
+      "text": [
+-      "114\n"
++      "Model: \"model_8\"\n",
++      "_________________________________________________________________\n",
++      "Layer (type)                 Output Shape              Param #   \n",
++      "=================================================================\n",
++      "input_20 (InputLayer)        [(None, 640, 1)]          0         \n",
++      "_________________________________________________________________\n",
++      "tcn_10 (TCN)                 (None, 64)                120000    \n",
++      "_________________________________________________________________\n",
++      "dense_8 (Dense)              (None, 1)                 65        \n",
++      "=================================================================\n",
++      "Total params: 120,065\n",
++      "Trainable params: 120,065\n",
++      "Non-trainable params: 0\n",
++      "_________________________________________________________________\n"
+      ]
+     }
+    ],
+    "source": [
+-    "print(electrode_count)"
++    "# TCN\n",
++    "i = Input(shape=(timesteps_per_sample, electrode_count))\n",
++    "m = TCN()(i)\n",
++    "m = Dense(1, activation='linear')(m)\n",
++    "\n",
++    "model = Model(inputs=[i], outputs=[m])\n",
++    "model.summary()"
+    ]
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": null,
++   "execution_count": 126,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+-    "train_676_generator = generators.FGenerator(file_paths = train_676, lookback=512 * 5, length = 1, delay = 512 * 0,\n",
+-    "                                            batch_size = 32, sample_period = 512 / 64, electrodes= np.arange(0, 114),\n",
+-    "                                            shuffle = True)"
++    "model.compile('adam', 'mae')"
+    ]
+   },
+   {
+    "cell_type": "code",
+-   "execution_count": null,
++   "execution_count": 135,
++   "metadata": {},
++   "outputs": [],
++   "source": [
++    "\n",
++    "config = model.get_config()\n",
++    "with open('test.json', 'w') as outfile:\n",
++    "    json.dump(config, outfile)"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 127,
++   "metadata": {},
++   "outputs": [
++    {
++     "data": {
++      "text/plain": [
++       "514"
++      ]
++     },
++     "execution_count": 127,
++     "metadata": {},
++     "output_type": "execute_result"
++    }
++   ],
++   "source": [
++    "len(train_676_generator)"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 128,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+-    "# TCN"
++    "# Validation Generator\n",
++    "val_676_generator = generators.FGenerator(file_paths = val_676,\n",
++    "                                          lookback=lookback_window, length = length_pred, delay = delay_pred,\n",
++    "                                          batch_size = 32, sample_period = samples_per_second,\n",
++    "                                          electrodes= electrode_selection, shuffle = False)"
+    ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 129,
++   "metadata": {},
++   "outputs": [
++    {
++     "data": {
++      "text/plain": [
++       "143"
++      ]
++     },
++     "execution_count": 129,
++     "metadata": {},
++     "output_type": "execute_result"
++    }
++   ],
++   "source": [
++    "len(val_676_generator)"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 142,
++   "metadata": {},
++   "outputs": [
++    {
++     "name": "stdout",
++     "output_type": "stream",
++     "text": [
++      "[1.6241981380856503, 0.6077941077151707, 0.0035571770562701265, 0.777317548501502, 0.6556758379011622, -0.9196391768065375, -0.37576155476945644, 1.7281578333715792, 2.1986135090754453, 1.3211956327722665, 1.5264868540062762, -0.34093494815706554, -1.3121054575178044, 3.78753020488931, 0.06797053007032287, 0.36698129441829713, 0.15689325361170214, -0.29537708061223233, -0.28018485759387135, -0.9476685822382913, 1.4018081281843724, -0.8634134808180367, 0.3436886778882797, 0.4106693137666804, -1.3844522291023469, -0.28778276764996724, -1.96761638711717, -0.5550694060038729, -0.6414397497811417, -1.1007419591424639, 0.12656036885267866, 6.3e-322]\n",
++      "[1.6241981380856503, 0.6077941077151707, 0.0035571770562701265, 0.777317548501502, 0.6556758379011622, -0.9196391768065375, -0.37576155476945644, 1.7281578333715792, 2.1986135090754453, 1.3211956327722665, 1.5264868540062762, -0.34093494815706554, -1.3121054575178044, 3.78753020488931, 0.06797053007032287, 0.36698129441829713, 0.15689325361170214, -0.29537708061223233, -0.28018485759387135, -0.9476685822382913, 1.4018081281843724, -0.8634134808180367, 0.3436886778882797, 0.4106693137666804, -1.3844522291023469, -0.28778276764996724, -1.96761638711717, -0.5550694060038729, -0.6414397497811417, -1.1007419591424639, 0.12656036885267866, 6.3e-322, -0.09950299130506318, 0.4803574765968358, 0.3173210479908089, -0.41527070339097766, 0.18929856911413112, 0.5282544992809033, -0.08426916903395335, 0.10376824449227298, -0.7520157019357996, -1.4741755544361643, -1.461401383630803, -0.7860665826127721, -0.7587095961309261, 0.5023027599713904, -0.42622519489928457, 0.1775111995635711, -1.1267358272727408, -1.222331622070776, 0.06509070813687805, -1.031055618437034, -0.6434216364280761, -1.957045888730653, 0.36398078404286066, -0.6730823474400461, -0.5388251469465898, 0.6293653167762117, -0.2833633952744047, -0.5465432903688526, -1.0104108686917788, 0.31181664261588865, 1.4990823193400409, 3.2295635450814222e+209]\n"
++     ]
++    },
++    {
++     "ename": "KeyboardInterrupt",
++     "evalue": "",
++     "output_type": "error",
++     "traceback": [
++      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
++      "\u001b[0;31mKeyboardInterrupt\u001b[0m                         Traceback (most recent call last)",
++      "\u001b[0;32m<ipython-input-142-bac19f9412aa>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0mtargets\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m[\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      2\u001b[0m \u001b[0;32mfor\u001b[0m \u001b[0mi\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mrange\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mlen\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mval_676_generator\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 3\u001b[0;31m     \u001b[0mx\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0my\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mval_676_generator\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mi\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      4\u001b[0m     \u001b[0;32mfor\u001b[0m \u001b[0mtarget\u001b[0m \u001b[0;32min\u001b[0m \u001b[0my\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m         \u001b[0mtargets\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mappend\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtarget\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;36m0\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;36m0\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;32m~/brain2brain/brain2brain/generators.py\u001b[0m in \u001b[0;36m__getitem__\u001b[0;34m(self, index)\u001b[0m\n\u001b[1;32m    151\u001b[0m         \u001b[0;32mfor\u001b[0m \u001b[0mfile_ix\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mbatch\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    152\u001b[0m             \u001b[0mfile_path\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mfile_paths\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mfile_ix\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 153\u001b[0;31m             \u001b[0mfile_contents\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mnp\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mload\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfile_path\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    154\u001b[0m             \u001b[0mfile_contents\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mfile_contents\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0melectrodes\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    155\u001b[0m             \u001b[0;31m# if self.normalize:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/site-packages/numpy/lib/npyio.py\u001b[0m in \u001b[0;36mload\u001b[0;34m(file, mmap_mode, allow_pickle, fix_imports, encoding)\u001b[0m\n\u001b[1;32m    451\u001b[0m             \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    452\u001b[0m                 return format.read_array(fid, allow_pickle=allow_pickle,\n\u001b[0;32m--> 453\u001b[0;31m                                          pickle_kwargs=pickle_kwargs)\n\u001b[0m\u001b[1;32m    454\u001b[0m         \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    455\u001b[0m             \u001b[0;31m# Try a pickle\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/site-packages/numpy/lib/format.py\u001b[0m in \u001b[0;36mread_array\u001b[0;34m(fp, allow_pickle, pickle_kwargs)\u001b[0m\n\u001b[1;32m    736\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0misfileobj\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfp\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    737\u001b[0m             \u001b[0;31m# We can use the fast fromfile() function.\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 738\u001b[0;31m             \u001b[0marray\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mnumpy\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mfromfile\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfp\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdtype\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mdtype\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mcount\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mcount\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    739\u001b[0m         \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    740\u001b[0m             \u001b[0;31m# This is not a real file. We have to read it the\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;31mKeyboardInterrupt\u001b[0m: "
++     ]
++    }
++   ],
++   "source": [
++    "targets = []\n",
++    "for i in range(len(val_676_generator)):\n",
++    "    x, y = val_676_generator[i]\n",
++    "    for target in y:\n",
++    "        targets.append(target[0][0])\n"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 144,
++   "metadata": {},
++   "outputs": [
++    {
++     "name": "stdout",
++     "output_type": "stream",
++     "text": [
++      "Model: \"model_9\"\n",
++      "_________________________________________________________________\n",
++      "Layer (type)                 Output Shape              Param #   \n",
++      "=================================================================\n",
++      "input_21 (InputLayer)        [(None, 640, 1)]          0         \n",
++      "_________________________________________________________________\n",
++      "tcn_11 (TCN)                 (None, 64)                120000    \n",
++      "_________________________________________________________________\n",
++      "dense_9 (Dense)              (None, 1)                 65        \n",
++      "=================================================================\n",
++      "Total params: 120,065\n",
++      "Trainable params: 120,065\n",
++      "Non-trainable params: 0\n",
++      "_________________________________________________________________\n",
++      "None\n",
++      "Model: \"model_9\"\n",
++      "_________________________________________________________________\n",
++      "Layer (type)                 Output Shape              Param #   \n",
++      "=================================================================\n",
++      "input_21 (InputLayer)        [(None, 640, 1)]          0         \n",
++      "_________________________________________________________________\n",
++      "tcn_11 (TCN)                 (None, 64)                120000    \n",
++      "_________________________________________________________________\n",
++      "dense_9 (Dense)              (None, 1)                 65        \n",
++      "=================================================================\n",
++      "Total params: 120,065\n",
++      "Trainable params: 120,065\n",
++      "Non-trainable params: 0\n",
++      "_________________________________________________________________\n",
++      "Epoch 1/20\n",
++      "  4/514 [..............................] - ETA: 12:49 - loss: 13.8453"
++     ]
++    },
++    {
++     "ename": "KeyboardInterrupt",
++     "evalue": "",
++     "output_type": "error",
++     "traceback": [
++      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
++      "\u001b[0;31mKeyboardInterrupt\u001b[0m                         Traceback (most recent call last)",
++      "\u001b[0;32m<ipython-input-144-667adc9e70b2>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mbrain2brain\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mexperiments\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0mexperiments\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 2\u001b[0;31m \u001b[0mexperiments\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtcn_experiment1\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
++      "\u001b[0;32m~/brain2brain/brain2brain/experiments.py\u001b[0m in \u001b[0;36mtcn_experiment1\u001b[0;34m()\u001b[0m\n\u001b[1;32m     98\u001b[0m                         \u001b[0mepochs\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;36m20\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     99\u001b[0m                         \u001b[0mvalidation_data\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mval_676_generator\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 100\u001b[0;31m                         validation_steps=val_steps)\n\u001b[0m\u001b[1;32m    101\u001b[0m     \u001b[0mmodel\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msave\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mfile_prefix\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0;34m\"model.h5\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    102\u001b[0m     p = model.predict_generator(val_676_generator, steps=val_steps,\n",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/site-packages/tensorflow_core/python/keras/engine/training.py\u001b[0m in \u001b[0;36mfit_generator\u001b[0;34m(self, generator, steps_per_epoch, epochs, verbose, callbacks, validation_data, validation_steps, validation_freq, class_weight, max_queue_size, workers, use_multiprocessing, shuffle, initial_epoch)\u001b[0m\n\u001b[1;32m   1295\u001b[0m         \u001b[0mshuffle\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mshuffle\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1296\u001b[0m         \u001b[0minitial_epoch\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0minitial_epoch\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m-> 1297\u001b[0;31m         steps_name='steps_per_epoch')\n\u001b[0m\u001b[1;32m   1298\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1299\u001b[0m   def evaluate_generator(self,\n",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/site-packages/tensorflow_core/python/keras/engine/training_generator.py\u001b[0m in \u001b[0;36mmodel_iteration\u001b[0;34m(model, data, steps_per_epoch, epochs, verbose, callbacks, validation_data, validation_steps, validation_freq, class_weight, max_queue_size, workers, use_multiprocessing, shuffle, initial_epoch, mode, batch_size, steps_name, **kwargs)\u001b[0m\n\u001b[1;32m    219\u001b[0m     \u001b[0mstep\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;36m0\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    220\u001b[0m     \u001b[0;32mwhile\u001b[0m \u001b[0mstep\u001b[0m \u001b[0;34m<\u001b[0m \u001b[0mtarget_steps\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 221\u001b[0;31m       \u001b[0mbatch_data\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0m_get_next_batch\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mgenerator\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    222\u001b[0m       \u001b[0;32mif\u001b[0m \u001b[0mbatch_data\u001b[0m \u001b[0;32mis\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    223\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0mis_dataset\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/site-packages/tensorflow_core/python/keras/engine/training_generator.py\u001b[0m in \u001b[0;36m_get_next_batch\u001b[0;34m(generator)\u001b[0m\n\u001b[1;32m    361\u001b[0m   \u001b[0;34m\"\"\"Retrieves the next batch of input data.\"\"\"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    362\u001b[0m   \u001b[0;32mtry\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 363\u001b[0;31m     \u001b[0mgenerator_output\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mnext\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mgenerator\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    364\u001b[0m   \u001b[0;32mexcept\u001b[0m \u001b[0;34m(\u001b[0m\u001b[0mStopIteration\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0merrors\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mOutOfRangeError\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    365\u001b[0m     \u001b[0;32mreturn\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/site-packages/tensorflow_core/python/keras/utils/data_utils.py\u001b[0m in \u001b[0;36mget\u001b[0;34m(self)\u001b[0m\n\u001b[1;32m    777\u001b[0m     \u001b[0;32mtry\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    778\u001b[0m       \u001b[0;32mwhile\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mis_running\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 779\u001b[0;31m         \u001b[0minputs\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mqueue\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mget\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mblock\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;32mTrue\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mget\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    780\u001b[0m         \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mqueue\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtask_done\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    781\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0minputs\u001b[0m \u001b[0;32mis\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/multiprocessing/pool.py\u001b[0m in \u001b[0;36mget\u001b[0;34m(self, timeout)\u001b[0m\n\u001b[1;32m    649\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    650\u001b[0m     \u001b[0;32mdef\u001b[0m \u001b[0mget\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtimeout\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;32mNone\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 651\u001b[0;31m         \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mwait\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtimeout\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    652\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mready\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    653\u001b[0m             \u001b[0;32mraise\u001b[0m \u001b[0mTimeoutError\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/multiprocessing/pool.py\u001b[0m in \u001b[0;36mwait\u001b[0;34m(self, timeout)\u001b[0m\n\u001b[1;32m    646\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    647\u001b[0m     \u001b[0;32mdef\u001b[0m \u001b[0mwait\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtimeout\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;32mNone\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 648\u001b[0;31m         \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_event\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mwait\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtimeout\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    649\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    650\u001b[0m     \u001b[0;32mdef\u001b[0m \u001b[0mget\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtimeout\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;32mNone\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/threading.py\u001b[0m in \u001b[0;36mwait\u001b[0;34m(self, timeout)\u001b[0m\n\u001b[1;32m    550\u001b[0m             \u001b[0msignaled\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_flag\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    551\u001b[0m             \u001b[0;32mif\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0msignaled\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 552\u001b[0;31m                 \u001b[0msignaled\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_cond\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mwait\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtimeout\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    553\u001b[0m             \u001b[0;32mreturn\u001b[0m \u001b[0msignaled\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    554\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/threading.py\u001b[0m in \u001b[0;36mwait\u001b[0;34m(self, timeout)\u001b[0m\n\u001b[1;32m    294\u001b[0m         \u001b[0;32mtry\u001b[0m\u001b[0;34m:\u001b[0m    \u001b[0;31m# restore state no matter what (e.g., KeyboardInterrupt)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    295\u001b[0m             \u001b[0;32mif\u001b[0m \u001b[0mtimeout\u001b[0m \u001b[0;32mis\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 296\u001b[0;31m                 \u001b[0mwaiter\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0macquire\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    297\u001b[0m                 \u001b[0mgotit\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;32mTrue\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    298\u001b[0m             \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;31mKeyboardInterrupt\u001b[0m: "
++     ]
++    }
++   ],
++   "source": [
++    "import brain2brain.experiments as experiments\n",
++    "experiments.tcn_experiment1()"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 130,
++   "metadata": {},
++   "outputs": [],
++   "source": [
++    "# How many samples to draw from val_676_generator \n",
++    "# in order to see the entire validation set.\n",
++    "val_steps = len(val_676_generator)"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": 131,
++   "metadata": {},
++   "outputs": [
++    {
++     "name": "stdout",
++     "output_type": "stream",
++     "text": [
++      "Epoch 1/20\n",
++      " 17/514 [..............................] - ETA: 7:37 - loss: 12.0805"
++     ]
++    },
++    {
++     "ename": "KeyboardInterrupt",
++     "evalue": "",
++     "output_type": "error",
++     "traceback": [
++      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
++      "\u001b[0;31mKeyboardInterrupt\u001b[0m                         Traceback (most recent call last)",
++      "\u001b[0;32m<ipython-input-131-9e9a9a08d8e7>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      3\u001b[0m                     \u001b[0mepochs\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;36m20\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m                     \u001b[0mvalidation_data\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mval_676_generator\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 5\u001b[0;31m                     validation_steps=val_steps)\n\u001b[0m",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/site-packages/tensorflow_core/python/keras/engine/training.py\u001b[0m in \u001b[0;36mfit_generator\u001b[0;34m(self, generator, steps_per_epoch, epochs, verbose, callbacks, validation_data, validation_steps, validation_freq, class_weight, max_queue_size, workers, use_multiprocessing, shuffle, initial_epoch)\u001b[0m\n\u001b[1;32m   1295\u001b[0m         \u001b[0mshuffle\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mshuffle\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1296\u001b[0m         \u001b[0minitial_epoch\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0minitial_epoch\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m-> 1297\u001b[0;31m         steps_name='steps_per_epoch')\n\u001b[0m\u001b[1;32m   1298\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1299\u001b[0m   def evaluate_generator(self,\n",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/site-packages/tensorflow_core/python/keras/engine/training_generator.py\u001b[0m in \u001b[0;36mmodel_iteration\u001b[0;34m(model, data, steps_per_epoch, epochs, verbose, callbacks, validation_data, validation_steps, validation_freq, class_weight, max_queue_size, workers, use_multiprocessing, shuffle, initial_epoch, mode, batch_size, steps_name, **kwargs)\u001b[0m\n\u001b[1;32m    219\u001b[0m     \u001b[0mstep\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;36m0\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    220\u001b[0m     \u001b[0;32mwhile\u001b[0m \u001b[0mstep\u001b[0m \u001b[0;34m<\u001b[0m \u001b[0mtarget_steps\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 221\u001b[0;31m       \u001b[0mbatch_data\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0m_get_next_batch\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mgenerator\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    222\u001b[0m       \u001b[0;32mif\u001b[0m \u001b[0mbatch_data\u001b[0m \u001b[0;32mis\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    223\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0mis_dataset\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/site-packages/tensorflow_core/python/keras/engine/training_generator.py\u001b[0m in \u001b[0;36m_get_next_batch\u001b[0;34m(generator)\u001b[0m\n\u001b[1;32m    361\u001b[0m   \u001b[0;34m\"\"\"Retrieves the next batch of input data.\"\"\"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    362\u001b[0m   \u001b[0;32mtry\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 363\u001b[0;31m     \u001b[0mgenerator_output\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mnext\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mgenerator\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    364\u001b[0m   \u001b[0;32mexcept\u001b[0m \u001b[0;34m(\u001b[0m\u001b[0mStopIteration\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0merrors\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mOutOfRangeError\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    365\u001b[0m     \u001b[0;32mreturn\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/site-packages/tensorflow_core/python/keras/utils/data_utils.py\u001b[0m in \u001b[0;36mget\u001b[0;34m(self)\u001b[0m\n\u001b[1;32m    777\u001b[0m     \u001b[0;32mtry\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    778\u001b[0m       \u001b[0;32mwhile\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mis_running\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 779\u001b[0;31m         \u001b[0minputs\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mqueue\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mget\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mblock\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;32mTrue\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mget\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    780\u001b[0m         \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mqueue\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtask_done\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    781\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0minputs\u001b[0m \u001b[0;32mis\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/multiprocessing/pool.py\u001b[0m in \u001b[0;36mget\u001b[0;34m(self, timeout)\u001b[0m\n\u001b[1;32m    649\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    650\u001b[0m     \u001b[0;32mdef\u001b[0m \u001b[0mget\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtimeout\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;32mNone\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 651\u001b[0;31m         \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mwait\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtimeout\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    652\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mready\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    653\u001b[0m             \u001b[0;32mraise\u001b[0m \u001b[0mTimeoutError\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/multiprocessing/pool.py\u001b[0m in \u001b[0;36mwait\u001b[0;34m(self, timeout)\u001b[0m\n\u001b[1;32m    646\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    647\u001b[0m     \u001b[0;32mdef\u001b[0m \u001b[0mwait\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtimeout\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;32mNone\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 648\u001b[0;31m         \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_event\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mwait\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtimeout\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    649\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    650\u001b[0m     \u001b[0;32mdef\u001b[0m \u001b[0mget\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtimeout\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;32mNone\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/threading.py\u001b[0m in \u001b[0;36mwait\u001b[0;34m(self, timeout)\u001b[0m\n\u001b[1;32m    550\u001b[0m             \u001b[0msignaled\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_flag\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    551\u001b[0m             \u001b[0;32mif\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0msignaled\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 552\u001b[0;31m                 \u001b[0msignaled\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_cond\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mwait\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtimeout\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    553\u001b[0m             \u001b[0;32mreturn\u001b[0m \u001b[0msignaled\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    554\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;32m~/.conda/envs/brain2brain_env/lib/python3.7/threading.py\u001b[0m in \u001b[0;36mwait\u001b[0;34m(self, timeout)\u001b[0m\n\u001b[1;32m    294\u001b[0m         \u001b[0;32mtry\u001b[0m\u001b[0;34m:\u001b[0m    \u001b[0;31m# restore state no matter what (e.g., KeyboardInterrupt)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    295\u001b[0m             \u001b[0;32mif\u001b[0m \u001b[0mtimeout\u001b[0m \u001b[0;32mis\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 296\u001b[0;31m                 \u001b[0mwaiter\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0macquire\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    297\u001b[0m                 \u001b[0mgotit\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;32mTrue\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    298\u001b[0m             \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
++      "\u001b[0;31mKeyboardInterrupt\u001b[0m: "
++     ]
++    }
++   ],
++   "source": [
++    "model.fit_generator(generator=train_676_generator,\n",
++    "                    steps_per_epoch=len(train_676_generator),\n",
++    "                    epochs=20,\n",
++    "                    validation_data=val_676_generator,\n",
++    "                    validation_steps=val_steps)"
++   ]
++  },
++  {
++   "cell_type": "code",
++   "execution_count": null,
++   "metadata": {},
++   "outputs": [],
++   "source": []
+   }
+  ],
+  "metadata": {

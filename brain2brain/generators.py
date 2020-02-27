@@ -23,11 +23,9 @@ class FGenerator(keras.utils.Sequence):
 
     def __init__(self, file_paths: list, lookback: int, length: int, delay: int,
                  batch_size: int, sample_period: int, electrodes: int,
-                 shuffle: bool = False):
-        ''' 
-        
+                 shuffle: bool = False, debug: bool = False):
+        '''
         Initialization function for the object. Call when Generator() is called.
-
         Args:
             file_paths (list): List of file paths.
             lookback (int): The number of timesteps the input data should go back.
@@ -39,6 +37,8 @@ class FGenerator(keras.utils.Sequence):
             electrodes (list[int]): List of electrode indices.
             shuffle (bool): Shuffle the samples or draw them in chronological order.
             normalize (bool): Deprecated. Should the sample values be normalized.
+            debug (bool): Whether we should be in debug mode or not. 
+                         Debug mode limits the number of batches to 1/4.
         Returns:
             A generator object.
         
@@ -55,6 +55,7 @@ class FGenerator(keras.utils.Sequence):
         self.batch_size = int(batch_size)
         self.sample_period = int(sample_period)
         # self.normalize = normalize
+        self.debug = debug
         self.electrodes = electrodes
         # Calculate the total sample count and create a map
         # of files to samples.
@@ -71,7 +72,10 @@ class FGenerator(keras.utils.Sequence):
         number of total samples by the batch_size and return that value. 
         '''
         # Calculate the total sample count and divide it by the batch_size.
-        return self.total_sample_count // self.batch_size
+        len = self.total_sample_count // self.batch_size
+        if self.debug:
+            len = int(len // 5)
+        return len
 
     def __get_file_map(self):
         '''

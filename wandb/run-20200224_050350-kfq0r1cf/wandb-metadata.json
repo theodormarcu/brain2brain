@@ -1,0 +1,25 @@
+{
+    "root": "/home/tmarcu/brain2brain",
+    "program": "/home/tmarcu/brain2brain/brain2brain/experiments.py",
+    "git": {
+        "remote": "https://github.com/theodormarcu/brain2brain.git",
+        "commit": "6e22d6fc09f281d57d706f0c30ecf5fc78dc557e"
+    },
+    "email": "marcu.theodor@gmail.com",
+    "codePath": "brain2brain/experiments.py",
+    "startedAt": "2020-02-24T05:03:50.347754",
+    "host": "tigergpu.princeton.edu",
+    "username": "tmarcu",
+    "executable": "/home/tmarcu/.conda/envs/brain2brain_env/bin/python3",
+    "os": "Linux-3.10.0-1062.12.1.el7.x86_64-x86_64-with-redhat-7.7-Verona",
+    "python": "3.7.5",
+    "cpu_count": 28,
+    "cuda": "10.2.89",
+    "args": [],
+    "state": "killed",
+    "jobType": null,
+    "mode": "run",
+    "project": "experiment_test_676_wandb",
+    "heartbeatAt": "2020-02-24T05:03:55.933512",
+    "exitcode": 255
+}

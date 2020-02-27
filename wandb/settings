@@ -1,0 +1,4 @@
+[default]
+project = experiment_test_676_bs128_wandb
+entity = tmarcu
+
