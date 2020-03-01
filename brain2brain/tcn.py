@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Theodor Marcu
 # tmarcu@princeton.edu
 # Created on 02/23/2020
@@ -408,7 +409,7 @@ def compiled_tcn(num_feat: int,
                  kernel_initializer: str = "he_normal",
                  activation: str = "linear",
                  opt: str = 'adam',
-                 lr: float = 0.0001,
+                 lr: float = 0.01,
                  use_batch_norm=False,
                  use_layer_norm=False):
     # type(...) -> Model
@@ -444,15 +445,23 @@ def compiled_tcn(num_feat: int,
     Returns:
         A compiled Keras TCN.
     """
-
     dilations = adjust_dilations(dilations)
-
     input_layer = Input(shape=(max_len, num_feat))
 
-    x = TCN(nb_filters, kernel_size, nb_stacks, dilations, padding,
-            use_skip_connections, dropout_rate, return_sequences,
-            activation, kernel_initializer, use_batch_norm,
-            use_layer_norm, name=name)(input_layer)
+    x = TCN(nb_filters,
+            kernel_size,
+            dilations,
+            nb_stacks,
+            padding,
+            use_skip_connections,
+            return_sequences,
+            activation,
+            dropout_rate,
+            kernel_initializer,
+            use_batch_norm,
+            use_layer_norm,
+            name=name)(input_layer)
+
     print("x.shape=", x.shape)
 
     def get_opt():
@@ -490,7 +499,8 @@ def compiled_tcn(num_feat: int,
         x = Activation('linear')(x)
         output_layer = x
         model = Model(input_layer, output_layer)
-        model.compile(get_opt(), loss='mean_squared_error')
+        model.compile(get_opt(), loss='mean_absolute_error')
+        # model.compile(get_opt(), loss='mean_squared_error')
     print('model.x = {}'.format(input_layer.shape))
     print('model.y = {}'.format(output_layer.shape))
     return model

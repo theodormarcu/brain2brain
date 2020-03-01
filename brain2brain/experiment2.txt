@@ -1,0 +1,12 @@
+Experiment 2 TCN
+experiment2_
+./brain2brain/train_676_norm_files_projects.txt
+512
+20
+512
+1
+0
+1
+0
+1
+False

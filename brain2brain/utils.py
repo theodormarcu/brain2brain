@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Theodor Marcu
 # tmarcu@princeton.edu
 # Created December 2019
@@ -167,18 +168,19 @@ def get_total_sample_count(file_paths: list, lookback: int, delay: int, length: 
     return total_sample_count
 
 
-def print_file_shape(file_paths: list):
+def get_file_shape(file_path: str, print_flag: bool = True):
     '''
     Prints the shape of each file in file_paths.
 
     Args:
         file_paths (list): A list of file paths.
     '''
-    for path in file_paths:
-        # Open the file to only read the header
-        data = np.load(path, mmap_mode='r')
-        shape = data.shape
+    # Open the file to only read the header
+    data = np.load(file_path, mmap_mode='r')
+    shape = data.shape
+    if print_flag:
         print(shape)
+    return shape
 
 
 def create_ecog_array(file_paths: list, verbose: bool = True):

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Theodor Marcu
 # tmarcu@princeton.edu
 # Created January 2020
@@ -73,7 +74,7 @@ class FGenerator(keras.utils.Sequence):
         number of total samples by the batch_size and return that value. 
         '''
         # Calculate the total sample count and divide it by the batch_size.
-        len = self.total_sample_count // self.batch_size
+        len = int(np.floor(self.total_sample_count // self.batch_size))
         if self.debug:
             len = int(len // 5)
         return len
