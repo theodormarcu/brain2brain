@@ -25,7 +25,7 @@ class FGenerator(keras.utils.Sequence):
 
     def __init__(self, file_paths: list, lookback: int, length: int, delay: int,
                  batch_size: int, sample_period: int, electrodes: int,
-                 shuffle: bool = False, debug: bool = False):
+                 shuffle: bool = False, debug: bool = False, ratio: float = 1.0):
         '''
         Initialization function for the object. Call when Generator() is called.
         Args:
@@ -41,6 +41,8 @@ class FGenerator(keras.utils.Sequence):
             normalize (bool): Deprecated. Should the sample values be normalized.
             debug (bool): Whether we should be in debug mode or not. 
                          Debug mode limits the number of batches to 1/4.
+            data_ratio (float): How much of the data should the generator use. E.g. 0.5
+                               is equal to half the data.
         Returns:
             A generator object.
 
@@ -58,6 +60,9 @@ class FGenerator(keras.utils.Sequence):
         self.sample_period = int(sample_period)
         # self.normalize = normalize
         self.debug = debug
+        self.ratio = ratio
+        if self.ratio > 1.0 or self.ratio <= 0.0:
+            raise Exception(f"The ratio ({self.ratio}) should be between 1.0 and 0.0 (1.0 >= ratio > 0.0).")
         self.electrodes = electrodes
         # Calculate the total sample count and create a map
         # of files to samples.
@@ -74,10 +79,12 @@ class FGenerator(keras.utils.Sequence):
         number of total samples by the batch_size and return that value. 
         '''
         # Calculate the total sample count and divide it by the batch_size.
-        len = int(np.floor(self.total_sample_count // self.batch_size))
+        length = int(np.floor(self.total_sample_count // self.batch_size))
         if self.debug:
-            len = int(len // 5)
-        return len
+            length = int(length // 5)
+        elif self.ratio < 1.0:
+            length = int(math.floor(length * self.ratio))
+        return length
 
     def __get_file_map(self):
         '''

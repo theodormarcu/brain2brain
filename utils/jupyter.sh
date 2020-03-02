@@ -1,12 +1,10 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=4
-#SBATCH --mem-per-cpu=8G
-#SBATCH --ntasks-per-socket=2
-#SBATCH --gres=gpu:4
-#SBATCH --time 01:05:00
-#SBATCH --job-name jupyter-notebook-tmarcu
-#SBATCH --output jupyter-notebook-%J.log
+#SBATCH --mem-per-cpu=20G
+#SBATCH --gres=gpu:1
+#SBATCH --time 02:05:00
+#SBATCH --job-name=jupyter-tmarcu
+#SBATCH -o 'jupyter-%A.log'
 # sends mail when process begins, and
 # when it ends. Make sure you define your email
 #SBATCH --mail-type=begin        # send mail when process begins
