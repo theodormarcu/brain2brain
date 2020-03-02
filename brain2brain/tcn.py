@@ -281,14 +281,14 @@ class TCN(Layer):
             input_shape ():
 
         '''
+        print(input_shape)
         self.main_conv1D = Conv1D(filters=self.nb_filters,
                                   kernel_size=1,
                                   padding=self.padding,
                                   kernel_initializer=self.kernel_initializer)
         self.main_conv1D.build(input_shape)
         # Member to hold current output shape of the layer for building purposes.
-        self.build_output_shape = self.main_conv1D.compute_output_shape(
-            input_shape)
+        self.build_output_shape = self.main_conv1D.compute_output_shape(input_shape)
 
         # List to hold all the member Residual Blocks.
         self.residual_blocks = []
@@ -393,6 +393,7 @@ class TCN(Layer):
 
 
 def compiled_tcn(num_feat: int,
+                 batch_size: int,
                  num_classes: int,
                  nb_filters: int,
                  kernel_size: int,
@@ -421,6 +422,7 @@ def compiled_tcn(num_feat: int,
     Args:
         num_feat (int): The number of features of your input, i.e. the last dimension
                        of: (batch_size, timesteps, input_dim).
+        batch_size (int): The batch size.
         num_classes (int): The size of the final dense layer, how many classes are we
                           predicting.
         nb_filters (int): The number of filters to use in the convolutional layers.
@@ -447,7 +449,7 @@ def compiled_tcn(num_feat: int,
     """
     dilations = adjust_dilations(dilations)
     input_layer = Input(shape=(max_len, num_feat))
-
+    print(input_layer)
     x = TCN(nb_filters,
             kernel_size,
             dilations,

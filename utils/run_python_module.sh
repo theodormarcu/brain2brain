@@ -2,7 +2,7 @@
 #SBATCH --nodes=1
 #SBATCH --mem-per-cpu=10G
 #SBATCH --gres=gpu:1
-#SBATCH --time 01:05:00
+#SBATCH --time 04:05:00
 #SBATCH --job-name neural_net_tmarcu
 #SBATCH --output neural-net-%J.log
 # sends mail when process begins, and
@@ -17,8 +17,8 @@ module load anaconda3
 # load brain2brain_env
 conda activate brain2brain_env
 
-test_file_name=$1
-echo $test_file_name
+experiment_name=$1
+echo $experiment_name
 
-# Run experiment
-python3 -m brain2brain @$test_file_name
+# Run experiment. -u = unbuffered printing.
+python3 -u -m brain2brain $experiment_name

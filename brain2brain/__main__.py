@@ -8,56 +8,61 @@ from brain2brain import utils
 from brain2brain import generators
 from brain2brain import experiments
 import numpy as np
+import pprint
+import json
 
 def main():
     '''
     Main function for __main__.py. This is the entry point in the CLI.
     '''
     parser = argparse.ArgumentParser(fromfile_prefix_chars='@')
-    parser.add_argument("experiment_name", help="Name of experiment dictionary.", type=str)
+    # parser.add_argument("experiment_name", help="Name of experiment dictionary.", type=str)
     parser.add_argument("experiment_json", help="Path to json file containing experiment params.", type=str)
     # parser.add_argument("use_layer_norm", help="Layer Normalization.", type=bool)
     args = parser.parse_args()
 
-
-    experiment_1 = {'experiment_description' : "Experiment 1 TCN",
-                    'file_prefix' : "experiment1_",
-                    'path' : './brain2brain/train_676_norm_files_projects.txt',
-                    'batch_size' : 128,
-                    'epochs' : 20, 
-                    'lookback_window' : 512*5,
-                    'length_pred' : 1,
-                    'delay_pred' : 0,
-                    'samples_per_second' : 1,
-                    'electrode_selection' : np.arange(0, 114),
-                    'debug_mode' : False,
-                    'num_feat' : 1,
-                    'num_classes' : 1,
-                    'nb_filters' : 32,
-                    'kernel_size' : 3,
-                    'dilations' : [1, 2, 4, 8, 16, 32],
-                    'nb_stacks' : 2,
-                    'output_len' : 1,
-                    'padding' : 'causal',
-                    'use_skip_connections' : True,
-                    'return_sequences' : False,
-                    'regression' : True,
-                    'dropout_rate' : 0.05,
-                    'name' : 'TCN Model',
-                    'kernel_initializer' : 'he_normal',
-                    'activation' : 'linear',
-                    'opt' : 'adam',
-                    'lr' : '0.01'}
+    # experiment_1 = {'experiment_description' : "Experiment 1 TCN",
+    #                 'file_prefix' : "experiment1_",
+    #                 'path' : './brain2brain/train_676_norm_files_projects.txt',
+    #                 'batch_size' : 128,
+    #                 'epochs' : 20, 
+    #                 'lookback_window' : 512*1,
+    #                 'length_pred' : 1,
+    #                 'delay_pred' : 0,
+    #                 'samples_per_second' : 1,
+    #                 'electrode_selection' : [0],
+    #                 'debug_mode' : False,
+    #                 'num_feat' : 1,
+    #                 'num_classes' : 1,
+    #                 'nb_filters' : 32,
+    #                 'kernel_size' : 3,
+    #                 'dilations' : [1, 2, 4, 8, 16, 32],
+    #                 'nb_stacks' : 2,
+    #                 'output_len' : 1,
+    #                 'padding' : 'causal',
+    #                 'use_skip_connections' : True,
+    #                 'return_sequences' : False,
+    #                 'regression' : True,
+    #                 'dropout_rate' : 0.05,
+    #                 'name' : 'tcn',
+    #                 'kernel_initializer' : 'he_normal',
+    #                 'activation' : 'linear',
+    #                 'opt' : 'adam',
+    #                 'lr' : 0.01}
+    with open(args.experiment_json) as f:
+        experiment_params = json.load(f)
     
-    switch(args.experiment_name) {
-        case "experiment_1":
-            print("Running experiment 1!")
-            return
-            experiments.tcn_experiment(experiment_dict)
-        default: 
-            print("Error! Could not find experiment name.")
-    }
-    return
+    pprint.sorted = lambda x, key=None: x
+    pprint.pprint(experiment_params)
+    experiments.tcn_experiment(experiment_params)
+    # case = args.experiment_name
+    # if case == "experiment_1":
+    #     print("Running experiment 1!")
+    #     pprint.sorted = lambda x, key=None: x
+    #     pprint.pprint(experiment_1)
+    #     experiments.tcn_experiment(experiment_1)
+    # else:
+    #     print("Error! Could not find experiment name.")
  
     # Run experiment.)
     # experiments.tcn_experiment(experiment_description= experiment_dict.experiment_description,
