@@ -156,6 +156,10 @@ def baseline_experiment(experiment_dict: dict):
     samples_per_second = experiment_dict['samples_per_second']
     electrode_selection=experiment_dict['electrode_selection']
     debug_mode = experiment_dict['debug_mode']
+    hidden_units = experiment_dict['hidden_units']
+    activation = experiment_dict['activation']
+    opt = experiment_dict['opt']
+    loss = experiment_dict['loss']
 
     # Read saved paths for training.
     saved_paths = utils.get_file_paths(path)
@@ -183,9 +187,12 @@ def baseline_experiment(experiment_dict: dict):
     # LSTM
     model = Sequential()
     model.add(Flatten(input_shape=(timesteps_per_sample, electrode_count)))
-    model.add(Dense(32, activation='relu'))
+    model.add(Dense(hidden_units, activation=activation))
     model.add(Dense(1))
-    model.compile(optimizer=RMSprop(), loss='mae')
+    if opt == "RMSprop":
+        model.compile(optimizer=RMSprop(), loss=loss)
+    else:
+        raise Exception(f"Could not find optimizer {opt} Aborting.")
 
     # Save Summary
     summary = model.summary()

@@ -10,7 +10,7 @@
     "samples_per_second" : 1,
     "electrode_selection" : [1],
     "debug_mode" : false,
-    "hidden_units": 32,
+    "hidden_units": 64,
     "activation" : "relu",
     "opt" : "RMSprop",
     "loss" : "mae"

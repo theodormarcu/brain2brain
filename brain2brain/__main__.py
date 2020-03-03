@@ -6,7 +6,7 @@ Main class for CLI functionality.
 import argparse
 from brain2brain import utils
 from brain2brain import generators
-from brain2brain import experiments
+from brain2brain import tcn_experiments, baseline_experiments, gru_experiments
 import numpy as np
 import pprint
 import json
@@ -30,11 +30,11 @@ def main():
     experiment_name = args.experiment_name
 
     if experiment_name == "tcn_experiment":
-        experiments.tcn_experiment(experiment_params)
+        tcn_experiments.tcn_experiment(experiment_params)
     elif experiment_name == "baseline_experiment":
-        experiments.baseline_experiment(experiment_params)
+        baseline_experiments.baseline_experiment(experiment_params)
     elif experiment_name == "gru_experiment":
-        experiments.gru_experiment(experiment_params)
+        gru_experiments.gru_experiment(experiment_params)
     else:
         raise Exception(f"Experiment {experiment_name} does not exist! Aborting.")
 if __name__ == '__main__':
