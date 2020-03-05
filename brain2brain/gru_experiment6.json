@@ -2,7 +2,7 @@
     "experiment_description" : "GRU Experiment 6",
     "file_prefix" : "gru_experiment_6_",
     "path" : "./brain2brain/train_676_norm_files_projects.txt",
-    "batch_size" : 1024,
+    "batch_size" : 4096,
     "epochs" : 20, 
     "lookback_window" : 128,
     "length_pred" : 1,
