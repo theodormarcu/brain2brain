@@ -1,9 +1,9 @@
 {
-    "experiment_description" : "Baseline Experiment 2",
-    "file_prefix" : "baseline_experiment_2_",
+    "experiment_description" : "Baseline Experiment 3",
+    "file_prefix" : "baseline_experiment_3_",
     "path" : "./brain2brain/train_676_norm_files_projects.txt",
     "batch_size" : 1024,
-    "epochs" : 20, 
+    "epochs" : 20,
     "lookback_window" : 256,
     "length_pred" : 1,
     "delay_pred" : 0,
@@ -11,7 +11,7 @@
     "electrode_selection" : [1],
     "debug_mode" : false,
     "hidden_units": 64,
-    "activation" : "relu",
+    "activation" : "linear",
     "opt" : "RMSprop",
     "loss" : "mae"
 }

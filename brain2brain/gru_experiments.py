@@ -52,6 +52,10 @@ def gru_experiment(experiment_dict: dict):
     debug_mode = experiment_dict['debug_mode']
     dropout_rate = experiment_dict['dropout_rate']
     recurrent_dropout = experiment_dict['recurrent_dropout']
+    hidden_units = experiment_dict['hidden_units']
+    activation = experiment_dict['activation']
+    opt = experiment_dict['opt']
+    loss = experiment_dict['loss']
 
     # Read saved paths for training.
     saved_paths = utils.get_file_paths(path)
@@ -78,13 +82,15 @@ def gru_experiment(experiment_dict: dict):
 
     # GRU
     model = Sequential()
-    model.add(GRU(32,
+    model.add(GRU(hidden_units,
                   dropout=dropout_rate,
                   recurrent_dropout=recurrent_dropout,
                   input_shape=(timesteps_per_sample, electrode_count)))
     model.add(Dense(1))
-    model.compile(optimizer=RMSprop(), loss='mae')
-
+    if opt == "RMSprop":
+        model.compile(optimizer=RMSprop(), loss=loss)
+    else:
+        raise Exception(f"Could not find optimizer {opt} Aborting.")
     # Save Summary
     model.summary()
     model_summary_path = file_prefix + "model_summary.txt"

@@ -120,13 +120,11 @@ def tcn_experiment(experiment_dict: dict):
     train_steps = len(train_generator)
     val_steps = len(val_generator)
 
-    # # TCN
-    # i = Input(shape=(timesteps_per_sample, electrode_count),
-    #           batch_size=batch_size)
-    # m = TCN()(i)
-    # # No activation.
-    # m = Dense(1)(m)
-    # model = Model(inputs=[i], outputs=[m])
+    print(f"Train Generator Batch Shape:\n"
+          f"Sample={train_generator[0][0].shape} Pred={train_generator[0][1].shape}")
+    print(f"Validation Generator Batch Shape:\n"
+          f"Sample={val_generator[0][0].shape} Pred={val_generator[0][1].shape}")
+
     model = compiled_tcn(num_feat=num_feat,
                          batch_size=batch_size,
                          num_classes=num_classes,
@@ -165,10 +163,10 @@ def tcn_experiment(experiment_dict: dict):
         json.dump(model_architecture, outfile)
 
     history = model.fit_generator(generator=train_generator,
-                                        steps_per_epoch=train_steps,
-                                        epochs=epochs,
-                                        validation_data=val_generator,
-                                        validation_steps=val_steps)
+                                  steps_per_epoch=train_steps,
+                                  epochs=epochs,
+                                  validation_data=val_generator,
+                                  validation_steps=val_steps)
 
     model.save(file_prefix + "model.h5")
     model.save_weights(file_prefix + 'model_weights.h5')

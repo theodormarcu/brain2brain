@@ -82,7 +82,7 @@ def baseline_experiment(experiment_dict: dict):
     model = Sequential()
     model.add(Flatten(input_shape=(timesteps_per_sample, electrode_count)))
     model.add(Dense(hidden_units, activation=activation))
-    model.add(Dense(1))
+    model.add(Dense(1)) 
     if opt == "RMSprop":
         model.compile(optimizer=RMSprop(), loss=loss)
     else:
