@@ -1,96 +1,0 @@
-Running SLURM Experiment.
-tcn_experiment
-brain2brain/tcn_experiment_sequence_2.json
-{'experiment_description': 'Experiment Sequence TCN 2',
- 'file_prefix': 'tcn_experiment_sequence_2_',
- 'path': './brain2brain/train_676_norm_files_projects.txt',
- 'batch_size': 512,
- 'epochs': 20,
- 'lookback_window': 256,
- 'length_pred': 32,
- 'delay_pred': 0,
- 'samples_per_second': 1,
- 'electrode_selection': [1],
- 'debug_mode': False,
- 'num_feat': 1,
- 'num_classes': 1,
- 'nb_filters': 16,
- 'kernel_size': 3,
- 'dilations': [1, 2, 4, 8, 16, 32],
- 'nb_stacks': 2,
- 'output_len': 32,
- 'padding': 'causal',
- 'use_skip_connections': True,
- 'return_sequences': False,
- 'regression': True,
- 'dropout_rate': 0.05,
- 'name': 'tcn',
- 'kernel_initializer': 'he_normal',
- 'activation': 'linear',
- 'opt': 'adam',
- 'lr': 0.005}
-(36853, 114)
-Train Generator Batch Shape:
-Sample=(512, 256, 1) Pred=(512, 32, 1)
-Validation Generator Batch Shape:
-Sample=(512, 256, 1) Pred=(512, 32, 1)
-Tensor("input_1:0", shape=(None, 256, 1), dtype=float32)
-(None, 256, 1)
-2020-03-05 01:29:24.283990: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcuda.so.1
-2020-03-05 01:29:24.312907: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1618] Found device 0 with properties: 
-name: Tesla P100-PCIE-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.3285
-pciBusID: 0000:04:00.0
-2020-03-05 01:29:24.315163: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.0
-2020-03-05 01:29:24.361935: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10.0
-2020-03-05 01:29:24.434992: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcufft.so.10.0
-2020-03-05 01:29:24.558434: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcurand.so.10.0
-2020-03-05 01:29:24.633431: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusolver.so.10.0
-2020-03-05 01:29:24.680696: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusparse.so.10.0
-2020-03-05 01:29:24.820168: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
-2020-03-05 01:29:24.823046: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1746] Adding visible gpu devices: 0
-2020-03-05 01:29:24.823529: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
-2020-03-05 01:29:24.830784: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2399955000 Hz
-2020-03-05 01:29:24.830923: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x5632674f2600 executing computations on platform Host. Devices:
-2020-03-05 01:29:24.830938: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): Host, Default Version
-2020-03-05 01:29:24.832093: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1618] Found device 0 with properties: 
-name: Tesla P100-PCIE-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.3285
-pciBusID: 0000:04:00.0
-2020-03-05 01:29:24.832137: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.0
-2020-03-05 01:29:24.832154: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10.0
-2020-03-05 01:29:24.832168: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcufft.so.10.0
-2020-03-05 01:29:24.832181: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcurand.so.10.0
-2020-03-05 01:29:24.832194: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusolver.so.10.0
-2020-03-05 01:29:24.832208: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusparse.so.10.0
-2020-03-05 01:29:24.832227: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
-2020-03-05 01:29:24.834348: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1746] Adding visible gpu devices: 0
-2020-03-05 01:29:24.834381: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.0
-2020-03-05 01:29:24.937050: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1159] Device interconnect StreamExecutor with strength 1 edge matrix:
-2020-03-05 01:29:24.937087: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1165]      0 
-2020-03-05 01:29:24.937098: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1178] 0:   N 
-2020-03-05 01:29:24.940213: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1304] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 15216 MB memory) -> physical GPU (device: 0, name: Tesla P100-PCIE-16GB, pci bus id: 0000:04:00.0, compute capability: 6.0)
-2020-03-05 01:29:24.942335: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x563267b31590 executing computations on platform CUDA. Devices:
-2020-03-05 01:29:24.942352: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): Tesla P100-PCIE-16GB, Compute Capability 6.0
-x.shape= (None, 16)
-model.x = (None, 256, 1)
-model.y = (None, 32)
-Model: "model"
-_________________________________________________________________
-Layer (type)                 Output Shape              Param #   
-=================================================================
-input_1 (InputLayer)         [(None, 256, 1)]          0         
-_________________________________________________________________
-tcn (TCN)                    (None, 16)                21840     
-_________________________________________________________________
-dense (Dense)                (None, 32)                544       
-_________________________________________________________________
-activation (Activation)      (None, 32)                0         
-=================================================================
-Total params: 22,384
-Trainable params: 22,384
-Non-trainable params: 0
-_________________________________________________________________
-calling compile
-Epoch 1/20
-2020-03-05 01:29:32.941026: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10.0
-2020-03-05 01:29:34.694820: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
-  1/271 [..............................] - ETA: 1:46:22 - loss: 309.5725  2/271 [..............................] - ETA: 53:54 - loss: 206.1048    3/271 [..............................] - ETA: 36:17 - loss: 151.8904  4/271 [..............................] - ETA: 27:31 - loss: 121.8203  5/271 [..............................] - ETA: 22:16 - loss: 101.7119  6/271 [..............................] - ETA: 18:53 - loss: 87.7683   7/271 [..............................] - ETA: 16:25 - loss: 76.9800  8/271 [..............................] - ETA: 14:33 - loss: 68.8612  9/271 [..............................] - ETA: 13:06 - loss: 62.2663 10/271 [>.............................] - ETA: 11:57 - loss: 56.7789 11/271 [>.............................] - ETA: 11:41 - loss: 52.1147 12/271 [>.............................] - ETA: 11:00 - loss: 48.2045 13/271 [>.............................] - ETA: 10:21 - loss: 44.8360 14/271 [>.............................] - ETA: 10:20 - loss: 41.9477 15/271 [>.............................] - ETA: 9:52 - loss: 39.3448  16/271 [>.............................] - ETA: 9:50 - loss: 37.0807 17/271 [>.............................] - ETA: 9:56 - loss: 35.0342 18/271 [>.............................] - ETA: 9:53 - loss: 33.2310 19/271 [=>............................] - ETA: 10:04 - loss: 31.6082 20/271 [=>............................] - ETA: 10:07 - loss: 30.1156 21/271 [=>............................] - ETA: 10:00 - loss: 28.7759 22/271 [=>............................] - ETA: 9:55 - loss: 27.5474  23/271 [=>............................] - ETA: 10:08 - loss: 26.4311 24/271 [=>............................] - ETA: 9:59 - loss: 25.3873  25/271 [=>............................] - ETA: 9:55 - loss: 24.4331 26/271 [=>............................] - ETA: 9:44 - loss: 23.5516 27/271 [=>............................] - ETA: 9:44 - loss: 22.7285 28/271 [==>...........................] - ETA: 9:26 - loss: 21.9640 29/271 [==>...........................] - ETA: 9:44 - loss: 21.2481 30/271 [==>...........................] - ETA: 9:45 - loss: 20.5805slurmstepd: error: *** JOB 4466406 ON tiger-i22g13 CANCELLED AT 2020-03-05T01:30:42 ***
