@@ -31,10 +31,16 @@ def main():
 
     if experiment_name == "tcn_experiment":
         tcn_experiments.tcn_experiment(experiment_params)
+    elif experiment_name == "tcn_m2m":
+        tcn_experiments.tcn_m2m(experiment_params)
     elif experiment_name == "baseline_experiment":
         baseline_experiments.baseline_experiment(experiment_params)
     elif experiment_name == "gru_experiment":
-        gru_experiments.gru_experiment(experiment_params)
+        if 'many_to_many' in experiment_params:
+            if experiment_params['many_to_many'] == True:
+                gru_experiments.gru_m2m(experiment_params)
+        else:
+            gru_experiments.gru_experiment(experiment_params)
     else:
         raise Exception(f"Experiment {experiment_name} does not exist! Aborting.")
 if __name__ == '__main__':

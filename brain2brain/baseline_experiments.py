@@ -13,6 +13,7 @@ import sys
 import time
 import string
 import json
+from pathlib import Path
 # General
 import numpy as np
 import pandas as pd
@@ -40,7 +41,7 @@ def baseline_experiment(experiment_dict: dict):
     """
     Baseline test.
     """
-    file_prefix = experiment_dict['file_prefix']
+    target_folder = experiment_dict['target_folder']
     path = experiment_dict['path']
     batch_size = experiment_dict['batch_size']
     epochs = experiment_dict['epochs']
@@ -54,6 +55,12 @@ def baseline_experiment(experiment_dict: dict):
     activation = experiment_dict['activation']
     opt = experiment_dict['opt']
     loss = experiment_dict['loss']
+
+    # Ensure target directory exists.
+    try:
+        Path(target_folder).mkdir(parents=True, exist_ok=True)
+    except IOError:
+        print(f"Directory creation failed for path {target_folder}")
 
     # Read saved paths for training.
     saved_paths = utils.get_file_paths(path)
@@ -90,22 +97,22 @@ def baseline_experiment(experiment_dict: dict):
 
     # Save Summary
     summary = model.summary()
-    model_summary_path = file_prefix + "model_summary.txt"
+    model_summary_path = target_folder + "model_summary.txt"
     with open(model_summary_path, 'w') as f:
         with redirect_stdout(f):
             model.summary()
     model_architecture = model.to_json()
-    model_architecture_file_path = file_prefix + "model_architecture.json"
+    model_architecture_file_path = target_folder + "model_architecture.json"
     with open(model_architecture_file_path, 'w') as outfile:
         json.dump(model_architecture, outfile)
 
     history = model.fit_generator(train_generator,
                                 epochs=epochs,
                                 validation_data = val_generator)
-    model.save(file_prefix + "model.h5")
-    model.save_weights(file_prefix + 'model_weights.h5')
+    model.save(target_folder + "model.h5")
+    model.save_weights(target_folder + 'model_weights.h5')
     # Save History to File (For Later)
-    history_path = file_prefix + "history.json"
+    history_path = target_folder + "history.json"
     with open(history_path, 'w') as outfile:
         json.dump(history.history, outfile)
     # Plot Loss Curves for Validation and Training
@@ -116,7 +123,7 @@ def baseline_experiment(experiment_dict: dict):
     plt.plot(epochs_plt, loss, 'bo', label="Training Loss")
     plt.plot(epochs_plt, val_loss, 'b', label="Validation Loss")
     plt.title("Training and Validation Loss")
-    plt.savefig(file_prefix + "train_val_loss_plot.png")
+    plt.savefig(target_folder + "train_val_loss_plot.png")
     plt.clf()
 
     p = model.predict_generator(val_generator, steps=val_steps,
@@ -132,7 +139,7 @@ def baseline_experiment(experiment_dict: dict):
     plt.plot(targets)
     plt.title('Actual vs predicted')
     plt.legend(['predicted', 'actual'])
-    plt.savefig(file_prefix + "plot.png")
+    plt.savefig(target_folder + "plot.png")
     plt.clf()
 
 

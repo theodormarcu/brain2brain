@@ -1,0 +1,22 @@
+{
+    "experiment_description" : "GRU Experiment M2M 1",
+    "file_prefix" : "gru_experiment_m2m_1_",
+    "many_to_many" : true,
+    "path" : "./brain2brain/train_676_norm_files_projects.txt",
+    "batch_size" : 512,
+    "epochs" : 30, 
+    "lookback_window" : 256,
+    "length_pred" : 1,
+    "delay_pred" : 0,
+    "samples_per_second" : 1,
+    "electrode_selection" : [0, 1, 2, 3, 4],
+    "debug_mode" : false,
+    "dropout_rate": 0,
+    "recurrent_dropout": 0,
+    "hidden_units": 128,
+    "dense_hidden_units" : 64,
+    "activation" : "linear",
+    "opt" : "RMSprop",
+    "loss" : "mae",
+    "return_sequences" : true
+}
