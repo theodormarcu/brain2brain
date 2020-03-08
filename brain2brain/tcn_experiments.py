@@ -168,11 +168,13 @@ def tcn_experiment(experiment_dict: dict):
     plt.savefig(target_folder + "train_val_loss_plot.png")
     plt.clf()
 
-    p = model.predict_generator(val_generator, steps=val_steps,
+    predictions = model.predict_generator(val_generator, steps=val_steps,
                                 callbacks=None, max_queue_size=10, workers=1,
                                 use_multiprocessing=True, verbose=1)
+    predictions_path = target_folder + "predictions.json"
+    np.save(predictions_path, predictions)
     plt.figure()
-    plt.plot(p)
+    plt.plot(predictions)
     targets = []
     for i in range(len(val_generator)):
         x, y = val_generator[i]
@@ -331,8 +333,7 @@ def tcn_m2m(experiment_dict: dict):
                                           use_multiprocessing=True, verbose=1)
 
     predictions_path = target_folder + "predictions.json"
-    with open(predictions_path, 'w') as outfile:
-        json.dump(predictions, outfile)
+    np.save(predictions_path, predictions)
 
     # plt.figure()
     # plt.plot(p)
