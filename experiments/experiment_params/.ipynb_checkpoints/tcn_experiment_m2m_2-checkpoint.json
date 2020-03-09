@@ -1,7 +1,7 @@
 {
     "experiment_description" : "Experiment M2M TCN 2",
     "target_folder" : "tcn_experiment_m2m_2/",
-    "path" : "/home/tmarcu/brain2brain/brain2brain/train_676_norm_files_projects.txt",
+    "path" : "./brain2brain/train_676_norm_files_projects.txt",
     "many_to_many" : true,
     "batch_size" : 1024,
     "epochs" : 30, 

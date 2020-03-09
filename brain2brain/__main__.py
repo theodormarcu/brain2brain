@@ -33,6 +33,8 @@ def main():
         tcn_experiments.tcn_experiment(experiment_params)
     elif experiment_name == "tcn_m2m":
         tcn_experiments.tcn_m2m(experiment_params)
+    elif experiment_name == "tcn_m2m_noseq":
+        tcn_experiments.tcn_m2m_noseq(experiment_params)
     elif experiment_name == "baseline_experiment":
         baseline_experiments.baseline_experiment(experiment_params)
     elif experiment_name == "gru_experiment":

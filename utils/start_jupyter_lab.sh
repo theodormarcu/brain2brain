@@ -10,7 +10,7 @@ conda activate brain2brain_env
 jupyter-lab --no-browser --port=8889 --ip=127.0.0.1
 
 # List Running Notebooks
-jupyter-lab list
+# jupyter-lab list
 
 
 
