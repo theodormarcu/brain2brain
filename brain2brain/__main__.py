@@ -6,7 +6,7 @@ Main class for CLI functionality.
 import argparse
 from brain2brain import utils
 from brain2brain import generators
-from brain2brain import tcn_experiments, baseline_experiments, gru_experiments
+from brain2brain import tcn_experiments, baseline_experiments, gru_experiments, optimization
 import numpy as np
 import pprint
 import json
@@ -31,6 +31,8 @@ def main():
 
     if experiment_name == "tcn_experiment":
         tcn_experiments.tcn_experiment(experiment_params)
+    elif experiment_name == "tcn_optimization":
+        optimization.tcn_optimization(experiment_params)
     elif experiment_name == "tcn_m2m":
         tcn_experiments.tcn_m2m(experiment_params)
     elif experiment_name == "tcn_m2m_noseq":

@@ -246,7 +246,7 @@ def tcn_m2m(experiment_dict: dict):
                                           lookback=lookback_window, length=length_pred, delay=delay_pred,
                                           batch_size=batch_size, sample_period=samples_per_second,
                                           electrodes=electrode_selection, shuffle=False, debug=debug_mode)
-
+    
     train_steps = len(train_generator)
     val_steps = len(val_generator)
 
@@ -258,7 +258,7 @@ def tcn_m2m(experiment_dict: dict):
     callbacks_list = [
         EarlyStopping(
             monitor="val_loss",
-            patience=3,
+            patience=2,
             mode="min"
         ),
         ModelCheckpoint(
