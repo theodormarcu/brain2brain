@@ -321,8 +321,7 @@ class TCN(Layer):
 
         # Author: @karolbadowski.
         # TODO: What does this mean?
-        output_slice_index = int(self.build_output_shape.as_list()[
-                                 1] / 2) if self.padding == 'same' else -1
+        output_slice_index = int(self.build_output_shape.as_list()[1] / 2) if self.padding == 'same' else -1
         self.lambda_layer = Lambda(lambda tt: tt[:, output_slice_index, :])
         self.lambda_ouput_shape = self.lambda_layer.compute_output_shape(
             self.build_output_shape)
