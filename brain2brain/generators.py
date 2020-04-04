@@ -25,7 +25,8 @@ class FGenerator(keras.utils.Sequence):
 
     def __init__(self, file_paths: list, lookback: int, length: int, delay: int,
                  batch_size: int, sample_period: int, electrodes: int,
-                 shuffle: bool = False, debug: bool = False, ratio: float = 1.0):
+                 electrode_output_ix: int=None, shuffle: bool = False,
+                 debug: bool = False, ratio: float = 1.0):
         '''
         Initialization function for the object. Call when Generator() is called.
         Args:
@@ -36,9 +37,13 @@ class FGenerator(keras.utils.Sequence):
             batch_size (int): The number of samples per batch.
             sample_period (int): The period, in timesteps, at which you sample data. 
                                 E.g. If you set this to 256, it will sample 256 timesteps from the interval.
-            electrodes (list[int]): List of electrode indices.
+            electrodes (list[int]): List of electrode indices for one-to-one and many-to-many prediction.
+            electrode_output_ix (int): Default = None. If present, the index of the electrode to
+                                       be predicted. Useful for many-to-one prediction.
             shuffle (bool): Shuffle the samples or draw them in chronological order.
-            normalize (bool): Deprecated. Should the sample values be normalized.
+            normalize (bool): Deprecated. Should the sample values be normalized. Normalization
+                              should take place at the file level. See utils.py for a normalize
+                              function.
             debug (bool): Whether we should be in debug mode or not. 
                          Debug mode limits the number of batches to 1/4.
             data_ratio (float): How much of the data should the generator use. E.g. 0.5
@@ -48,6 +53,11 @@ class FGenerator(keras.utils.Sequence):
 
         The ecog signals are sampled at 512Hz. This means we have 512 values per second.
         This means that a second of data is equal to 512 timesteps.
+
+        Note: For one-to-one and many-to-many prediction, simply specify the list of electrodes
+        using the `electrodes` list. For many-to-one prediction, use `electrodes` to
+        specify the number of input electrodes and `electrode_output_ix` to specify
+        which electrode should be predicted.
 
         The values of the ecosignals are in microVolts.
         '''
@@ -64,6 +74,7 @@ class FGenerator(keras.utils.Sequence):
         if self.ratio > 1.0 or self.ratio <= 0.0:
             raise Exception(f"The ratio ({self.ratio}) should be between 1.0 and 0.0 (1.0 >= ratio > 0.0).")
         self.electrodes = electrodes
+        self.electrode_output_ix = electrode_output_ix
         # Calculate the total sample count and create a map
         # of files to samples.
         self.file_map, self.total_sample_count = self.__get_file_map()
@@ -93,10 +104,9 @@ class FGenerator(keras.utils.Sequence):
         file_map = dict()
         total_sample_count = 0
         for file_ix, file_path in enumerate(self.file_paths):
-            # Open the file to only read the header
-            # data = np.load(file_path, mmap_mode='r')
+            # Open the file to only read the header using mmap_mode.
             data = np.load(file_path, mmap_mode='r')
-            # Get the number of rows (i.e. timesteps)
+            # Get the number of rows (i.e. timesteps).
             file_timestep_count = data.shape[0]
             # Calculate the number of total samples in this file.
             file_sample_count = int(
@@ -130,7 +140,8 @@ class FGenerator(keras.utils.Sequence):
             while current_batch_sample_count < self.batch_size:
                 # While the batch is not filled with samples.
                 if delta > 0:
-                    # If there are samples left in a previous file.
+                    # If there are samples left in a previous file, 
+                    # add them to this batch.
                     current_batch_sample_count += delta
                     self.batch_map[batch_index][file_ix] = (
                         self.file_map[file_ix] - delta, self.file_map[file_ix] - 1)
@@ -159,14 +170,19 @@ class FGenerator(keras.utils.Sequence):
         '''
         X = np.empty((self.batch_size, self.lookback //
                       self.sample_period, len(self.electrodes)))
-        y = np.empty((self.batch_size, math.ceil(
-            self.length / self.sample_period), len(self.electrodes)))
+
+        if self.electrode_output_ix is not None:
+            y = np.empty((self.batch_size, math.ceil(
+                self.length / self.sample_period), 1))
+        else:
+            y = np.empty((self.batch_size, math.ceil(
+                self.length / self.sample_period), len(self.electrodes)))
 
         # Get files from batch_map
         batch = self.batch_map[index]
         curr_ix = 0
         sample_length = self.lookback + self.delay + self.length
-        # For each file, get the samples and add them to the data
+        # For each file, get the samples and add them to the data.
         for file_ix in batch:
             file_path = self.file_paths[file_ix]
             file_contents = np.load(file_path)
@@ -191,7 +207,13 @@ class FGenerator(keras.utils.Sequence):
                 sampled_indices_target = range(
                     len(sample) - self.length, len(sample), self.sample_period)
                 # y[curr_ix, ] = sample[sample_length - self.length:]
-                y[curr_ix, ] = sample[sampled_indices_target]
+                if self.electrode_output_ix is not None:
+                    y[curr_ix, ] = sample[sampled_indices_target, self.electrode_output_ix]
+                else:
+                    y[curr_ix, ] = sample[sampled_indices_target]
+                # Select just one electrode if the index of an output electrode is specified.
+                # This is useful for many-to-one prediction.
+                    # y[curr_ix, ] = y[curr_ix, ][:, self.electrode_output_ix]
                 curr_ix += 1
         return X, y
 

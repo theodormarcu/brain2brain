@@ -1,8 +1,7 @@
 #!/bin/bash
 #SBATCH --nodes=1
 #SBATCH --mem-per-cpu=20G
-#SBATCH --gres=gpu:1
-#SBATCH --time 02:05:00
+#SBATCH --time 01:00:00
 #SBATCH --job-name=jupyter-tmarcu
 #SBATCH -o 'jupyter-%A.log'
 # sends mail when process begins, and
@@ -35,6 +34,3 @@ conda activate brain2brain_env
 
 # Run Jupyter
 jupyter-lab --no-browser --port=${port} --ip=${node}
-
-# List Running Notebooks
-jupyter-lab list

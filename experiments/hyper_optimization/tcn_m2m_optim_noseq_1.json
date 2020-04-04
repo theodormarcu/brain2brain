@@ -1,18 +1,22 @@
 {
     "experiment_description" : "Experiment M2M TCN Optimization",
     "path" : "/home/tmarcu/brain2brain/brain2brain/train_676_norm_files_projects.txt",
+    "target_folder" : "tcn_m2m_optim_noseq/",
+    "max_evals" : 100,
     "epochs" : 30, 
     "lookback_window" : 128,
     "length_pred" : 1,
     "delay_pred" : 0,
-    "samples_per_second" : 1,
+    "sample_period" : 1,
     "electrode_selection" : [0, 1, 2, 3, 4],
-    "debug_mode" : true,
+    "debug_mode" : false,
     "data_ratio" : 0.5,
     "padding" : "causal",
     "use_skip_connections" : true,
     "return_sequences" : false,
     "kernel_initializer" : "he_normal",
     "activation" : "linear",
-    "loss" : "mae"
+    "loss" : "mae",
+    "shuffle" : true,
+    "dry_run" : false
 }

@@ -1,0 +1,20 @@
+2020-04-02 04:29:10,860 DEBUG   MainThread:34144 [wandb_config.py:_load_defaults():122] no defaults not found in config-defaults.yaml
+2020-04-02 04:29:10,895 DEBUG   MainThread:34144 [meta.py:setup():97] code probe starting
+2020-04-02 04:29:10,897 DEBUG   MainThread:34144 [meta.py:_setup_code_git():49] probe for git information
+2020-04-02 04:29:10,908 DEBUG   MainThread:34144 [meta.py:_setup_code_program():58] save program starting
+2020-04-02 04:29:10,908 DEBUG   MainThread:34144 [meta.py:_setup_code_program():60] save program starting: /home/tmarcu/.conda/envs/brain2brain_env/bin/wandb
+2020-04-02 04:29:10,910 DEBUG   MainThread:34144 [meta.py:_setup_code_program():65] save program saved: /home/tmarcu/brain2brain/brain2brain/wandb/run-20200402_082907-wewejk1e/code/../.conda/envs/brain2brain_env/bin/wandb
+2020-04-02 04:29:10,910 DEBUG   MainThread:34144 [meta.py:_setup_code_program():67] save program
+2020-04-02 04:29:10,910 DEBUG   MainThread:34144 [meta.py:setup():119] code probe done
+2020-04-02 04:29:10,932 DEBUG   MainThread:34144 [run_manager.py:__init__():545] Initialized sync for brain2brain-brain2brain/wewejk1e
+2020-04-02 04:29:10,934 INFO    MainThread:34144 [run_manager.py:wrap_existing_process():1148] wrapping existing process 34136
+2020-04-02 04:29:10,934 WARNING MainThread:34144 [io_wrap.py:register():104] SIGWINCH handler was not None: <Handlers.SIG_DFL: 0>
+2020-04-02 04:29:10,984 INFO    MainThread:34144 [run_manager.py:init_run():928] system metrics and metadata threads started
+2020-04-02 04:29:10,984 INFO    MainThread:34144 [run_manager.py:wrap_existing_process():1165] informing user process we are ready to proceed
+2020-04-02 04:29:10,985 INFO    MainThread:34144 [run_manager.py:_sync_etc():1272] entering loop for messages from user process
+2020-04-02 04:29:11,881 INFO    Thread-3  :34144 [run_manager.py:_on_file_modified():692] file/dir modified: /home/tmarcu/brain2brain/brain2brain/wandb/run-20200402_082907-wewejk1e/config.yaml
+2020-04-02 04:29:12,987 INFO    MainThread:34144 [run_manager.py:_sync_etc():1295] received message from user process: {"save_policy": {"glob": "model-best.h5", "policy": "live"}}
+2020-04-02 04:29:33,009 INFO    MainThread:34144 [run_manager.py:_sync_etc():1381] closing log streams and sending exitcode to W&B
+2020-04-02 04:29:33,010 INFO    MainThread:34144 [run_manager.py:shutdown():1072] shutting down system stats and metadata service
+wewejk1e:run_manager.py:_sync_etc():1381] closing log streams and sending exitcode to W&B
+2020-04-02 04:29:33,010 INFO    MainThread:34144 [wewejk1e:run_manager.py:shutdown():1072] shutting down system stats and metadata service

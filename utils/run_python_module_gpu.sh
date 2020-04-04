@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --mem-per-cpu=40G
+#SBATCH --mem-per-cpu=50G
 #SBATCH --gres=gpu:1
-#SBATCH --time 10:05:00
+#SBATCH --time 3:00:00
 #SBATCH --job-name neural_net_tmarcu
 #SBATCH --output neural-net-%J.log
 # sends mail when process begins, and
@@ -22,7 +22,10 @@ experiment_name=$1
 echo $experiment_name
 
 experiment_param_file=$2
-echo $experiment_params
+echo $experiment_param_file
+
+# target_folder=$3
+# echo $target_folder
 
 # Run experiment. -u = unbuffered printing.
 python3 -u -m brain2brain $experiment_name $experiment_param_file

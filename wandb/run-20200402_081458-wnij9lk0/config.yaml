@@ -1,0 +1,97 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.8.31
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.7.6
+activation:
+  desc: null
+  value: linear
+batch_size:
+  desc: null
+  value: 666
+debug_mode:
+  desc: null
+  value: false
+delay_pred:
+  desc: null
+  value: 0
+dilations:
+  desc: null
+  value:
+  - 1
+  - 2
+  - 4
+  - 8
+  - 16
+dropout_rate:
+  desc: null
+  value: 0.374583344409312
+electrode_out:
+  desc: null
+  value: 0
+electrode_selection:
+  desc: null
+  value:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+epochs:
+  desc: null
+  value: 256
+file_path:
+  desc: null
+  value: /home/tmarcu/brain2brain/brain2brain/train_676_norm_bin_files_projects.txt
+kernel_initializer:
+  desc: null
+  value: he_normal
+kernel_size:
+  desc: null
+  value: 3
+length_pred:
+  desc: null
+  value: 1
+lookback_window:
+  desc: null
+  value: 128
+loss:
+  desc: null
+  value: mae
+nb_filters:
+  desc: null
+  value: 16
+nb_stacks:
+  desc: null
+  value: 4
+num_classes:
+  desc: null
+  value: 1
+num_feat:
+  desc: null
+  value: 1
+opt:
+  desc: null
+  value: RMSprop
+output_len:
+  desc: null
+  value: 1
+padding:
+  desc: null
+  value: causal
+regression:
+  desc: null
+  value: true
+return_sequences:
+  desc: null
+  value: false
+samples_per_second:
+  desc: null
+  value: 1
+use_skip_connections:
+  desc: null
+  value: true

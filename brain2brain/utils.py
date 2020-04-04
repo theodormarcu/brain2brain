@@ -5,11 +5,14 @@
 # Computer Science Senior Thesis
 
 import os
+import time
 import random
 import numpy as np
 import glob
+import scipy
 import tensorflow.keras as keras
-import time
+import json
+
 from pathlib import Path
 
 
@@ -124,7 +127,6 @@ def split_file_paths(file_paths: list, split_ratio: float = 0.8):
 
     return training_file_paths, testing_file_paths
 
-
 def get_total_timestep_count(file_paths: list):
     '''
     Returns total sample count for the given file paths.
@@ -231,6 +233,7 @@ def normalize_files(file_paths: list, output_directory: str = "/tmp/tmarcu/norma
         # Open the file, normalize the data, and save it to a new path.
         start_time = time.time()
         data = np.load(old_path)
+        print(f"Original Shape: {data.shape}\n")
         electrode_means = np.mean(data, axis=0)
         _, broadcast_electrode_means = np.broadcast_arrays(
             data, electrode_means)
@@ -238,6 +241,7 @@ def normalize_files(file_paths: list, output_directory: str = "/tmp/tmarcu/norma
         electrode_stds = np.std(data, axis=0)
         _, broadcast_electrode_stds = np.broadcast_arrays(data, electrode_stds)
         new_data /= broadcast_electrode_stds
+        print(f"New Shape: {new_data.shape}\n")
         # Save to new path.
         # Ensure that the directory exists.
         # Respect old directory structure. Add prefix.
@@ -248,3 +252,104 @@ def normalize_files(file_paths: list, output_directory: str = "/tmp/tmarcu/norma
         np.save(new_path, new_data)
         print(f"Normalized file and saved at {new_path}.npy\n"
               f"Elapsed time: {time.time() - start_time:.2f}s {ix + 1}/{n_files} done")
+
+def generate_binned_data(file_paths: list,
+                         avg_timestep_count: int=25,
+                         output_directory: str="/tmp/tmarcu/binned_conversation_data/",
+                         file_prefix: str="binned_",
+                         normalize: bool=False,
+                         order: str="bin_norm"):
+    '''
+    Performs data binning through averaging over a list of files, i.e. averages 
+    every 25 timesteps to create a new timesteps.
+
+    This downsamples the data.
+
+    The default is 25 timesteps, which is roughly equivalent to 50ms for 
+    data at 512Hz.
+
+    Args:
+        files_paths (list): List of one or more file paths.
+        avg_timestep_count (int): The number of timesteps to average to create one data point. Default: 25.
+        output_directory (str): Path to the output directory. (Default = "/tmp/tmarcu/normalized-conversations/")
+        file_prefix (str): Prefix to add to directories and files. (Default = "binned_")
+        normalize (bool): Default False. Normalizes the data as well (after binning).
+        order (str): Default "bin_norm", which means bin and normalize. Other settings are: "norm_bin".
+    '''
+    n_files = len(file_paths)
+    for ix, old_path in enumerate(file_paths):
+        start_time = time.time()
+        # Open the file, average the data, and save it to a new path.
+        data = np.load(old_path)
+        print(f"Original Shape: {data.shape}")
+        if normalize:
+            if order == "bin_norm":
+                new_data = bin_data(data, avg_timestep_count)
+                print(f"New Shape: {new_data.shape}")
+                new_data = normalize_data(new_data)
+                print(f"New Shape: {new_data.shape}")
+            elif order == "norm_bin":
+                new_data = normalize_data(data)
+                print(f"New Shape: {new_data.shape}")
+                new_data = bin_data(new_data)
+                print(f"New Shape: {new_data.shape}")
+            else:
+                raise Exception("Order not well specified. Aborting...")
+        else:
+            # Only bin the data.
+            new_data = bin_data(data)
+            print(f"New Shape: {new_data.shape}")
+        # Save to new path.
+        # Ensure that the directory exists.
+        # Respect old directory structure. Add prefix.
+        old_file_name = old_path.split('/')[6]
+        new_path = os.path.join(output_directory + file_prefix + old_file_name)
+        Path(new_path).mkdir(parents=True, exist_ok=True)
+        new_path = os.path.join(new_path, file_prefix + old_file_name)
+        np.save(new_path, new_data)
+        print(f"Binned file and saved at {new_path}.npy\n"
+              f"Elapsed time: {time.time() - start_time:.2f}s {ix + 1}/{n_files} done")
+
+def normalize_data(data: np.array):
+    '''
+    Normalize data and return a normalized numpy array.
+
+    Args:
+        data (np.array): Numpy array that contains data.
+    Returns:
+        (np.array) Normalized data.
+    '''
+    electrode_means = np.mean(data, axis=0)
+    _, broadcast_electrode_means = np.broadcast_arrays(data, electrode_means)
+    new_data_normalized = data - broadcast_electrode_means
+    electrode_stds = np.std(data, axis=0)
+    _, broadcast_electrode_stds = np.broadcast_arrays(data, electrode_stds)
+    new_data_normalized /= broadcast_electrode_stds
+    return new_data_normalized
+
+def bin_data(data: np.array, avg_timestep_count: int=25):
+    '''
+    Bin data in a np.array and return a new array
+    containing the resulting data.
+
+    Args:
+        data (np.array): Numpy array that contains data.
+        avg_timestep_count (int): The number of timesteps to average
+                                  to create one data point. Default: 25.
+    Returns:
+        (np.array) Normalized data.
+    '''
+    new_data = data[:(data.shape[0] // avg_timestep_count) * avg_timestep_count]
+    new_data = new_data.reshape(-1, avg_timestep_count, data.shape[1]).mean(axis=1)
+    return new_data
+
+def save_json_file(data, file_path):
+    '''
+    Saves data in file_path.
+
+    Args:
+        data (json-able object): Object to save.
+        file_path (str): Path where file should be saved.
+    '''
+    with open(file_path, 'w') as outfile:
+        json.dump(data, outfile)
