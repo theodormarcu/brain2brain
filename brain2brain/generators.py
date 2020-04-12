@@ -310,8 +310,8 @@ class Generator(keras.utils.Sequence):
         indices = self.sample_indices[index *
                                       self.batch_size: (index+1) * self.batch_size]
         sample_length = int(self.lookback + self.delay + self.length)
-        X = np.empty((self.batch_size, self.lookback, self.num_electrodes))
-        y = np.empty((self.batch_size, self.length, self.num_electrodes))
+        X = np.empty((self.batch_size, self.lookback, 114))
+        y = np.empty((self.batch_size, self.length, 114))
 
         for ix, k in enumerate(indices):
             # Very expensive implementation.
@@ -322,6 +322,7 @@ class Generator(keras.utils.Sequence):
             file_contents = np.load(filename)
             sample = file_contents[sample_ix *
                                    sample_length: (sample_ix+1) * sample_length]
+            # print(sample.shape)
             X[ix, ] = sample[:sample_length - self.length - self.delay]
             y[ix, ] = sample[sample_length - self.length:]
 

@@ -1,0 +1,3 @@
+fake work
+/var/spool/slurmd/job4610865/slurm_script: line 24: 15011 Terminated              sleep 20
+15011 was terminated.

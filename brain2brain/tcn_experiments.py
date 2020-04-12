@@ -627,6 +627,7 @@ def tcn_m2o_noseq(experiment_dict: dict):
     else:
         raise Exception(f"Could not find optimizer {config.opt} Aborting.")
     print("calling compile")
+    model.summary()
     # Save Model Config and Architecture
     utils.save_json_file(model.get_config(), target_folder + "model_config.json")
     utils.save_json_file(model.to_json(), target_folder + "model_architecture.json")
