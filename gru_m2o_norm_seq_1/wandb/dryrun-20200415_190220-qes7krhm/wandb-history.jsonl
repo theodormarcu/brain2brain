@@ -1,0 +1,3 @@
+{"epoch": 0, "loss": NaN, "val_loss": NaN, "_runtime": 822.9374673366547, "_timestamp": 1586978162.3538265, "_step": 0}
+{"epoch": 1, "loss": NaN, "val_loss": NaN, "_runtime": 1505.7907330989838, "_timestamp": 1586978845.2070923, "_step": 1}
+{"epoch": 2, "loss": NaN, "val_loss": NaN, "_runtime": 2126.6387214660645, "_timestamp": 1586979466.0550807, "_step": 2}

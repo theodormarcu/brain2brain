@@ -1,0 +1,76 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.8.31
+    code_path: code/brain2brain/__main__.py
+    framework: tensorflow
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.7.7
+activation:
+  desc: null
+  value: linear
+batch_size:
+  desc: null
+  value: 1024
+debug_mode:
+  desc: null
+  value: false
+delay_pred:
+  desc: null
+  value: 50
+dropout_rate:
+  desc: null
+  value: 0.05
+electrode_out:
+  desc: null
+  value: 2
+electrode_selection:
+  desc: null
+  value:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+epochs:
+  desc: null
+  value: 128
+experiment_description:
+  desc: null
+  value: Experiment M2O GRU Norm - Sequential 4
+experiment_name:
+  desc: null
+  value: gru_m2o_norm_seq_4
+hidden_units:
+  desc: null
+  value: 64
+length_pred:
+  desc: null
+  value: 25
+lookback_window:
+  desc: null
+  value: 128
+loss:
+  desc: null
+  value: mae
+opt:
+  desc: null
+  value: RMSprop
+path:
+  desc: null
+  value: /home/tmarcu/brain2brain/brain2brain/train_676_norm_files_projects.txt
+recurrent_dropout:
+  desc: null
+  value: 0.05
+return_sequences:
+  desc: null
+  value: true
+samples_per_second:
+  desc: null
+  value: 1
+target_folder:
+  desc: null
+  value: gru_m2o_norm_seq_4/

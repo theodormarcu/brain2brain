@@ -1,0 +1,20 @@
+2020-04-15 15:13:27,256 DEBUG   MainThread:27581 [wandb_config.py:_load_defaults():122] no defaults not found in config-defaults.yaml
+2020-04-15 15:13:27,264 DEBUG   MainThread:27581 [meta.py:setup():97] code probe starting
+2020-04-15 15:13:27,266 DEBUG   MainThread:27581 [meta.py:_setup_code_git():49] probe for git information
+2020-04-15 15:13:27,280 DEBUG   MainThread:27581 [meta.py:_setup_code_program():58] save program starting
+2020-04-15 15:13:27,280 DEBUG   MainThread:27581 [meta.py:_setup_code_program():60] save program starting: /home/tmarcu/brain2brain/brain2brain/__main__.py
+2020-04-15 15:13:27,281 DEBUG   MainThread:27581 [meta.py:_setup_code_program():65] save program saved: /home/tmarcu/brain2brain/gru_m2o_norm_seq_3/wandb/dryrun-20200415_191326-muy0wla2/code/brain2brain/__main__.py
+2020-04-15 15:13:27,281 DEBUG   MainThread:27581 [meta.py:_setup_code_program():67] save program
+2020-04-15 15:13:27,282 DEBUG   MainThread:27581 [meta.py:setup():119] code probe done
+2020-04-15 15:13:27,291 DEBUG   MainThread:27581 [run_manager.py:__init__():545] Initialized sync for brain2brain/muy0wla2
+2020-04-15 15:13:27,293 INFO    MainThread:27581 [run_manager.py:wrap_existing_process():1148] wrapping existing process 27572
+2020-04-15 15:13:28,264 INFO    Thread-3  :27581 [run_manager.py:_on_file_modified():692] file/dir modified: /home/tmarcu/brain2brain/gru_m2o_norm_seq_3/wandb/dryrun-20200415_191326-muy0wla2/config.yaml
+2020-04-15 15:13:33,338 INFO    MainThread:27581 [run_manager.py:init_run():928] system metrics and metadata threads started
+2020-04-15 15:13:33,343 INFO    MainThread:27581 [run_manager.py:wrap_existing_process():1165] informing user process we are ready to proceed
+2020-04-15 15:13:33,343 INFO    MainThread:27581 [run_manager.py:_sync_etc():1272] entering loop for messages from user process
+2020-04-15 15:13:36,295 INFO    MainThread:27581 [run_manager.py:_sync_etc():1295] received message from user process: {"save_policy": {"glob": "model-best.h5", "policy": "live"}}
+2020-04-15 17:07:10,296 INFO    MainThread:27581 [run_manager.py:_sync_etc():1295] received message from user process: {"exitcode": 0}
+2020-04-15 17:07:10,307 INFO    MainThread:27581 [run_manager.py:_sync_etc():1381] closing log streams and sending exitcode to W&B
+2020-04-15 17:07:10,316 INFO    MainThread:27581 [run_manager.py:shutdown():1072] shutting down system stats and metadata service
+-04-15 17:07:10,307 INFO    MainThread:27581 [muy0wla2:run_manager.py:_sync_etc():1381] closing log streams and sending exitcode to W&B
+2020-04-15 17:07:10,316 INFO    MainThread:27581 [muy0wla2:run_manager.py:shutdown():1072] shutting down system stats and metadata service

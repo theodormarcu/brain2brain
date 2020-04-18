@@ -8,6 +8,7 @@ import os
 import time
 import random
 import numpy as np
+import math
 import glob
 import scipy
 import tensorflow.keras as keras
@@ -145,7 +146,6 @@ def get_total_timestep_count(file_paths: list):
         total_timestep_count += file_timestep_count
     return total_timestep_count
 
-
 def get_total_sample_count(file_paths: list, lookback: int, delay: int, length: int):
     '''
     Args:
@@ -169,7 +169,6 @@ def get_total_sample_count(file_paths: list, lookback: int, delay: int, length: 
         total_sample_count += file_sample_count
     return total_sample_count
 
-
 def get_file_shape(file_path: str, print_flag: bool = True):
     '''
     Prints the shape of each file in file_paths.
@@ -183,7 +182,6 @@ def get_file_shape(file_path: str, print_flag: bool = True):
     if print_flag:
         print(shape)
     return shape
-
 
 def create_ecog_array(file_paths: list, verbose: bool = True):
     '''
@@ -216,7 +214,6 @@ def create_ecog_array(file_paths: list, verbose: bool = True):
     vprint(f"Reading DONE! Final shape: {np_ecogs.shape}")
     return np_ecogs
 
-
 def normalize_files(file_paths: list, output_directory: str = "/tmp/tmarcu/normalized-conversations/",
                     file_prefix: str = "norm_"):
     '''
@@ -228,7 +225,7 @@ def normalize_files(file_paths: list, output_directory: str = "/tmp/tmarcu/norma
         file_prefix (str): Prefix to add to directories and files. (Default = "norm_")
 
     '''
-    n_files = len(file_paths)
+    total_file_count = len(file_paths)
     for ix, old_path in enumerate(file_paths):
         # Open the file, normalize the data, and save it to a new path.
         start_time = time.time()
@@ -251,7 +248,7 @@ def normalize_files(file_paths: list, output_directory: str = "/tmp/tmarcu/norma
         new_path = os.path.join(new_path, file_prefix + old_file_name)
         np.save(new_path, new_data)
         print(f"Normalized file and saved at {new_path}.npy\n"
-              f"Elapsed time: {time.time() - start_time:.2f}s {ix + 1}/{n_files} done")
+              f"Elapsed time: {time.time() - start_time:.2f}s {ix + 1}/{total_file_count} done")
 
 def generate_binned_data(file_paths: list,
                          avg_timestep_count: int=25,
@@ -276,7 +273,7 @@ def generate_binned_data(file_paths: list,
         normalize (bool): Default False. Normalizes the data as well (after binning).
         order (str): Default "bin_norm", which means bin and normalize. Other settings are: "norm_bin".
     '''
-    n_files = len(file_paths)
+    total_file_count = len(file_paths)
     for ix, old_path in enumerate(file_paths):
         start_time = time.time()
         # Open the file, average the data, and save it to a new path.
@@ -286,10 +283,10 @@ def generate_binned_data(file_paths: list,
             if order == "bin_norm":
                 new_data = bin_data(data, avg_timestep_count)
                 print(f"New Shape: {new_data.shape}")
-                new_data = normalize_data(new_data)
+                new_data = normalize_file(new_data)
                 print(f"New Shape: {new_data.shape}")
             elif order == "norm_bin":
-                new_data = normalize_data(data)
+                new_data = normalize_file(data)
                 print(f"New Shape: {new_data.shape}")
                 new_data = bin_data(new_data)
                 print(f"New Shape: {new_data.shape}")
@@ -308,9 +305,9 @@ def generate_binned_data(file_paths: list,
         new_path = os.path.join(new_path, file_prefix + old_file_name)
         np.save(new_path, new_data)
         print(f"Binned file and saved at {new_path}.npy\n"
-              f"Elapsed time: {time.time() - start_time:.2f}s {ix + 1}/{n_files} done")
+              f"Elapsed time: {time.time() - start_time:.2f}s {ix + 1}/{total_file_count} done")
 
-def normalize_data(data: np.array):
+def normalize_file(data: np.array):
     '''
     Normalize data and return a normalized numpy array.
 
@@ -325,6 +322,21 @@ def normalize_data(data: np.array):
     electrode_stds = np.std(data, axis=0)
     _, broadcast_electrode_stds = np.broadcast_arrays(data, electrode_stds)
     new_data_normalized /= broadcast_electrode_stds
+    return new_data_normalized
+
+def normalize_data_arr(data: np.array, mean: np.array, std: np.array):
+    '''
+    Normalize data and return a normalized numpy array.
+
+    Args:
+        data (np.array): Numpy array that contains data.
+        mean (double): Double arr for each electrode to normalize data with. (Must be computed using get_mean_std())
+        std (double): Double arr for each electrode to normalize data with. (Must be computed using get_mean_std())
+    Returns:
+        (np.array) Normalized data.
+    '''
+    new_data_normalized = np.subtract(data, mean)
+    new_data_normalized = np.divide(new_data_normalized, std)
     return new_data_normalized
 
 def bin_data(data: np.array, avg_timestep_count: int=25):
@@ -343,6 +355,143 @@ def bin_data(data: np.array, avg_timestep_count: int=25):
     new_data = new_data.reshape(-1, avg_timestep_count, data.shape[1]).mean(axis=1)
     return new_data
 
+def get_mean(file_paths: list):
+    """
+    Return the mean of a list of file paths. Useful for normalizing datasets.
+    """
+    electrode_count = np.load(file_paths[0]).shape[1]
+    total_row_count = 0
+    current_sum = np.zeros(shape=(electrode_count))
+    total_file_count = len(file_paths)
+    for ix, path in enumerate(file_paths, start=1   ):
+        print(f"File {ix}/{total_file_count}", end="\r", flush=True)
+        data = np.load(path)
+        sum = np.sum(data, axis=0)
+        current_sum += np.sum(data, axis=0)
+        total_row_count += data.shape[0]
+    mean = current_sum / total_row_count
+    return mean
+
+def get_mean_std(file_paths: list):
+    """
+    Return the mean and std of a list of file paths. Useful for normalizing datasets.
+    """
+    electrode_count = np.load(file_paths[0]).shape[1]
+    total_row_count = 0
+    current_sum = np.zeros(shape=(electrode_count),  dtype=np.double)
+    total_file_count = len(file_paths)
+    print("Calculating mean per electrode")
+    for ix, path in enumerate(file_paths, start=1):
+        print(f"File {ix}/{total_file_count}", end="\r", flush=True)
+        data = np.load(path)
+        current_sum += np.sum(data, axis=0, dtype=np.double)
+        total_row_count += data.shape[0]
+    mean = current_sum / total_row_count
+    print("Calculating std per electrode")
+    running_sum = np.zeros(shape=(electrode_count), dtype=np.double)
+    for ix, path in enumerate(file_paths, start=1):
+        print(f"File {ix}/{total_file_count}", end="\r", flush=True)
+        data = np.load(path)
+        a = np.square(abs(data - mean), dtype=np.double)
+        sum = np.sum(a, axis=0, dtype=np.double)
+        running_sum += sum
+    std = np.sqrt(running_sum/total_row_count)
+    return mean, std
+
+def normalize_dataset_partition(file_paths: list,
+                                output_directory: str="/tmp/tmarcu/binned_conversation_data/",
+                                file_prefix: str="binned_",
+                                binned: bool=False,
+                                avg_timestep_count: int=25):
+    '''
+    Normalizes a list of files.
+    '''
+    print("Normalizing dataset partition")
+    mean, std = get_mean_std(file_paths)
+    total_file_count = len(file_paths)
+    file_path_list = list()
+    for ix, path in enumerate(file_paths, start=1):
+        print(f"File {ix}/{total_file_count}", end="\r", flush=True)
+        start_time = time.time()
+        data = np.load(path)
+        if binned:
+            print("Binning dataset partition.")
+            data = bin_data(data, avg_timestep_count)
+        data = normalize_data_arr(data, mean, std)
+        # Save to new path.
+        # Ensure that the directory exists.
+        # Respect old directory structure. Add prefix.
+        old_file_name = path.split('/')[6]
+        new_path = os.path.join(output_directory + file_prefix + old_file_name)
+        Path(new_path).mkdir(parents=True, exist_ok=True)
+        new_path = os.path.join(new_path, file_prefix + old_file_name + ".npy")
+        np.save(new_path, data)
+        print(f"Normalized file and saved at {new_path}\n"
+              f"Elapsed time: {time.time() - start_time:.2f}s {ix}/{total_file_count} done")
+        file_path_list.append(new_path)
+    return file_path_list
+
+def normalize_dataset(file_paths: list,
+                      path_list_out: str="bin_norm_dataset",
+                      split_data: bool=False,
+                      split_ratio: float=0.8,
+                      output_directory: str = "/tmp/tmarcu/normalized-conversations/",
+                      file_prefix: str = "norm_",
+                      binned: bool=False,
+                      avg_timestep_count: int=25):
+    '''
+    Normalizes entire data set and saves them into the output directory.
+    Generates txt files that contain the paths to the train and validation dataset if necessary.
+
+    Args:
+        file_paths (list): List of one or more file paths.
+        output_directory (str): Path to the output directory. (Default = "/tmp/tmarcu/normalized-conversations/")
+        file_prefix (str): Prefix to add to directories and files. (Default = "norm_")
+        split_data (bool): Whether to split data.
+        split_ratio (str): Split ratio for train/val. Default=0.8.
+        binned (bool): Whether to bin data before normalization.
+        avg_timestep_count (int): Default=25. How many timesteps to average at once.
+    '''
+    # Split files into train/val/test.
+    # file_paths = file_paths[:5]
+    if split_data:
+        print("Splitting data in train, val, test.")
+        train, test = split_file_paths(file_paths, split_ratio=split_ratio)
+        train, val = split_file_paths(train, split_ratio=split_ratio)
+        print("Training set normalization.")
+        train_file_path_list = normalize_dataset_partition(file_paths=train,
+                                                           output_directory=output_directory,
+                                                           file_prefix=file_prefix,
+                                                           binned=binned,
+                                                           avg_timestep_count=avg_timestep_count)
+        path_list_out_train = "train_" + path_list_out + ".txt"
+        save_file_paths(train_file_path_list, path_list_out_train)
+        print("Validation set normalization.")
+        val_file_path_list = normalize_dataset_partition(file_paths=val,
+                                                         output_directory=output_directory,
+                                                         file_prefix=file_prefix,
+                                                         binned=binned,
+                                                         avg_timestep_count=avg_timestep_count)
+        path_list_out_val = "val_" + path_list_out + ".txt"
+        save_file_paths(val_file_path_list, path_list_out_val)
+        print("Test set normalization.")
+        test_file_path_list = normalize_dataset_partition(file_paths=test,
+                                                          output_directory=output_directory,
+                                                          file_prefix=file_prefix,
+                                                          binned=binned,
+                                                          avg_timestep_count=avg_timestep_count)
+        path_list_out_test = "test_" + path_list_out + ".txt"
+        save_file_paths(test_file_path_list, path_list_out_test)
+    else:
+        print("All file set normalization.")
+        all_file_path_list = normalize_dataset_partition(file_paths=file_paths,
+                                                         output_directory=output_directory,
+                                                         file_prefix=file_prefix,
+                                                         binned=binned,
+                                                         avg_timestep_count=avg_timestep_count)
+        path_list_out_all = "all_" + path_list_out + ".txt"
+        save_file_paths(all_file_path_list, path_list_out_all)
+
 def save_json_file(data, file_path):
     '''
     Saves data in file_path.
@@ -353,3 +502,13 @@ def save_json_file(data, file_path):
     '''
     with open(file_path, 'w') as outfile:
         json.dump(data, outfile)
+
+def save_file_paths(file_paths: list,
+                    target_file: str):
+    '''
+    Save files in file_paths in a file.
+    '''
+    # Save the files
+    with open(target_file, 'w') as filehandle:
+        for path in file_paths:
+            filehandle.write('%s\n' % path)

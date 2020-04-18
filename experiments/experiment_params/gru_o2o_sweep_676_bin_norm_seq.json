@@ -1,0 +1,21 @@
+{
+    "experiment_name": "gru_o2o_sweep_676_bin_norm_seq",
+    "experiment_description" : "Attempting to predict signals for all electrodes in order to better understand which ones work. All hyperparameters below get passed to hyperparameters_defaults.",
+    "target_folder" : "gru_o2o_sweep_676_bin_norm_seq/",
+    "path" : "/home/tmarcu/brain2brain/brain2brain/train_676_bin_norm_files_projects.txt",
+    "batch_size" : 1024,
+    "epochs" : 128,
+    "early_stopping_patience": 2,
+    "lookback_window" : 10,
+    "length_pred" : 1,
+    "delay_pred" : 0,
+    "samples_per_second" : 1,
+    "return_sequences" : true,
+    "debug_mode" : false,
+    "hidden_units": 5,
+    "dropout_rate": 0.05,
+    "recurrent_dropout": 0.05,
+    "activation" : "linear",
+    "opt" : "RMSprop",
+    "loss" : "mae"
+}

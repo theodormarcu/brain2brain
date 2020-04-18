@@ -173,7 +173,7 @@ class FGenerator(keras.utils.Sequence):
 
         if self.electrode_output_ix is not None:
             y = np.empty((self.batch_size, math.ceil(
-                self.length / self.sample_period), 1))
+                self.length / self.sample_period)))
         else:
             y = np.empty((self.batch_size, math.ceil(
                 self.length / self.sample_period), len(self.electrodes)))
@@ -208,7 +208,7 @@ class FGenerator(keras.utils.Sequence):
                     len(sample) - self.length, len(sample), self.sample_period)
                 # y[curr_ix, ] = sample[sample_length - self.length:]
                 if self.electrode_output_ix is not None:
-                    y[curr_ix, ] = sample[sampled_indices_target, self.electrode_output_ix]
+                    y[curr_ix, ] = sample[sampled_indices_target, [self.electrode_output_ix]]
                 else:
                     y[curr_ix, ] = sample[sampled_indices_target]
                 # Select just one electrode if the index of an output electrode is specified.

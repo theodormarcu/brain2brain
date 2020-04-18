@@ -1,3 +1,0 @@
-(451, 114)
-Train Generator Batch Shape:
-Sample=(512, 128, 5) Pred=(512, 1, 1)

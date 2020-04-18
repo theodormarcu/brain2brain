@@ -1,0 +1,22 @@
+2020-04-13 10:07:59,852 DEBUG   MainThread:868 [wandb_config.py:_load_defaults():122] no defaults not found in config-defaults.yaml
+2020-04-13 10:07:59,863 DEBUG   MainThread:868 [meta.py:setup():97] code probe starting
+2020-04-13 10:07:59,865 DEBUG   MainThread:868 [meta.py:_setup_code_git():49] probe for git information
+2020-04-13 10:07:59,878 DEBUG   MainThread:868 [meta.py:_setup_code_program():58] save program starting
+2020-04-13 10:07:59,878 DEBUG   MainThread:868 [meta.py:_setup_code_program():60] save program starting: /home/tmarcu/brain2brain/brain2brain/__main__.py
+2020-04-13 10:07:59,880 DEBUG   MainThread:868 [meta.py:_setup_code_program():65] save program saved: /home/tmarcu/brain2brain/tcn_m2o_bin_norm_seq_3/wandb/dryrun-20200413_140759-3iem0mlu/code/brain2brain/__main__.py
+2020-04-13 10:07:59,880 DEBUG   MainThread:868 [meta.py:_setup_code_program():67] save program
+2020-04-13 10:07:59,881 DEBUG   MainThread:868 [meta.py:setup():119] code probe done
+2020-04-13 10:07:59,889 DEBUG   MainThread:868 [run_manager.py:__init__():545] Initialized sync for brain2brain/3iem0mlu
+2020-04-13 10:07:59,891 INFO    MainThread:868 [run_manager.py:wrap_existing_process():1148] wrapping existing process 860
+2020-04-13 10:08:00,861 INFO    Thread-3  :868 [run_manager.py:_on_file_modified():692] file/dir modified: /home/tmarcu/brain2brain/tcn_m2o_bin_norm_seq_3/wandb/dryrun-20200413_140759-3iem0mlu/config.yaml
+2020-04-13 10:08:05,927 INFO    MainThread:868 [run_manager.py:init_run():928] system metrics and metadata threads started
+2020-04-13 10:08:05,928 INFO    MainThread:868 [run_manager.py:wrap_existing_process():1165] informing user process we are ready to proceed
+2020-04-13 10:08:05,928 INFO    MainThread:868 [run_manager.py:_sync_etc():1272] entering loop for messages from user process
+2020-04-13 10:08:07,938 INFO    MainThread:868 [run_manager.py:_sync_etc():1295] received message from user process: {"save_policy": {"glob": "model-best.h5", "policy": "live"}}
+2020-04-13 10:17:16,467 INFO    MainThread:868 [run_manager.py:_sync_etc():1295] received message from user process: {"save_policy": {"glob": "wandb.h5", "policy": "live"}}
+2020-04-13 10:17:16,467 INFO    MainThread:868 [run_manager.py:_sync_etc():1295] received message from user process: {"exitcode": 0}
+2020-04-13 10:17:16,468 INFO    MainThread:868 [run_manager.py:_sync_etc():1381] closing log streams and sending exitcode to W&B
+2020-04-13 10:17:16,468 INFO    MainThread:868 [run_manager.py:shutdown():1072] shutting down system stats and metadata service
+tcode": 0}
+2020-04-13 10:17:16,468 INFO    MainThread:868 [3iem0mlu:run_manager.py:_sync_etc():1381] closing log streams and sending exitcode to W&B
+2020-04-13 10:17:16,468 INFO    MainThread:868 [3iem0mlu:run_manager.py:shutdown():1072] shutting down system stats and metadata service

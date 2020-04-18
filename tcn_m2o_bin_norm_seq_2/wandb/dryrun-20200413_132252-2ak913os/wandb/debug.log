@@ -1,0 +1,1 @@
+2020-04-14 11:35:15,714 DEBUG   MainThread:13366 [wandb_config.py:_load_defaults():118] wandb dir not provided, skipping defaults

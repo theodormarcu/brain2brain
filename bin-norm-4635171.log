@@ -1,0 +1,182 @@
+HI
+Splitting data in train, val, test.
+Training set normalization.
+Normalizing dataset partition
+Calculating mean per electrode
+File 1/44File 2/44File 3/44File 4/44File 5/44File 6/44File 7/44File 8/44File 9/44File 10/44File 11/44File 12/44File 13/44File 14/44File 15/44File 16/44File 17/44File 18/44File 19/44File 20/44File 21/44File 22/44File 23/44File 24/44File 25/44File 26/44File 27/44File 28/44File 29/44File 30/44File 31/44File 32/44File 33/44File 34/44File 35/44File 36/44File 37/44File 38/44File 39/44File 40/44File 41/44File 42/44File 43/44File 44/44Calculating std per electrode
+File 1/44File 2/44File 3/44File 4/44File 5/44File 6/44File 7/44File 8/44File 9/44File 10/44File 11/44File 12/44File 13/44File 14/44File 15/44File 16/44File 17/44File 18/44File 19/44File 20/44File 21/44File 22/44File 23/44File 24/44File 25/44File 26/44File 27/44File 28/44File 29/44File 30/44File 31/44File 32/44File 33/44File 34/44File 35/44File 36/44File 37/44File 38/44File 39/44File 40/44File 41/44File 42/44File 43/44File 44/44File 1/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part7_conversation3/norm_2_NY676_618_Part7_conversation3.npy
+Elapsed time: 4.50s 1/44 done
+File 2/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_619_Part2_conversation1/norm_2_NY676_619_Part2_conversation1.npy
+Elapsed time: 0.62s 2/44 done
+File 3/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part6_conversation2/norm_2_NY676_618_Part6_conversation2.npy
+Elapsed time: 16.59s 3/44 done
+File 4/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_619_Part3_conversation1/norm_2_NY676_619_Part3_conversation1.npy
+Elapsed time: 1.29s 4/44 done
+File 5/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_619_Part5-one_conversation1/norm_2_NY676_619_Part5-one_conversation1.npy
+Elapsed time: 0.56s 5/44 done
+File 6/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_621_Part2-two_conversation2/norm_2_NY676_621_Part2-two_conversation2.npy
+Elapsed time: 9.48s 6/44 done
+File 7/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part5-one_conversation2/norm_2_NY676_620_Part5-one_conversation2.npy
+Elapsed time: 7.98s 7/44 done
+File 8/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part5-two_conversation1/norm_2_NY676_620_Part5-two_conversation1.npy
+Elapsed time: 1.66s 8/44 done
+File 9/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_616_Part1_conversation2/norm_2_NY676_616_Part1_conversation2.npy
+Elapsed time: 1.94s 9/44 done
+File 10/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part5-one_conversation5/norm_2_NY676_620_Part5-one_conversation5.npy
+Elapsed time: 6.53s 10/44 done
+File 11/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_617_Part2_conversation1/norm_2_NY676_617_Part2_conversation1.npy
+Elapsed time: 0.15s 11/44 done
+File 12/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_616_Part2-one_conversation1/norm_2_NY676_616_Part2-one_conversation1.npy
+Elapsed time: 3.66s 12/44 done
+File 13/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_619_Part3_conversation2/norm_2_NY676_619_Part3_conversation2.npy
+Elapsed time: 12.29s 13/44 done
+File 14/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part3-one_conversation1/norm_2_NY676_620_Part3-one_conversation1.npy
+Elapsed time: 8.58s 14/44 done
+File 15/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_619_Part2_conversation2/norm_2_NY676_619_Part2_conversation2.npy
+Elapsed time: 9.60s 15/44 done
+File 16/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_616_Part3_conversation2/norm_2_NY676_616_Part3_conversation2.npy
+Elapsed time: 0.65s 16/44 done
+File 17/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part4_conversation5/norm_2_NY676_618_Part4_conversation5.npy
+Elapsed time: 7.85s 17/44 done
+File 18/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part5-two_conversation1/norm_2_NY676_618_Part5-two_conversation1.npy
+Elapsed time: 0.99s 18/44 done
+File 19/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part6_conversation1/norm_2_NY676_618_Part6_conversation1.npy
+Elapsed time: 9.43s 19/44 done
+File 20/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part6_conversation3/norm_2_NY676_618_Part6_conversation3.npy
+Elapsed time: 3.02s 20/44 done
+File 21/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part5-one_conversation1/norm_2_NY676_620_Part5-one_conversation1.npy
+Elapsed time: 3.57s 21/44 done
+File 22/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part7_conversation6/norm_2_NY676_618_Part7_conversation6.npy
+Elapsed time: 1.77s 22/44 done
+File 23/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part4_conversation3/norm_2_NY676_618_Part4_conversation3.npy
+Elapsed time: 0.35s 23/44 done
+File 24/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_621_Part1_conversation1/norm_2_NY676_621_Part1_conversation1.npy
+Elapsed time: 0.06s 24/44 done
+File 25/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_619_Part7_conversation1/norm_2_NY676_619_Part7_conversation1.npy
+Elapsed time: 0.75s 25/44 done
+File 26/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part2_conversation3/norm_2_NY676_620_Part2_conversation3.npy
+Elapsed time: 4.20s 26/44 done
+File 27/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_616_Part1_conversation4/norm_2_NY676_616_Part1_conversation4.npy
+Elapsed time: 1.21s 27/44 done
+File 28/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part5-two_conversation3/norm_2_NY676_620_Part5-two_conversation3.npy
+Elapsed time: 1.89s 28/44 done
+File 29/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part6_conversation3/norm_2_NY676_620_Part6_conversation3.npy
+Elapsed time: 17.49s 29/44 done
+File 30/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_616_Part3_conversation1/norm_2_NY676_616_Part3_conversation1.npy
+Elapsed time: 6.02s 30/44 done
+File 31/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_616_Part1_conversation1/norm_2_NY676_616_Part1_conversation1.npy
+Elapsed time: 4.21s 31/44 done
+File 32/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part4_conversation6/norm_2_NY676_618_Part4_conversation6.npy
+Elapsed time: 0.08s 32/44 done
+File 33/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part4_conversation7/norm_2_NY676_618_Part4_conversation7.npy
+Elapsed time: 0.29s 33/44 done
+File 34/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_619_Part4_conversation3/norm_2_NY676_619_Part4_conversation3.npy
+Elapsed time: 12.50s 34/44 done
+File 35/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_619_Part6_conversation1/norm_2_NY676_619_Part6_conversation1.npy
+Elapsed time: 0.69s 35/44 done
+File 36/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_619_Part4_conversation2/norm_2_NY676_619_Part4_conversation2.npy
+Elapsed time: 0.04s 36/44 done
+File 37/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_617_Part2_conversation2/norm_2_NY676_617_Part2_conversation2.npy
+Elapsed time: 9.90s 37/44 done
+File 38/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_617_Part1_conversation1/norm_2_NY676_617_Part1_conversation1.npy
+Elapsed time: 3.08s 38/44 done
+File 39/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_619_Part5-two_conversation1/norm_2_NY676_619_Part5-two_conversation1.npy
+Elapsed time: 6.66s 39/44 done
+File 40/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part8_conversation2/norm_2_NY676_618_Part8_conversation2.npy
+Elapsed time: 0.16s 40/44 done
+File 41/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part3-one_conversation4/norm_2_NY676_620_Part3-one_conversation4.npy
+Elapsed time: 0.16s 41/44 done
+File 42/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part7_conversation5/norm_2_NY676_618_Part7_conversation5.npy
+Elapsed time: 2.99s 42/44 done
+File 43/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part3-one_conversation5/norm_2_NY676_620_Part3-one_conversation5.npy
+Elapsed time: 0.53s 43/44 done
+File 44/44Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part7_conversation2/norm_2_NY676_618_Part7_conversation2.npy
+Elapsed time: 2.53s 44/44 done
+Validation set normalization.
+Normalizing dataset partition
+Calculating mean per electrode
+File 1/13File 2/13File 3/13File 4/13File 5/13File 6/13File 7/13File 8/13File 9/13File 10/13File 11/13File 12/13File 13/13Calculating std per electrode
+File 1/13File 2/13File 3/13File 4/13File 5/13File 6/13File 7/13File 8/13File 9/13File 10/13File 11/13File 12/13File 13/13File 1/13Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part4_conversation1/norm_2_NY676_620_Part4_conversation1.npy
+Elapsed time: 4.74s 1/13 done
+File 2/13Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_617_Part1_conversation5/norm_2_NY676_617_Part1_conversation5.npy
+Elapsed time: 0.32s 2/13 done
+File 3/13Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part5-one_conversation1/norm_2_NY676_618_Part5-one_conversation1.npy
+Elapsed time: 13.65s 3/13 done
+File 4/13Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part4_conversation8/norm_2_NY676_618_Part4_conversation8.npy
+Elapsed time: 0.38s 4/13 done
+File 5/13Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_616_Part2-two_conversation2/norm_2_NY676_616_Part2-two_conversation2.npy
+Elapsed time: 1.26s 5/13 done
+File 6/13Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part6_conversation1/norm_2_NY676_620_Part6_conversation1.npy
+Elapsed time: 7.97s 6/13 done
+File 7/13Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_617_Part2_conversation4/norm_2_NY676_617_Part2_conversation4.npy
+Elapsed time: 0.61s 7/13 done
+File 8/13Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_619_Part5-two_conversation2/norm_2_NY676_619_Part5-two_conversation2.npy
+Elapsed time: 0.08s 8/13 done
+File 9/13Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_617_Part2_conversation5/norm_2_NY676_617_Part2_conversation5.npy
+Elapsed time: 0.22s 9/13 done
+File 10/13Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part4_conversation1/norm_2_NY676_618_Part4_conversation1.npy
+Elapsed time: 0.62s 10/13 done
+File 11/13Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part5-one_conversation2/norm_2_NY676_618_Part5-one_conversation2.npy
+Elapsed time: 1.41s 11/13 done
+File 12/13Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_617_Part2_conversation3/norm_2_NY676_617_Part2_conversation3.npy
+Elapsed time: 0.86s 12/13 done
+File 13/13Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_621_Part2-two_conversation1/norm_2_NY676_621_Part2-two_conversation1.npy
+Elapsed time: 4.88s 13/13 done
+Test set normalization.
+Normalizing dataset partition
+Calculating mean per electrode
+File 1/27File 2/27File 3/27File 4/27File 5/27File 6/27File 7/27File 8/27File 9/27File 10/27File 11/27File 12/27File 13/27File 14/27File 15/27File 16/27File 17/27File 18/27File 19/27File 20/27File 21/27File 22/27File 23/27File 24/27File 25/27File 26/27File 27/27Calculating std per electrode
+File 1/27File 2/27File 3/27File 4/27File 5/27File 6/27File 7/27File 8/27File 9/27File 10/27File 11/27File 12/27File 13/27File 14/27File 15/27File 16/27File 17/27File 18/27File 19/27File 20/27File 21/27File 22/27File 23/27File 24/27File 25/27File 26/27File 27/27File 1/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part2_conversation2/norm_2_NY676_620_Part2_conversation2.npy
+Elapsed time: 8.37s 1/27 done
+File 2/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part5-two_conversation2/norm_2_NY676_620_Part5-two_conversation2.npy
+Elapsed time: 0.53s 2/27 done
+File 3/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part3-one_conversation3/norm_2_NY676_620_Part3-one_conversation3.npy
+Elapsed time: 0.77s 3/27 done
+File 4/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_616_Part2-two_conversation1/norm_2_NY676_616_Part2-two_conversation1.npy
+Elapsed time: 3.38s 4/27 done
+File 5/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_617_Part2_conversation6/norm_2_NY676_617_Part2_conversation6.npy
+Elapsed time: 1.32s 5/27 done
+File 6/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_616_Part1_conversation5/norm_2_NY676_616_Part1_conversation5.npy
+Elapsed time: 2.33s 6/27 done
+File 7/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_617_Part1_conversation2/norm_2_NY676_617_Part1_conversation2.npy
+Elapsed time: 0.03s 7/27 done
+File 8/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part4_conversation10/norm_2_NY676_618_Part4_conversation10.npy
+Elapsed time: 0.16s 8/27 done
+File 9/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_619_Part2_conversation3/norm_2_NY676_619_Part2_conversation3.npy
+Elapsed time: 3.30s 9/27 done
+File 10/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_617_Part1_conversation3/norm_2_NY676_617_Part1_conversation3.npy
+Elapsed time: 1.52s 10/27 done
+File 11/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_619_Part4_conversation1/norm_2_NY676_619_Part4_conversation1.npy
+Elapsed time: 8.30s 11/27 done
+File 12/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part7_conversation1/norm_2_NY676_620_Part7_conversation1.npy
+Elapsed time: 2.57s 12/27 done
+File 13/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part7_conversation4/norm_2_NY676_618_Part7_conversation4.npy
+Elapsed time: 1.66s 13/27 done
+File 14/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_617_Part0_conversation1/norm_2_NY676_617_Part0_conversation1.npy
+Elapsed time: 0.03s 14/27 done
+File 15/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_619_Part5-two_conversation3/norm_2_NY676_619_Part5-two_conversation3.npy
+Elapsed time: 0.58s 15/27 done
+File 16/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part5-one_conversation3/norm_2_NY676_620_Part5-one_conversation3.npy
+Elapsed time: 0.03s 16/27 done
+File 17/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part7_conversation1/norm_2_NY676_618_Part7_conversation1.npy
+Elapsed time: 0.71s 17/27 done
+File 18/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part4_conversation4/norm_2_NY676_618_Part4_conversation4.npy
+Elapsed time: 0.04s 18/27 done
+File 19/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_617_Part1_conversation4/norm_2_NY676_617_Part1_conversation4.npy
+Elapsed time: 1.17s 19/27 done
+File 20/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part4_conversation2/norm_2_NY676_618_Part4_conversation2.npy
+Elapsed time: 0.01s 20/27 done
+File 21/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_616_Part1_conversation3/norm_2_NY676_616_Part1_conversation3.npy
+Elapsed time: 0.15s 21/27 done
+File 22/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_619_Part6_conversation2/norm_2_NY676_619_Part6_conversation2.npy
+Elapsed time: 2.69s 22/27 done
+File 23/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_616_Part2-two_conversation3/norm_2_NY676_616_Part2-two_conversation3.npy
+Elapsed time: 1.27s 23/27 done
+File 24/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_619_Part3_conversation3/norm_2_NY676_619_Part3_conversation3.npy
+Elapsed time: 4.16s 24/27 done
+File 25/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_618_Part8_conversation1/norm_2_NY676_618_Part8_conversation1.npy
+Elapsed time: 0.19s 25/27 done
+File 26/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_620_Part5-one_conversation4/norm_2_NY676_620_Part5-one_conversation4.npy
+Elapsed time: 0.05s 26/27 done
+File 27/27Normalized file and saved at /projects/HASSON/247/data/normalized_conversations/676_norm_2/norm_2_NY676_621_Part2-one_conversation1/norm_2_NY676_621_Part2-one_conversation1.npy
+Elapsed time: 2.27s 27/27 done
