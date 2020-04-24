@@ -1,0 +1,59 @@
+
+Command to create ssh tunnel:
+ssh -N -f -L 8001:tiger-i26c2n24:8001 tmarcu@tigergpu.princeton.edu
+
+Use a Browser on your local machine to go to:
+localhost:8001  (prefix w/ https:// if using password)
+
+[I 15:38:01.684 LabApp] JupyterLab extension loaded from /home/tmarcu/.conda/envs/brain2brain_env/lib/python3.7/site-packages/jupyterlab
+[I 15:38:01.684 LabApp] JupyterLab application directory is /home/tmarcu/.conda/envs/brain2brain_env/share/jupyter/lab
+[I 15:38:01.687 LabApp] Serving notebooks from local directory: /home/tmarcu/brain2brain
+[I 15:38:01.687 LabApp] The Jupyter Notebook is running at:
+[I 15:38:01.687 LabApp] http://tiger-i26c2n24:8001/
+[I 15:38:01.687 LabApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[I 15:39:16.650 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[W 15:41:32.722 LabApp] Could not determine jupyterlab build status without nodejs
+[I 15:41:34.854 LabApp] Kernel started: 398ec927-797e-4d9b-8e62-fa6dda72a652
+[I 15:41:34.877 LabApp] Kernel started: 28d13579-09ae-4f3e-ac05-e2dbb0f3891d
+[I 15:41:34.897 LabApp] Kernel started: 1f83f336-a7d9-45dc-8100-feb76504c599
+[I 15:41:34.937 LabApp] Kernel started: d2eabcb3-2dec-4654-8e5d-cfed493c1123
+[I 15:43:34.250 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 15:45:34.500 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 15:47:34.770 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 15:49:34.964 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 15:51:35.152 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 15:53:35.324 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 15:55:35.556 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 15:57:36.559 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 16:21:43.408 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 16:23:44.776 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 16:45:19.032 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 16:45:22.618 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 16:47:22.980 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 16:49:25.808 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 17:01:27.065 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 17:03:27.670 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 17:05:08.855 LabApp] Starting buffering for 398ec927-797e-4d9b-8e62-fa6dda72a652:f2832ef4-ee86-4e6f-9fc5-e459199270cc
+[I 17:05:08.856 LabApp] Starting buffering for 28d13579-09ae-4f3e-ac05-e2dbb0f3891d:96420118-acdb-4fa2-a7f5-c69963c57dd8
+[I 17:05:08.857 LabApp] Starting buffering for 1f83f336-a7d9-45dc-8100-feb76504c599:c73d2793-31f7-4661-8fa4-656ab3aac5d6
+[I 17:05:08.857 LabApp] Starting buffering for d2eabcb3-2dec-4654-8e5d-cfed493c1123:875d73a5-4ad2-40c6-a17d-2b70fb651a94
+[W 17:05:41.078 LabApp] Could not determine jupyterlab build status without nodejs
+[I 17:07:44.050 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 17:09:44.412 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 17:10:13.809 LabApp] Kernel interrupted: 398ec927-797e-4d9b-8e62-fa6dda72a652
+[I 17:11:34.577 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 17:13:35.372 LabApp] Saving file at /experiments/notebooks/LinReg.ipynb
+[I 17:13:44.544 LabApp] Saving file at /Untitled.ipynb
+2020-04-23 17:14:50.193439: W tensorflow/stream_executor/platform/default/dso_loader.cc:55] Could not load dynamic library 'libcuda.so.1'; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory
+2020-04-23 17:14:50.193484: E tensorflow/stream_executor/cuda/cuda_driver.cc:351] failed call to cuInit: UNKNOWN ERROR (303)
+2020-04-23 17:14:50.193512: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (tiger-i26c2n24): /proc/driver/nvidia/version does not exist
+2020-04-23 17:14:50.193740: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 AVX512F FMA
+2020-04-23 17:14:50.199886: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2400000000 Hz
+2020-04-23 17:14:50.200070: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x557efd6122c0 initialized for platform Host (this does not guarantee that XLA will be used). Devices:
+2020-04-23 17:14:50.200086: I tensorflow/compiler/xla/service/service.cc:176]   StreamExecutor device (0): Host, Default Version
+[I 17:15:44.849 LabApp] Saving file at /experiments/notebooks/LSTM_encoder_decoder.ipynb
+[I 17:17:45.098 LabApp] Saving file at /experiments/notebooks/LSTM_encoder_decoder.ipynb
+[I 17:19:46.326 LabApp] Saving file at /experiments/notebooks/LSTM_encoder_decoder.ipynb
+[I 17:21:44.880 LabApp] Saving file at /Untitled.ipynb
+[I 17:21:47.163 LabApp] Saving file at /experiments/notebooks/LSTM_encoder_decoder.ipynb
+slurmstepd: error: *** JOB 4646758 ON tiger-i26c2n24 CANCELLED AT 2020-04-23T17:23:43 ***

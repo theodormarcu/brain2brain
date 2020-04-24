@@ -8,3 +8,6 @@ learning/jena_climate/
 
 # Ignore .vscode
 /.vscode
+
+TimeSeries_Seq2Seq/
+web-traffic-time-series-forecasting.zip

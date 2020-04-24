@@ -1,0 +1,12 @@
+name: brain2brain-sweep
+program: gru_o2o_bin_norm_sweep.py
+controller:
+  type: local
+method: bayes
+metric:
+  name: val_loss
+  goal: minimize
+parameters:
+  electrode:
+    min: 0
+    max: 114

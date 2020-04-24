@@ -1,0 +1,74 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.8.31
+    framework: tensorflow
+    is_jupyter_run: true
+    is_kaggle_kernel: false
+    python_version: 3.7.7
+activation:
+  desc: null
+  value: linear
+batch_size:
+  desc: null
+  value: 512
+debug_mode:
+  desc: null
+  value: false
+delay_pred:
+  desc: null
+  value: 0
+dropout_rate:
+  desc: null
+  value: 0.05
+early_stopping_patience:
+  desc: null
+  value: 2
+electrode:
+  desc: null
+  value: 0
+epochs:
+  desc: null
+  value: 128
+experiment_description:
+  desc: null
+  value: Attempting to predict signals for all electrodes in order to better understand
+    which ones work. All hyperparameters below get passed to hyperparameters_defaults.
+experiment_name:
+  desc: null
+  value: gru_o2o_sweep_676_norm
+hidden_units:
+  desc: null
+  value: 100
+length_pred:
+  desc: null
+  value: 3
+lookback_window:
+  desc: null
+  value: 15
+loss:
+  desc: null
+  value: mse
+opt:
+  desc: null
+  value: adam
+recurrent_dropout:
+  desc: null
+  value: 0.05
+return_sequences:
+  desc: null
+  value: true
+samples_per_second:
+  desc: null
+  value: 1
+target_folder:
+  desc: null
+  value: gru_o2o_sweep_676_norm/
+train_path:
+  desc: null
+  value: /home/tmarcu/brain2brain/brain2brain/train_676_norm_2.txt
+val_path:
+  desc: null
+  value: /home/tmarcu/brain2brain/brain2brain/val_676_norm_2.txt

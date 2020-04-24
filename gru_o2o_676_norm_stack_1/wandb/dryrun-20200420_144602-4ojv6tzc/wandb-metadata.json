@@ -1,0 +1,32 @@
+{
+    "root": "/home/tmarcu/brain2brain",
+    "program": "/home/tmarcu/brain2brain/brain2brain/__main__.py",
+    "git": {
+        "remote": "https://github.com/theodormarcu/brain2brain.git",
+        "commit": "4274fc459d0ccc36b34ac90e46c0eebc96221b79"
+    },
+    "email": "marcu.theodor@gmail.com",
+    "codePath": "brain2brain/__main__.py",
+    "startedAt": "2020-04-20T14:46:02.334633",
+    "host": "tiger-i23g10",
+    "username": "tmarcu",
+    "executable": "/home/tmarcu/.conda/envs/brain2brain_env/bin/python3",
+    "os": "Linux-3.10.0-1062.12.1.el7.x86_64-x86_64-with-redhat-7.7-Verona",
+    "python": "3.7.7",
+    "gpu": "Tesla P100-PCIE-16GB",
+    "gpu_count": 1,
+    "cpu_count": 28,
+    "cuda": "10.2.89",
+    "args": [
+        "gru_o2o_stack",
+        "experiments/experiment_params/gru_o2o_676_norm_stack_1.json"
+    ],
+    "state": "finished",
+    "jobType": null,
+    "mode": "dryrun",
+    "name": "gru_o2o_676_norm_stack_1",
+    "notes": "Attempting to predict signals for all electrodes in order to better understand which ones work. All hyperparameters below get passed to hyperparameters_defaults.",
+    "project": "brain2brain",
+    "heartbeatAt": "2020-04-20T15:08:43.813569",
+    "exitcode": 0
+}

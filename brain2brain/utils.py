@@ -13,6 +13,9 @@ import glob
 import scipy
 import tensorflow.keras as keras
 import json
+from brain2brain import models
+from scipy.stats import pearsonr
+from matplotlib import pyplot as plt
 
 from pathlib import Path
 
@@ -511,4 +514,59 @@ def save_file_paths(file_paths: list,
     # Save the files
     with open(target_file, 'w') as filehandle:
         for path in file_paths:
+<<<<<<< HEAD
             filehandle.write('%s\n' % path)
+=======
+            filehandle.write('%s\n' % path)
+
+def predict_and_plot(inference_encoder_model,
+                     inference_decoder_model,
+                     encoder_input_data,
+                     decoder_target_data,
+                     sample_ix,
+                     pred_steps: int,
+                     enc_tail_len=50):
+    encode_series = encoder_input_data[0][sample_ix:sample_ix+1,:,:] 
+    pred_series = models.decode_sequence_o2o(inference_encoder_model,
+                                             inference_decoder_model, 
+                                             input_seq=encode_series,
+                                             pred_steps=pred_steps)
+    encode_series = encode_series.reshape(-1,1)
+    pred_series = pred_series.reshape(-1,1)   
+    target_series = decoder_target_data[sample_ix,:,:1].reshape(-1,1)
+    encode_series_tail = np.concatenate([encode_series[-enc_tail_len:],target_series[:1]])
+    x_encode = encode_series_tail.shape[0]
+    r, p = pearsonr(pred_series.reshape(-1), target_series.reshape(-1))
+    print(f"Correlation: {r}. P: {p}")
+    plt.figure(figsize=(10,6))   
+    
+    plt.plot(range(1,x_encode+1),encode_series_tail)
+    plt.plot(range(x_encode,x_encode+pred_steps),target_series,color='orange')
+    plt.plot(range(x_encode,x_encode+pred_steps),pred_series,color='teal',linestyle='--')
+    
+    plt.title('Encoder Series Tail of Length %d, Target Series, and Predictions' % enc_tail_len)
+    plt.legend(['Encoding Series','Target Series','Predictions'])
+
+def get_corr_mae(inference_encoder_model,
+                 inference_decoder_model,
+                 encoder_input_data,
+                 decoder_target_data,
+                 sample_ix,
+                 pred_steps: int,
+                 enc_tail_len=50, verbose=True):
+    encode_series = encoder_input_data[0][sample_ix:sample_ix+1,:,:] 
+    pred_series = models.decode_sequence_o2o(inference_encoder_model,
+                                             inference_decoder_model, 
+                                             input_seq=encode_series,
+                                             pred_steps=pred_steps)
+    encode_series = encode_series.reshape(-1,1)
+    pred_series = pred_series.reshape(-1,1)   
+    target_series = decoder_target_data[sample_ix,:,:1].reshape(-1,1)
+    encode_series_tail = np.concatenate([encode_series[-enc_tail_len:],target_series[:1]])
+    x_encode = encode_series_tail.shape[0]
+    r, p = pearsonr(pred_series.reshape(-1), target_series.reshape(-1))
+    mae = np.mean(np.abs(pred_series.reshape(-1) - target_series.reshape(-1)))
+    if verbose:
+        print(f"Correlation: {r}. P: {p}. MAE: {mae}")
+    return r, mae
+>>>>>>> new_test

@@ -1,1 +1,20 @@
-2020-04-13 01:50:48,976 DEBUG   MainThread:1262 [wandb_config.py:_load_defaults():118] wandb dir not provided, skipping defaults
+2020-04-20 01:55:51,096 INFO    MainThread:30270 [wandb_agent.py:run():194] Running runs: []
+2020-04-20 01:55:51,252 INFO    MainThread:30270 [wandb_agent.py:_process_command():256] Agent received command: run
+2020-04-20 01:55:51,252 INFO    MainThread:30270 [wandb_agent.py:_command_run():286] Agent starting run with config:
+	electrode: 56
+2020-04-20 01:55:51,257 DEBUG   MainThread:30270 [wandb_config.py:_load_defaults():118] wandb dir not provided, skipping defaults
+2020-04-20 01:55:51,260 INFO    MainThread:30270 [wandb_agent.py:_command_run():325] About to run command: /usr/bin/env python gru_o2o_bin_norm_sweep.py --electrode=56
+2020-04-20 01:55:56,270 INFO    MainThread:30270 [wandb_agent.py:run():194] Running runs: ['ht410m85']
+2020-04-20 01:55:56,270 INFO    MainThread:30270 [wandb_agent.py:run():209] Cleaning up finished run: ht410m85
+2020-04-20 01:55:56,439 INFO    MainThread:30270 [wandb_agent.py:_process_command():256] Agent received command: run
+2020-04-20 01:55:56,439 INFO    MainThread:30270 [wandb_agent.py:_command_run():286] Agent starting run with config:
+	electrode: 73
+2020-04-20 01:55:56,444 DEBUG   MainThread:30270 [wandb_config.py:_load_defaults():118] wandb dir not provided, skipping defaults
+2020-04-20 01:55:56,447 INFO    MainThread:30270 [wandb_agent.py:_command_run():325] About to run command: /usr/bin/env python gru_o2o_bin_norm_sweep.py --electrode=73
+2020-04-20 01:56:01,456 INFO    MainThread:30270 [wandb_agent.py:run():194] Running runs: ['lu2by3f2']
+2020-04-20 01:56:01,457 INFO    MainThread:30270 [wandb_agent.py:run():209] Cleaning up finished run: lu2by3f2
+2020-04-20 01:56:01,648 INFO    MainThread:30270 [wandb_agent.py:_process_command():256] Agent received command: run
+2020-04-20 01:56:01,649 INFO    MainThread:30270 [wandb_agent.py:_command_run():286] Agent starting run with config:
+	electrode: 87
+2020-04-20 01:56:01,652 DEBUG   MainThread:30270 [wandb_config.py:_load_defaults():118] wandb dir not provided, skipping defaults
+2020-04-20 01:56:01,654 INFO    MainThread:30270 [wandb_agent.py:_command_run():325] About to run command: /usr/bin/env python gru_o2o_bin_norm_sweep.py --electrode=87
