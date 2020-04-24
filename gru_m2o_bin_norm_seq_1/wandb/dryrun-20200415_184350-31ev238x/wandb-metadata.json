@@ -1,0 +1,30 @@
+{
+    "root": "/home/tmarcu/brain2brain",
+    "program": "/home/tmarcu/brain2brain/brain2brain/__main__.py",
+    "git": {
+        "remote": "https://github.com/theodormarcu/brain2brain.git",
+        "commit": "1a1592b24fdd42b049720b887e2150fedba88ac4"
+    },
+    "email": "marcu.theodor@gmail.com",
+    "codePath": "brain2brain/__main__.py",
+    "startedAt": "2020-04-15T18:43:50.111288",
+    "host": "tigergpu.princeton.edu",
+    "username": "tmarcu",
+    "executable": "/home/tmarcu/.conda/envs/brain2brain_env/bin/python3",
+    "os": "Linux-3.10.0-1062.12.1.el7.x86_64-x86_64-with-redhat-7.7-Verona",
+    "python": "3.7.7",
+    "cpu_count": 28,
+    "cuda": "10.2.89",
+    "args": [
+        "tcn_m2o_seq",
+        "experiments/experiment_params/gru_m2o_bin_norm_seq_1.json"
+    ],
+    "state": "failed",
+    "jobType": null,
+    "mode": "dryrun",
+    "name": "gru_m2o_bin_norm_seq_1",
+    "notes": "Experiment M2O GRU Bin Norm - Sequential 1",
+    "project": "brain2brain",
+    "heartbeatAt": "2020-04-15T18:43:55.763616",
+    "exitcode": 1
+}

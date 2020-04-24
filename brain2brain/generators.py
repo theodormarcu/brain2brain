@@ -25,8 +25,9 @@ class FGenerator(keras.utils.Sequence):
 
     def __init__(self, file_paths: list, lookback: int, length: int, delay: int,
                  batch_size: int, sample_period: int, electrodes: int,
-                 electrode_output_ix: int=None, shuffle: bool = False,
-                 debug: bool = False, ratio: float = 1.0):
+                 electrode_output_ix: int=None, overlap: bool=False, shuffle: bool = False,
+                 debug: bool = False, ratio: float = 1.0, teacher_forcing: bool=False,
+                 slide_normalization: bool=False, slide_norm_interval: int=30*512):
         '''
         Initialization function for the object. Call when Generator() is called.
         Args:
@@ -40,6 +41,7 @@ class FGenerator(keras.utils.Sequence):
             electrodes (list[int]): List of electrode indices for one-to-one and many-to-many prediction.
             electrode_output_ix (int): Default = None. If present, the index of the electrode to
                                        be predicted. Useful for many-to-one prediction.
+            overlap (bool): Default=False. Allows overlaps in time series samplings for target data.
             shuffle (bool): Shuffle the samples or draw them in chronological order.
             normalize (bool): Deprecated. Should the sample values be normalized. Normalization
                               should take place at the file level. See utils.py for a normalize
@@ -48,6 +50,12 @@ class FGenerator(keras.utils.Sequence):
                          Debug mode limits the number of batches to 1/4.
             data_ratio (float): How much of the data should the generator use. E.g. 0.5
                                is equal to half the data.
+            teacher_forcing (bool): Teacher forcing makes the generator yield two inputs and one target.
+                                    The first input is the same as usual, but the second one is the same
+                                    as the target but shifted by one target step. Currently works only
+                                    with no delay.
+            slide_normalization (bool): Normalizes the data. Uses slide_norm_interval.
+            slide_norm_interval (int): 30s = 30 * 512. Interval for normalization.
         Returns:
             A generator object.
 
@@ -75,6 +83,10 @@ class FGenerator(keras.utils.Sequence):
             raise Exception(f"The ratio ({self.ratio}) should be between 1.0 and 0.0 (1.0 >= ratio > 0.0).")
         self.electrodes = electrodes
         self.electrode_output_ix = electrode_output_ix
+        self.overlap = overlap
+        self.teacher_forcing = teacher_forcing
+        self.slide_normalization = slide_normalization
+        self.slide_norm_interval = slide_norm_interval
         # Calculate the total sample count and create a map
         # of files to samples.
         self.file_map, self.total_sample_count = self.__get_file_map()
@@ -109,8 +121,11 @@ class FGenerator(keras.utils.Sequence):
             # Get the number of rows (i.e. timesteps).
             file_timestep_count = data.shape[0]
             # Calculate the number of total samples in this file.
-            file_sample_count = int(
-                file_timestep_count // (self.lookback + self.delay + self.length))
+            if self.overlap:
+                file_timestep_count -= self.length + self.delay
+                file_sample_count = int(file_timestep_count // self.lookback)
+            else:
+                file_sample_count = int(file_timestep_count // (self.lookback + self.delay + self.length))
             file_map[file_ix] = file_sample_count
             total_sample_count += file_sample_count
         return file_map, total_sample_count
@@ -126,7 +141,7 @@ class FGenerator(keras.utils.Sequence):
         if self.shuffle == True:
             np.random.shuffle(self.sample_indices)
 
-        # Map batches to files and samples. This reduces the number of
+        # Map batch_ix to files and samples. This reduces the number of
         # file open operations when the generator produces a batch.
         self.batch_map = dict()
         # Remainder store
@@ -168,8 +183,9 @@ class FGenerator(keras.utils.Sequence):
         Given batch number idx, create a list of data.
         X, y: (batch_size, self.lookback, num_electrodes)
         '''
-        X = np.empty((self.batch_size, self.lookback //
-                      self.sample_period, len(self.electrodes)))
+        X = np.empty((self.batch_size,
+                     self.lookback // self.sample_period,
+                     len(self.electrodes)))
 
         if self.electrode_output_ix is not None:
             y = np.empty((self.batch_size, math.ceil(
@@ -177,44 +193,59 @@ class FGenerator(keras.utils.Sequence):
         else:
             y = np.empty((self.batch_size, math.ceil(
                 self.length / self.sample_period), len(self.electrodes)))
+        if self.teacher_forcing:
+            X_t = np.empty(y.shape)
 
         # Get files from batch_map
         batch = self.batch_map[index]
         curr_ix = 0
-        sample_length = self.lookback + self.delay + self.length
+        if self.overlap:
+            sample_length = self.lookback
+        else:
+            sample_length = self.lookback + self.delay + self.length
         # For each file, get the samples and add them to the data.
         for file_ix in batch:
             file_path = self.file_paths[file_ix]
             file_contents = np.load(file_path)
             file_contents = file_contents[:, self.electrodes]
-            # if self.normalize:
-            #     print("Normalizing.")
-            #     start_time = time.time()
-            #     # Normalize the sample (for each electrode).
-            #     for electrode in self.electrodes:
-            #         mean = np.mean(file_contents[:, electrode])
-            #         std = np.std(file_contents[:, electrode])
-            #         file_contents[:, electrode] = (file_contents[:, electrode] - mean)/std
-            #     print(f"Elapsed time: {time.time() - start_time}")
-            for sample_ix in range(batch[file_ix][0], batch[file_ix][1]):
-                sample = file_contents[sample_ix *
-                                       sample_length: (sample_ix + 1) * sample_length]
+            for sample_ix in range(batch[file_ix][0], batch[file_ix][1] + 1):
+                # print(sample_ix)
+                if self.overlap:
+                    sample = file_contents[sample_ix *
+                                           sample_length: (sample_ix + 1) * sample_length + self.delay + self.length]
+                else:
+                    sample = file_contents[sample_ix *
+                                           sample_length: (sample_ix + 1) * sample_length]
+                    
                 # Sample at sample_period.
-                sampled_indices_data = range(
-                    0, len(sample) - self.length - self.delay, self.sample_period)
+                sampled_indices_data = range(0,
+                                             len(sample) - self.length - self.delay,
+                                             self.sample_period)
                 # X[curr_ix, ] = sample[:sample_length - self.length - self.delay]
+                # if len(self.electrodes) == 1:
+                    # X[curr_ix] = sample[sampled_indices_data, self.electrodes[0]]
+                # else:
                 X[curr_ix, ] = sample[sampled_indices_data]
-                sampled_indices_target = range(
-                    len(sample) - self.length, len(sample), self.sample_period)
+                sampled_indices_target = range(len(sample) - self.length,
+                                               len(sample),
+                                               self.sample_period)
+                # print(sampled_indices_target)
                 # y[curr_ix, ] = sample[sample_length - self.length:]
                 if self.electrode_output_ix is not None:
-                    y[curr_ix, ] = sample[sampled_indices_target, self.electrode_output_ix]
+                    # print(sample.shape)
+                    # y[curr_ix, ] = sample[sampled_indices_target, 0]
+                    y[curr_ix, ] = sample[sampled_indices_target, 0].reshape(len(sampled_indices_target), 1)
                 else:
-                    y[curr_ix, ] = sample[sampled_indices_target]
+                    y[curr_ix, ] = sample[sampled_indices_target, :]
                 # Select just one electrode if the index of an output electrode is specified.
                 # This is useful for many-to-one prediction.
                     # y[curr_ix, ] = y[curr_ix, ][:, self.electrode_output_ix]
                 curr_ix += 1
+        
+        if self.teacher_forcing:
+            X_t[:, 1:, :] = y[:, :-1, :]
+            X_t[:, 0, :] = X[:, -1, :]
+            return [X, X_t], y
         return X, y
 
 

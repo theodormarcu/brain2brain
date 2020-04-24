@@ -1,0 +1,100 @@
+Running Scheduled Experiment.
+tcn_m2o_seq
+experiments/experiment_params/tcn_m2o_norm_seq_2.json
+tcn_m2o_norm_seq_2
+{'experiment_name': 'tcn_m2o_norm_seq_2',
+ 'experiment_description': 'Experiment M2O TCN 2 - Normalized Data',
+ 'target_folder': 'tcn_m2o_norm_seq_2/',
+ 'path': '/home/tmarcu/brain2brain/brain2brain/train_676_norm_files_projects.txt',
+ 'batch_size': 1024,
+ 'epochs': 128,
+ 'lookback_window': 128,
+ 'length_pred': 25,
+ 'delay_pred': 0,
+ 'samples_per_second': 1,
+ 'electrode_selection': [0, 1, 2, 3, 4],
+ 'electrode_out': 2,
+ 'num_feat': 1,
+ 'num_classes': 1,
+ 'nb_filters': 32,
+ 'kernel_size': 3,
+ 'dilations': [1, 2, 4, 8, 16, 32],
+ 'nb_stacks': 2,
+ 'output_len': 1,
+ 'padding': 'causal',
+ 'use_skip_connections': True,
+ 'return_sequences': True,
+ 'regression': True,
+ 'dropout_rate': 0.1,
+ 'name': 'tcn',
+ 'kernel_initializer': 'he_normal',
+ 'activation': 'linear',
+ 'opt': 'RMSprop',
+ 'lr': 0.005,
+ 'loss': 'mae',
+ 'debug_mode': False}
+wandb: Dry run mode, not syncing to the cloud.
+wandb: Tracking run with wandb version 0.8.31
+wandb: Run data is saved locally in tcn_m2o_norm_seq_2/wandb/dryrun-20200414_155850-2xwlh0po
+
+(36853, 114)
+Train Generator Batch Shape:
+Sample=(1024, 128, 5) Pred=(1024, 25)
+Validation Generator Batch Shape:
+Sample=(1024, 128, 5) Pred=(1024, 25)
+(None, 128, 5)
+2020-04-14 12:03:22.563729: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcuda.so.1
+2020-04-14 12:03:22.583857: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1618] Found device 0 with properties: 
+name: Tesla P100-PCIE-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.3285
+pciBusID: 0000:82:00.0
+2020-04-14 12:03:22.586502: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.0
+2020-04-14 12:03:23.457306: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10.0
+2020-04-14 12:03:24.561989: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcufft.so.10.0
+2020-04-14 12:03:26.175354: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcurand.so.10.0
+2020-04-14 12:03:27.535158: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusolver.so.10.0
+2020-04-14 12:03:28.427361: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusparse.so.10.0
+2020-04-14 12:03:30.610435: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+2020-04-14 12:03:30.612629: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1746] Adding visible gpu devices: 0
+2020-04-14 12:03:30.613053: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 FMA
+2020-04-14 12:03:30.619937: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2399710000 Hz
+2020-04-14 12:03:30.620224: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x5650eaa20a90 executing computations on platform Host. Devices:
+2020-04-14 12:03:30.620243: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): Host, Default Version
+2020-04-14 12:03:30.621331: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1618] Found device 0 with properties: 
+name: Tesla P100-PCIE-16GB major: 6 minor: 0 memoryClockRate(GHz): 1.3285
+pciBusID: 0000:82:00.0
+2020-04-14 12:03:30.621379: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.0
+2020-04-14 12:03:30.621397: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10.0
+2020-04-14 12:03:30.621412: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcufft.so.10.0
+2020-04-14 12:03:30.621428: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcurand.so.10.0
+2020-04-14 12:03:30.621444: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusolver.so.10.0
+2020-04-14 12:03:30.621459: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcusparse.so.10.0
+2020-04-14 12:03:30.621475: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+2020-04-14 12:03:30.623339: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1746] Adding visible gpu devices: 0
+2020-04-14 12:03:30.623374: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudart.so.10.0
+2020-04-14 12:03:30.771150: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1159] Device interconnect StreamExecutor with strength 1 edge matrix:
+2020-04-14 12:03:30.771188: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1165]      0 
+2020-04-14 12:03:30.771200: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1178] 0:   N 
+2020-04-14 12:03:30.774196: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1304] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 15216 MB memory) -> physical GPU (device: 0, name: Tesla P100-PCIE-16GB, pci bus id: 0000:82:00.0, compute capability: 6.0)
+2020-04-14 12:03:30.776377: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x5650eb05fab0 executing computations on platform CUDA. Devices:
+2020-04-14 12:03:30.776395: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): Tesla P100-PCIE-16GB, Compute Capability 6.0
+calling compile
+Model: "model"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+input_1 (InputLayer)         [(None, 128, 5)]          0         
+_________________________________________________________________
+tcn (TCN)                    (None, 128, 32)           86304     
+_________________________________________________________________
+dense (Dense)                (None, 128, 1)            33        
+_________________________________________________________________
+lambda (Lambda)              (None, 25, 1)             0         
+=================================================================
+Total params: 86,337
+Trainable params: 86,337
+Non-trainable params: 0
+_________________________________________________________________
+Epoch 1/128
+2020-04-14 12:06:41.862817: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcublas.so.10.0
+2020-04-14 12:06:42.139077: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcudnn.so.7
+  1/255 [..............................] - ETA: 12:58:41 - loss: 2066.6021  2/255 [..............................] - ETA: 8:39:22 - loss: 1162.3792   3/255 [..............................] - ETA: 6:56:40 - loss: 855.2654   4/255 [..............................] - ETA: 5:35:24 - loss: 692.5383  5/255 [..............................] - ETA: 4:40:22 - loss: 583.8853  6/255 [..............................] - ETA: 3:54:15 - loss: 508.1303  7/255 [..............................] - ETA: 4:16:09 - loss: 450.6531  8/255 [..............................] - ETA: 3:44:13 - loss: 407.4356  9/255 [>.............................] - ETA: 3:19:11 - loss: 372.8562slurmstepd: error: *** JOB 4619722 ON tiger-i22g5 CANCELLED AT 2020-04-14T12:13:42 ***

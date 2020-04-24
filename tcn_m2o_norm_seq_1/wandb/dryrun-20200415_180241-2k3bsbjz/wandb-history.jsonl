@@ -1,0 +1,9 @@
+{"epoch": 0, "loss": NaN, "val_loss": 0.035642086665200835, "_runtime": 853.4518556594849, "_timestamp": 1586974613.6669927, "_step": 0}
+{"epoch": 1, "loss": Infinity, "val_loss": 0.043708394938970316, "_runtime": 2053.354086637497, "_timestamp": 1586975813.5692236, "_step": 1}
+{"epoch": 2, "loss": Infinity, "val_loss": NaN, "_runtime": 3233.5370750427246, "_timestamp": 1586976993.752212, "_step": 2}
+{"epoch": 3, "loss": NaN, "val_loss": 0.01597542290612325, "_runtime": 4411.445944309235, "_timestamp": 1586978171.6610813, "_step": 3}
+{"epoch": 4, "loss": Infinity, "val_loss": 0.02873941539220658, "_runtime": 5588.716013908386, "_timestamp": 1586979348.931151, "_step": 4}
+{"epoch": 5, "loss": Infinity, "val_loss": 0.016223672909808216, "_runtime": 6761.9748067855835, "_timestamp": 1586980522.1899438, "_step": 5}
+{"epoch": 6, "loss": Infinity, "val_loss": 0.011340193717521341, "_runtime": 7939.714880943298, "_timestamp": 1586981699.930018, "_step": 6}
+{"epoch": 7, "loss": Infinity, "val_loss": 0.016578323399538502, "_runtime": 9135.99278831482, "_timestamp": 1586982896.2079253, "_step": 7}
+{"epoch": 8, "loss": Infinity, "val_loss": 0.027481126653797486, "_runtime": 10249.359855413437, "_timestamp": 1586984009.5749924, "_step": 8}

@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --mem-per-cpu=20G
-#SBATCH --time 01:00:00
+#SBATCH --mem-per-cpu=80G
+#SBATCH --time 02:00:00
 #SBATCH --job-name=jupyter-tmarcu
 #SBATCH -o 'jupyter-%A.log'
 # sends mail when process begins, and

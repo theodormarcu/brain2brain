@@ -1,0 +1,17 @@
+2020-04-12 21:41:55,171 DEBUG   MainThread:39243 [wandb_config.py:_load_defaults():122] no defaults not found in config-defaults.yaml
+2020-04-12 21:41:55,183 DEBUG   MainThread:39243 [meta.py:setup():97] code probe starting
+2020-04-12 21:41:55,184 DEBUG   MainThread:39243 [meta.py:_setup_code_git():49] probe for git information
+2020-04-12 21:41:55,198 DEBUG   MainThread:39243 [meta.py:_setup_code_program():58] save program starting
+2020-04-12 21:41:55,198 DEBUG   MainThread:39243 [meta.py:_setup_code_program():60] save program starting: /home/tmarcu/brain2brain/brain2brain/__main__.py
+2020-04-12 21:41:55,198 DEBUG   MainThread:39243 [meta.py:_setup_code_program():65] save program saved: /home/tmarcu/brain2brain/tcn_m2o_norm_noseq_3/wandb/dryrun-20200413_014154-1rq14sj3/code/brain2brain/__main__.py
+2020-04-12 21:41:55,199 DEBUG   MainThread:39243 [meta.py:_setup_code_program():67] save program
+2020-04-12 21:41:55,199 DEBUG   MainThread:39243 [meta.py:setup():119] code probe done
+2020-04-12 21:41:55,207 DEBUG   MainThread:39243 [run_manager.py:__init__():545] Initialized sync for brain2brain/1rq14sj3
+2020-04-12 21:41:55,209 INFO    MainThread:39243 [run_manager.py:wrap_existing_process():1148] wrapping existing process 39233
+2020-04-12 21:41:56,274 INFO    Thread-3  :39243 [run_manager.py:_on_file_modified():692] file/dir modified: /home/tmarcu/brain2brain/tcn_m2o_norm_noseq_3/wandb/dryrun-20200413_014154-1rq14sj3/config.yaml
+2020-04-12 21:42:01,245 INFO    MainThread:39243 [run_manager.py:init_run():928] system metrics and metadata threads started
+2020-04-12 21:42:01,245 INFO    MainThread:39243 [run_manager.py:wrap_existing_process():1165] informing user process we are ready to proceed
+2020-04-12 21:42:01,245 INFO    MainThread:39243 [run_manager.py:_sync_etc():1272] entering loop for messages from user process
+2020-04-12 21:42:08,213 INFO    MainThread:39243 [run_manager.py:_sync_etc():1295] received message from user process: {"save_policy": {"glob": "model-best.h5", "policy": "live"}}
+ync_etc():1272] entering loop for messages from user process
+2020-04-12 21:42:08,213 INFO    MainThread:39243 [1rq14sj3:run_manager.py:_sync_etc():1295] received message from user process: {"save_policy": {"glob": "model-best.h5", "policy": "live"}}

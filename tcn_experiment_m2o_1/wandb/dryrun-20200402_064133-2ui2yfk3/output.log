@@ -1,16 +1,0 @@
-(490, 114)
-Train Generator Batch Shape:
-Sample=(1024, 128, 5) Pred=(1024, 1, 1)
-Validation Generator Batch Shape:
-Sample=(1024, 128, 5) Pred=(1024, 1, 1)
-(None, 128, 5)
-2020-04-02 02:41:37.995884: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcuda.so.1
-2020-04-02 02:41:38.021520: E tensorflow/stream_executor/cuda/cuda_driver.cc:318] failed call to cuInit: CUDA_ERROR_NO_DEVICE: no CUDA-capable device is detected
-2020-04-02 02:41:38.021577: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (tigercpu.princeton.edu): /proc/driver/nvidia/version does not exist
-2020-04-02 02:41:38.022148: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 AVX512F FMA
-2020-04-02 02:41:38.035244: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2400000000 Hz
-2020-04-02 02:41:38.037287: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x55b4585dae40 executing computations on platform Host. Devices:
-2020-04-02 02:41:38.037316: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): Host, Default Version
-calling compile
-Epoch 1/128
- 1/13 [=>............................] - ETA: 14s - loss: 274.1353 2/13 [===>..........................] - ETA: 10s - loss: 192.0371 3/13 [=====>........................] - ETA: 8s - loss: 152.6005  4/13 [========>.....................] - ETA: 7s - loss: 131.6185 5/13 [==========>...................] - ETA: 5s - loss: 116.4877 6/13 [============>.................] - ETA: 5s - loss: 105.6893 7/13 [===============>..............] - ETA: 4s - loss: 97.5332  8/13 [=================>............] - ETA: 3s - loss: 90.7431

@@ -3,7 +3,7 @@
 #SBATCH --mem-per-cpu=50G
 #SBATCH --time 3:00:00
 #SBATCH --job-name neural_net_tmarcu
-#SBATCH --output tcn-%J.log
+#SBATCH --output %J.log
 # sends mail when process begins, and
 # when it ends. Make sure you define your email
 #SBATCH --mail-type=begin        # send mail when process begins
@@ -33,4 +33,4 @@ echo $target_folder
 python3 -u -m brain2brain $experiment_name $experiment_param_file
 
 # Copy file
-cp "tcn-"$SLURM_JOB_ID".log" $target_folder"/"$target_folder".log"
+cp $SLURM_JOB_ID".log" $target_folder"/"$target_folder".log"
