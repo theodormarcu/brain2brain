@@ -514,9 +514,6 @@ def save_file_paths(file_paths: list,
     # Save the files
     with open(target_file, 'w') as filehandle:
         for path in file_paths:
-<<<<<<< HEAD
-            filehandle.write('%s\n' % path)
-=======
             filehandle.write('%s\n' % path)
 
 def predict_and_plot(inference_encoder_model,
@@ -569,4 +566,3 @@ def get_corr_mae(inference_encoder_model,
     if verbose:
         print(f"Correlation: {r}. P: {p}. MAE: {mae}")
     return r, mae
->>>>>>> new_test

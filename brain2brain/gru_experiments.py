@@ -537,23 +537,6 @@ def gru_m2o_seq(experiment_dict: dict):
     ]
      # GRU One-to-one Architecture
     model = Sequential()
-<<<<<<< HEAD
-    model.add(GRU(units=config.hidden_units,
-            dropout=config.dropout_rate,
-            recurrent_dropout=config.recurrent_dropout,
-            input_shape=(timesteps_per_sample, electrode_count),
-            return_sequences = experiment_dict['return_sequences']))
-    # Many to one prediction - We select just one electrode.
-    model.add(Dense(1))
-    # Workaround because config does not work with copy.deepcopy
-    # https://github.com/wandb/client/issues/833 fix does not work
-    length_pred = config.length_pred
-    model.add(Lambda(lambda x: x[:, -length_pred:, :]))
-    if config.opt == "RMSprop":
-        model.compile(optimizer=RMSprop(), loss=config.loss)
-    else:
-        raise Exception(f"Could not find optimizer {config.opt} Aborting.")
-=======
     model.add(GRU(config.hidden_units,
                   activation=config.activation,
                   return_sequences=config.return_sequences,
@@ -564,7 +547,6 @@ def gru_m2o_seq(experiment_dict: dict):
     model.add(GRU(config.hidden_units, activation=config.activation))
     model.add(Dense(config.length_pred))
     model.compile(optimizer=config.opt, loss=config.loss)
->>>>>>> new_test
     # Save Summary
     model.summary()
     if config.opt == "RMSprop":
@@ -617,81 +599,6 @@ def gru_m2o_seq(experiment_dict: dict):
 #     plt.legend(['predicted', 'actual'])
 #     plt.savefig(target_folder + "predict_vs_targets.png")
 #     plt.clf()
-<<<<<<< HEAD
-#     wandb.save("wandb.h5")
-#     model.save(os.path.join(wandb.run.dir, "model_wandb.h5"))
-# ####################################################################################################
-
-####################################################################################################
-
-def gru_single_sweep(experiment_dict: dict):
-    """
-    GRU for multiple one-to-one electrodes to identify the best one to predict.
-    """
-    ####################################################################################################
-    experiment_name = experiment_dict['experiment_name']
-    experiment_description = experiment_dict['experiment_description']
-    target_folder = experiment_dict['target_folder']
-
-    # Ensure target directory exists.
-    try:
-        Path(target_folder).mkdir(parents=True, exist_ok=True)
-    except IOError:
-        print(f"Directory creation failed for path {target_folder}")
-    # Save dictionary in json as well
-    utils.save_json_file(experiment_dict, target_folder + "experiment_params.json")
-    # Configure wandb
-    # Toggle Offline Mode
-    os.environ['WANDB_MODE'] = 'dryrun'
-    wandb.init(name=experiment_name,
-               notes=experiment_description,
-               config=experiment_dict,
-               dir=target_folder,
-               entity="theodormarcu",
-               project="brain2brain")
-    # Save Hyperparams
-    config = wandb.config
-    # Read saved paths for training.
-    saved_paths = utils.get_file_paths(config.path)
-    # Split the train files into a training and validation set.
-    train, val = utils.split_file_paths(saved_paths, 0.8)
-    total_electrode_count = utils.get_file_shape(train[0])[1]
-    # Electrodes
-    electrode_count = len(config.electrode_selection)
-    # Sampling of electrodes.
-    timesteps_per_sample = int(config.lookback_window // config.samples_per_second)
-    # Training Generator
-    train_generator = generators.FGenerator(file_paths=train,
-                                            lookback=config.lookback_window,
-                                            length=config.length_pred,
-                                            delay=config.delay_pred,
-                                            batch_size=config.batch_size,
-                                            sample_period=config.samples_per_second,
-                                            electrodes=config.electrode_selection,
-                                            electrode_output_ix=config.electrode_out,
-                                            shuffle=True,
-                                            debug=config.debug_mode)
-    # Validation Generator
-    val_generator = generators.FGenerator(file_paths=val,
-                                          lookback=config.lookback_window,
-                                          length=config.length_pred,
-                                          delay=config.delay_pred,
-                                          batch_size=config.batch_size,
-                                          sample_period=config.samples_per_second,
-                                          electrodes=config.electrode_selection,
-                                          electrode_output_ix=config.electrode_out,
-                                          shuffle=False,
-                                          debug=config.debug_mode)
-
-    train_steps = len(train_generator)
-    val_steps = len(val_generator)
-
-    print(f"Train Generator Batch Shape:\n"
-          f"Sample={train_generator[0][0].shape} Pred={train_generator[0][1].shape}")
-    print(f"Validation Generator Batch Shape:\n"
-          f"Sample={val_generator[0][0].shape} Pred={val_generator[0][1].shape}")
-
-=======
     wandb.save("wandb.h5")
     model.save(os.path.join(wandb.run.dir, "model_wandb.h5"))
 # ####################################################################################################
@@ -768,7 +675,6 @@ def gru_o2o_stack(experiment_dict: dict):
     print(f"Validation Generator Batch Shape:\n"
           f"Sample={val_generator[0][0].shape} Pred={val_generator[0][1].shape}")
 
->>>>>>> new_test
     callbacks_list = [
         EarlyStopping(
             monitor="val_loss",
@@ -786,32 +692,6 @@ def gru_o2o_stack(experiment_dict: dict):
             save_model=True,
         )
     ]
-<<<<<<< HEAD
-    # GRU Many-to-one Model Architecture
-    model = Sequential()
-    model.add(GRU(units=config.hidden_units,
-            dropout=config.dropout_rate,
-            recurrent_dropout=config.recurrent_dropout,
-            input_shape=(timesteps_per_sample, electrode_count),
-            return_sequences = experiment_dict['return_sequences']))
-    # Many to one prediction - We select just one electrode.
-    model.add(Dense(1))
-    # Workaround because config does not work with copy.deepcopy
-    # https://github.com/wandb/client/issues/833 fix does not work
-    length_pred = config.length_pred
-    model.add(Lambda(lambda x: x[:, -length_pred:, :]))
-    if config.opt == "RMSprop":
-        model.compile(optimizer=RMSprop(), loss=config.loss)
-    else:
-        raise Exception(f"Could not find optimizer {config.opt} Aborting.")
-    # Save Summary
-    model.summary()
-    if config.opt == "RMSprop":
-        model.compile(optimizer=RMSprop(), loss=config.loss)
-    else:
-        raise Exception(f"Could not find optimizer {config.opt} Aborting.")
-    print("calling compile")
-=======
      # GRU One-to-one Architecture
     model = Sequential()
     model.add(GRU(config.hidden_units,
@@ -827,7 +707,6 @@ def gru_o2o_stack(experiment_dict: dict):
     model.compile(optimizer=config.opt, loss=config.loss)
     # Save Summary
     model.summary()
->>>>>>> new_test
     # Save Model Config and Architecture
     utils.save_json_file(model.get_config(), target_folder + "model_config.json")
     utils.save_json_file(model.to_json(), target_folder + "model_architecture.json")
@@ -854,11 +733,6 @@ def gru_o2o_stack(experiment_dict: dict):
     plt.savefig(target_folder + "train_val_loss_plot.png")
     plt.clf()
 
-<<<<<<< HEAD
-    predictions = model.predict_generator(val_generator, steps=val_steps,
-                                          callbacks=None, max_queue_size=10, workers=1,
-                                          use_multiprocessing=True, verbose=1)
-=======
     # predictions = model.predict_generator(val_generator, steps=val_steps,
                                         #   callbacks=None, max_queue_size=10, workers=1,
                                         #   use_multiprocessing=True, verbose=1)
@@ -1005,7 +879,6 @@ def gru_single_sweep(experiment_dict: dict):
     # predictions = model.predict_generator(val_generator, steps=val_steps,
                                         #   callbacks=None, max_queue_size=10, workers=1,
                                         #   use_multiprocessing=True, verbose=1)
->>>>>>> new_test
 
 #     predictions_path = target_folder + "predictions.json"
 #     np.save(predictions_path, predictions)
@@ -1022,11 +895,6 @@ def gru_single_sweep(experiment_dict: dict):
 #     plt.legend(['predicted', 'actual'])
 #     plt.savefig(target_folder + "predict_vs_targets.png")
 #     plt.clf()
-<<<<<<< HEAD
-#     wandb.save("wandb.h5")
-#     model.save(os.path.join(wandb.run.dir, "model_wandb.h5"))
-=======
     wandb.save("wandb.h5")
     model.save(os.path.join(wandb.run.dir, "model_wandb.h5"))
->>>>>>> new_test
 # ####################################################################################################
