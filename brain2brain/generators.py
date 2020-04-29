@@ -27,7 +27,7 @@ class FGenerator(keras.utils.Sequence):
                  batch_size: int, sample_period: int, electrodes: int,
                  electrode_output_ix: int=None, overlap: bool=False, shuffle: bool = False,
                  debug: bool = False, ratio: float = 1.0, teacher_forcing: bool=False,
-                 slide_normalization: bool=False, slide_norm_interval: int=30*512):
+                 teacher_forcing_concat: bool=False):
         '''
         Initialization function for the object. Call when Generator() is called.
         Args:
@@ -54,8 +54,8 @@ class FGenerator(keras.utils.Sequence):
                                     The first input is the same as usual, but the second one is the same
                                     as the target but shifted by one target step. Currently works only
                                     with no delay.
-            slide_normalization (bool): Normalizes the data. Uses slide_norm_interval.
-            slide_norm_interval (int): 30s = 30 * 512. Interval for normalization.
+            teacher_forcing_concat (bool): If teacher forcing is on, it concatenates the two inputs rather
+                                           than returning a list.
         Returns:
             A generator object.
 
@@ -85,8 +85,7 @@ class FGenerator(keras.utils.Sequence):
         self.electrode_output_ix = electrode_output_ix
         self.overlap = overlap
         self.teacher_forcing = teacher_forcing
-        self.slide_normalization = slide_normalization
-        self.slide_norm_interval = slide_norm_interval
+        self.teacher_forcing_concat = teacher_forcing_concat
         # Calculate the total sample count and create a map
         # of files to samples.
         self.file_map, self.total_sample_count = self.__get_file_map()
@@ -189,13 +188,16 @@ class FGenerator(keras.utils.Sequence):
 
         if self.electrode_output_ix is not None:
             y = np.empty((self.batch_size, math.ceil(
-                self.length / self.sample_period)))
+                self.length / self.sample_period), 1))
         else:
             y = np.empty((self.batch_size, math.ceil(
                 self.length / self.sample_period), len(self.electrodes)))
         if self.teacher_forcing:
-            X_t = np.empty(y.shape)
-
+            X_t = np.empty(shape=(self.batch_size, 
+                                  self.length, 
+                                  len(self.electrodes)))
+        lagged_y = np.empty((self.batch_size, math.ceil(
+                            self.length / self.sample_period), len(self.electrodes)))
         # Get files from batch_map
         batch = self.batch_map[index]
         curr_ix = 0
@@ -207,15 +209,15 @@ class FGenerator(keras.utils.Sequence):
         for file_ix in batch:
             file_path = self.file_paths[file_ix]
             file_contents = np.load(file_path)
-            file_contents = file_contents[:, self.electrodes]
+            file_contents = file_contents[:, :]
             for sample_ix in range(batch[file_ix][0], batch[file_ix][1] + 1):
                 # print(sample_ix)
                 if self.overlap:
                     sample = file_contents[sample_ix *
-                                           sample_length: (sample_ix + 1) * sample_length + self.delay + self.length]
+                                           sample_length: (sample_ix + 1) * sample_length + self.delay + self.length, :]
                 else:
                     sample = file_contents[sample_ix *
-                                           sample_length: (sample_ix + 1) * sample_length]
+                                           sample_length: (sample_ix + 1) * sample_length,:]
                     
                 # Sample at sample_period.
                 sampled_indices_data = range(0,
@@ -225,25 +227,33 @@ class FGenerator(keras.utils.Sequence):
                 # if len(self.electrodes) == 1:
                     # X[curr_ix] = sample[sampled_indices_data, self.electrodes[0]]
                 # else:
-                X[curr_ix, ] = sample[sampled_indices_data]
+                s = sample[sampled_indices_data, :]
+                X[curr_ix, ] = s[:, [*self.electrodes]]
                 sampled_indices_target = range(len(sample) - self.length,
                                                len(sample),
                                                self.sample_period)
+                t = sample[sampled_indices_target, :]
                 # print(sampled_indices_target)
                 # y[curr_ix, ] = sample[sample_length - self.length:]
                 if self.electrode_output_ix is not None:
                     # print(sample.shape)
-                    # y[curr_ix, ] = sample[sampled_indices_target, 0]
-                    y[curr_ix, ] = sample[sampled_indices_target, 0].reshape(len(sampled_indices_target), 1)
+                    y[curr_ix, ] = t[:, self.electrode_output_ix].reshape(len(sampled_indices_target), 1)
+                    # if len(self.electrodes) == 1:
+                        # y[curr_ix, ] = sample[sampled_indices_target, :].reshape(len(sampled_indices_target), 1)
+                    # else:
+                        # y[curr_ix, ] = sample[sampled_indices_target, self.electrode_output_ix].reshape(len(sampled_indices_target), 1)
                 else:
-                    y[curr_ix, ] = sample[sampled_indices_target, :]
+                    y[curr_ix, ] = t[:, [*self.electrodes]]
+                lagged_y[curr_ix, ] = t[:, [*self.electrodes]]
                 # Select just one electrode if the index of an output electrode is specified.
                 # This is useful for many-to-one prediction.
                     # y[curr_ix, ] = y[curr_ix, ][:, self.electrode_output_ix]
                 curr_ix += 1
         
         if self.teacher_forcing:
-            X_t[:, 1:, :] = y[:, :-1, :]
+            if self.teacher_forcing_concat:
+                return np.concatenate([X, lagged_y[:, :-1, :]], axis=1), y
+            X_t[:, 1:, :] = lagged_y[:, :-1, :]
             X_t[:, 0, :] = X[:, -1, :]
             return [X, X_t], y
         return X, y

@@ -7,7 +7,7 @@
 
 import numpy as np
 from tensorflow.keras import Input, Model
-from tensorflow.keras.layers import LSTM, Dense, Flatten
+from tensorflow.keras.layers import LSTM, Dense, Flatten, Reshape
 from tensorflow.keras.models import Sequential
 from tensorflow.keras import layers
 from tensorflow.keras.optimizers import RMSprop, Adam
@@ -179,22 +179,48 @@ def define_baseline_nn_model_o2o(latent_dim: int, input_len: int, output_dim: in
     '''
     model = Sequential()
     model.add(layers.Dense(latent_dim, input_shape=(input_len, 1)))
-    model.add(Flatten())
+    model.add(layers.Flatten())
     model.add(layers.Dense(output_dim))
+    model.add(Reshape((output_dim, 1)))
+    return model
+
+def define_baseline_nn_model_m2o(latent_dim: int, input_len: int, output_dim: int,
+                                 electrode_count: int):
+    '''
+    Simple baseline nn model to compare results.
+    Args:
+        latent_dim (int): Hidden inputs.
+        output_dim (int): Number of timesteps to predict.
+    '''
+    model = Sequential()
+    model.add(layers.Dense(latent_dim, input_shape=(input_len, electrode_count)))
+    model.add(layers.Flatten())
+    model.add(layers.Dense(output_dim))
+    model.add(Reshape((output_dim, 1)))
     return model
 
 def predict_sequence_o2o(input_sequence, pred_steps, model):
-    history_sequence = input_sequence.copy()
-    pred_sequence = np.zeros((1,pred_steps,1)) # initialize output (pred_steps time steps)  
+    lookback = input_sequence.shape[0]
+    history_sequence = input_sequence.reshape((1, lookback, 1))
+    pred_sequence = np.zeros((pred_steps,)) # initialize output (pred_steps time steps)  
     
     for i in range(pred_steps):
-        
         # record next time step prediction (last time step of model output) 
-        last_step_pred = model.predict(history_sequence)[0,-1,0]
-        pred_sequence[0,i,0] = last_step_pred
+        last_step_pred = model.predict(history_sequence)
+        last_step_pred = last_step_pred.reshape(-1)
+
+        pred_sequence[i] = last_step_pred[-1]
         
         # add the next time step prediction to the history sequence
-        history_sequence = np.concatenate([history_sequence, 
-                                           last_step_pred.reshape(-1,1,1)], axis=1)
+        history_sequence = np.concatenate([history_sequence[:, -(lookback-1):, :], 
+                                           last_step_pred[-1].reshape(1, 1, 1)], axis=1)
 
+    return pred_sequence
+
+def predict_sequence_m2o(input_sequence, pred_steps, model, n_electrodes):
+    lookback = input_sequence.shape[0]
+    history_sequence = input_sequence.reshape((1, lookback, n_electrodes))
+    pred_sequence = np.zeros((pred_steps,)) # initialize output (pred_steps time steps)  
+    
+    pred_sequence = model.predict(history_sequence)
     return pred_sequence
