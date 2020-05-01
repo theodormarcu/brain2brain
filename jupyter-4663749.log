@@ -1,0 +1,8 @@
+
+Command to create ssh tunnel:
+ssh -N -f -L 8001:tiger-h19c1n16:8001 tmarcu@tigergpu.princeton.edu
+
+Use a Browser on your local machine to go to:
+localhost:8001  (prefix w/ https:// if using password)
+
+slurmstepd: error: *** JOB 4663749 ON tiger-h19c1n16 CANCELLED AT 2020-04-29T23:37:23 ***
