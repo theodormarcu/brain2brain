@@ -1,266 +1,0 @@
-HI
-Splitting data in train, val, test.
-Training set normalization.
-Normalizing dataset partition
-Calculating mean per electrode
-File 1/56File 2/56File 3/56File 4/56File 5/56File 6/56File 7/56File 8/56File 9/56File 10/56File 11/56File 12/56File 13/56File 14/56File 15/56File 16/56File 17/56File 18/56File 19/56File 20/56File 21/56File 22/56File 23/56File 24/56File 25/56File 26/56File 27/56File 28/56File 29/56File 30/56File 31/56File 32/56File 33/56File 34/56File 35/56File 36/56File 37/56File 38/56File 39/56File 40/56File 41/56File 42/56File 43/56File 44/56File 45/56File 46/56File 47/56File 48/56File 49/56File 50/56File 51/56File 52/56File 53/56File 54/56File 55/56File 56/56Calculating std per electrode
-File 1/56File 2/56File 3/56File 4/56File 5/56File 6/56File 7/56File 8/56File 9/56File 10/56File 11/56File 12/56File 13/56File 14/56File 15/56File 16/56File 17/56File 18/56File 19/56File 20/56File 21/56File 22/56File 23/56File 24/56File 25/56File 26/56File 27/56File 28/56File 29/56File 30/56File 31/56File 32/56File 33/56File 34/56File 35/56File 36/56File 37/56File 38/56File 39/56File 40/56File 41/56File 42/56File 43/56File 44/56File 45/56File 46/56File 47/56File 48/56File 49/56File 50/56File 51/56File 52/56File 53/56File 54/56File 55/56File 56/56File 1/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part5-two_conversation1/bin_norm_2_NY676_618_Part5-two_conversation1.npy
-Elapsed time: 0.63s 1/56 done
-File 2/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part7_conversation5/bin_norm_2_NY676_618_Part7_conversation5.npy
-Elapsed time: 1.09s 2/56 done
-File 3/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part7_conversation6/bin_norm_2_NY676_618_Part7_conversation6.npy
-Elapsed time: 1.62s 3/56 done
-File 4/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part4_conversation10/bin_norm_2_NY676_618_Part4_conversation10.npy
-Elapsed time: 0.15s 4/56 done
-File 5/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part4_conversation4/bin_norm_2_NY676_618_Part4_conversation4.npy
-Elapsed time: 0.06s 5/56 done
-File 6/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part7_conversation4/bin_norm_2_NY676_618_Part7_conversation4.npy
-Elapsed time: 1.35s 6/56 done
-File 7/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_617_Part0_conversation1/bin_norm_2_NY676_617_Part0_conversation1.npy
-Elapsed time: 0.04s 7/56 done
-File 8/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_617_Part2_conversation2/bin_norm_2_NY676_617_Part2_conversation2.npy
-Elapsed time: 9.20s 8/56 done
-File 9/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_616_Part1_conversation4/bin_norm_2_NY676_616_Part1_conversation4.npy
-Elapsed time: 0.24s 9/56 done
-File 10/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_617_Part2_conversation4/bin_norm_2_NY676_617_Part2_conversation4.npy
-Elapsed time: 0.37s 10/56 done
-File 11/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part7_conversation3/bin_norm_2_NY676_618_Part7_conversation3.npy
-Elapsed time: 1.93s 11/56 done
-File 12/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part5-one_conversation4/bin_norm_2_NY676_620_Part5-one_conversation4.npy
-Elapsed time: 0.01s 12/56 done
-File 13/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_619_Part5-two_conversation2/bin_norm_2_NY676_619_Part5-two_conversation2.npy
-Elapsed time: 0.09s 13/56 done
-File 14/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part4_conversation7/bin_norm_2_NY676_618_Part4_conversation7.npy
-Elapsed time: 0.27s 14/56 done
-File 15/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part5-two_conversation3/bin_norm_2_NY676_620_Part5-two_conversation3.npy
-Elapsed time: 0.21s 15/56 done
-File 16/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_616_Part1_conversation5/bin_norm_2_NY676_616_Part1_conversation5.npy
-Elapsed time: 0.48s 16/56 done
-File 17/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_617_Part2_conversation3/bin_norm_2_NY676_617_Part2_conversation3.npy
-Elapsed time: 0.89s 17/56 done
-File 18/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part3-one_conversation4/bin_norm_2_NY676_620_Part3-one_conversation4.npy
-Elapsed time: 0.14s 18/56 done
-File 19/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part8_conversation1/bin_norm_2_NY676_618_Part8_conversation1.npy
-Elapsed time: 0.14s 19/56 done
-File 20/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_621_Part2-two_conversation2/bin_norm_2_NY676_621_Part2-two_conversation2.npy
-Elapsed time: 1.61s 20/56 done
-File 21/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_616_Part2-one_conversation1/bin_norm_2_NY676_616_Part2-one_conversation1.npy
-Elapsed time: 2.13s 21/56 done
-File 22/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_619_Part4_conversation2/bin_norm_2_NY676_619_Part4_conversation2.npy
-Elapsed time: 0.08s 22/56 done
-File 23/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_619_Part3_conversation3/bin_norm_2_NY676_619_Part3_conversation3.npy
-Elapsed time: 4.23s 23/56 done
-File 24/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part5-one_conversation2/bin_norm_2_NY676_618_Part5-one_conversation2.npy
-Elapsed time: 1.05s 24/56 done
-File 25/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part4_conversation1/bin_norm_2_NY676_618_Part4_conversation1.npy
-Elapsed time: 0.59s 25/56 done
-File 26/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part6_conversation1/bin_norm_2_NY676_618_Part6_conversation1.npy
-Elapsed time: 3.15s 26/56 done
-File 27/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part3-one_conversation1/bin_norm_2_NY676_620_Part3-one_conversation1.npy
-Elapsed time: 5.82s 27/56 done
-File 28/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_619_Part4_conversation3/bin_norm_2_NY676_619_Part4_conversation3.npy
-Elapsed time: 9.17s 28/56 done
-File 29/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_616_Part2-two_conversation3/bin_norm_2_NY676_616_Part2-two_conversation3.npy
-Elapsed time: 1.90s 29/56 done
-File 30/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part2_conversation3/bin_norm_2_NY676_620_Part2_conversation3.npy
-Elapsed time: 2.45s 30/56 done
-File 31/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part6_conversation1/bin_norm_2_NY676_620_Part6_conversation1.npy
-Elapsed time: 1.88s 31/56 done
-File 32/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_617_Part2_conversation5/bin_norm_2_NY676_617_Part2_conversation5.npy
-Elapsed time: 0.22s 32/56 done
-File 33/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part6_conversation3/bin_norm_2_NY676_620_Part6_conversation3.npy
-Elapsed time: 1.84s 33/56 done
-File 34/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_619_Part2_conversation3/bin_norm_2_NY676_619_Part2_conversation3.npy
-Elapsed time: 3.17s 34/56 done
-File 35/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_619_Part6_conversation1/bin_norm_2_NY676_619_Part6_conversation1.npy
-Elapsed time: 0.24s 35/56 done
-File 36/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_621_Part2-two_conversation1/bin_norm_2_NY676_621_Part2-two_conversation1.npy
-Elapsed time: 0.91s 36/56 done
-File 37/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_619_Part2_conversation2/bin_norm_2_NY676_619_Part2_conversation2.npy
-Elapsed time: 5.37s 37/56 done
-File 38/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part6_conversation3/bin_norm_2_NY676_618_Part6_conversation3.npy
-Elapsed time: 2.32s 38/56 done
-File 39/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part4_conversation2/bin_norm_2_NY676_618_Part4_conversation2.npy
-Elapsed time: 0.01s 39/56 done
-File 40/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part2_conversation2/bin_norm_2_NY676_620_Part2_conversation2.npy
-Elapsed time: 9.16s 40/56 done
-File 41/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part5-one_conversation3/bin_norm_2_NY676_620_Part5-one_conversation3.npy
-Elapsed time: 0.01s 41/56 done
-File 42/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part4_conversation3/bin_norm_2_NY676_618_Part4_conversation3.npy
-Elapsed time: 0.14s 42/56 done
-File 43/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part7_conversation2/bin_norm_2_NY676_618_Part7_conversation2.npy
-Elapsed time: 1.11s 43/56 done
-File 44/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_619_Part2_conversation1/bin_norm_2_NY676_619_Part2_conversation1.npy
-Elapsed time: 0.29s 44/56 done
-File 45/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part4_conversation8/bin_norm_2_NY676_618_Part4_conversation8.npy
-Elapsed time: 0.08s 45/56 done
-File 46/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part4_conversation5/bin_norm_2_NY676_618_Part4_conversation5.npy
-Elapsed time: 4.59s 46/56 done
-File 47/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part3-one_conversation5/bin_norm_2_NY676_620_Part3-one_conversation5.npy
-Elapsed time: 0.53s 47/56 done
-File 48/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_619_Part7_conversation1/bin_norm_2_NY676_619_Part7_conversation1.npy
-Elapsed time: 0.38s 48/56 done
-File 49/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_616_Part2-two_conversation1/bin_norm_2_NY676_616_Part2-two_conversation1.npy
-Elapsed time: 3.73s 49/56 done
-File 50/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_617_Part1_conversation4/bin_norm_2_NY676_617_Part1_conversation4.npy
-Elapsed time: 1.28s 50/56 done
-File 51/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part8_conversation2/bin_norm_2_NY676_618_Part8_conversation2.npy
-Elapsed time: 0.15s 51/56 done
-File 52/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_616_Part2-two_conversation2/bin_norm_2_NY676_616_Part2-two_conversation2.npy
-Elapsed time: 45.64s 52/56 done
-File 53/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_616_Part3_conversation2/bin_norm_2_NY676_616_Part3_conversation2.npy
-Elapsed time: 0.44s 53/56 done
-File 54/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_616_Part1_conversation3/bin_norm_2_NY676_616_Part1_conversation3.npy
-Elapsed time: 0.03s 54/56 done
-File 55/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part5-one_conversation5/bin_norm_2_NY676_620_Part5-one_conversation5.npy
-Elapsed time: 1.70s 55/56 done
-File 56/56Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_617_Part2_conversation6/bin_norm_2_NY676_617_Part2_conversation6.npy
-Elapsed time: 1.24s 56/56 done
-Validation set normalization.
-Normalizing dataset partition
-Calculating mean per electrode
-File 1/18File 2/18File 3/18File 4/18File 5/18File 6/18File 7/18File 8/18File 9/18File 10/18File 11/18File 12/18File 13/18File 14/18File 15/18File 16/18File 17/18File 18/18Calculating std per electrode
-File 1/18File 2/18File 3/18File 4/18File 5/18File 6/18File 7/18File 8/18File 9/18File 10/18File 11/18File 12/18File 13/18File 14/18File 15/18File 16/18File 17/18File 18/18File 1/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_619_Part3_conversation2/bin_norm_2_NY676_619_Part3_conversation2.npy
-Elapsed time: 6.49s 1/18 done
-File 2/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_617_Part1_conversation5/bin_norm_2_NY676_617_Part1_conversation5.npy
-Elapsed time: 0.11s 2/18 done
-File 3/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part5-two_conversation2/bin_norm_2_NY676_620_Part5-two_conversation2.npy
-Elapsed time: 0.12s 3/18 done
-File 4/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_616_Part1_conversation2/bin_norm_2_NY676_616_Part1_conversation2.npy
-Elapsed time: 0.37s 4/18 done
-File 5/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_619_Part5-two_conversation3/bin_norm_2_NY676_619_Part5-two_conversation3.npy
-Elapsed time: 0.19s 5/18 done
-File 6/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_619_Part5-one_conversation1/bin_norm_2_NY676_619_Part5-one_conversation1.npy
-Elapsed time: 0.06s 6/18 done
-File 7/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part7_conversation1/bin_norm_2_NY676_618_Part7_conversation1.npy
-Elapsed time: 0.16s 7/18 done
-File 8/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part3-one_conversation3/bin_norm_2_NY676_620_Part3-one_conversation3.npy
-Elapsed time: 0.29s 8/18 done
-File 9/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_621_Part1_conversation1/bin_norm_2_NY676_621_Part1_conversation1.npy
-Elapsed time: 0.03s 9/18 done
-File 10/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_619_Part5-two_conversation1/bin_norm_2_NY676_619_Part5-two_conversation1.npy
-Elapsed time: 1.19s 10/18 done
-File 11/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part5-one_conversation1/bin_norm_2_NY676_620_Part5-one_conversation1.npy
-Elapsed time: 0.43s 11/18 done
-File 12/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part6_conversation2/bin_norm_2_NY676_618_Part6_conversation2.npy
-Elapsed time: 2.65s 12/18 done
-File 13/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_617_Part2_conversation1/bin_norm_2_NY676_617_Part2_conversation1.npy
-Elapsed time: 0.04s 13/18 done
-File 14/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_617_Part1_conversation1/bin_norm_2_NY676_617_Part1_conversation1.npy
-Elapsed time: 0.58s 14/18 done
-File 15/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part4_conversation6/bin_norm_2_NY676_618_Part4_conversation6.npy
-Elapsed time: 0.02s 15/18 done
-File 16/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_617_Part1_conversation2/bin_norm_2_NY676_617_Part1_conversation2.npy
-Elapsed time: 0.01s 16/18 done
-File 17/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part5-two_conversation1/bin_norm_2_NY676_620_Part5-two_conversation1.npy
-Elapsed time: 0.30s 17/18 done
-File 18/18Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part7_conversation1/bin_norm_2_NY676_620_Part7_conversation1.npy
-Elapsed time: 0.59s 18/18 done
-Test set normalization.
-Normalizing dataset partition
-Calculating mean per electrode
-File 1/10File 2/10File 3/10File 4/10File 5/10File 6/10File 7/10File 8/10File 9/10File 10/10Calculating std per electrode
-File 1/10File 2/10File 3/10File 4/10File 5/10File 6/10File 7/10File 8/10File 9/10File 10/10File 1/10Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_618_Part5-one_conversation1/bin_norm_2_NY676_618_Part5-one_conversation1.npy
-Elapsed time: 4.34s 1/10 done
-File 2/10Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_619_Part4_conversation1/bin_norm_2_NY676_619_Part4_conversation1.npy
-Elapsed time: 2.37s 2/10 done
-File 3/10Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part4_conversation1/bin_norm_2_NY676_620_Part4_conversation1.npy
-Elapsed time: 1.27s 3/10 done
-File 4/10Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_621_Part2-one_conversation1/bin_norm_2_NY676_621_Part2-one_conversation1.npy
-Elapsed time: 0.49s 4/10 done
-File 5/10Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_619_Part3_conversation1/bin_norm_2_NY676_619_Part3_conversation1.npy
-Elapsed time: 0.26s 5/10 done
-File 6/10Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_616_Part1_conversation1/bin_norm_2_NY676_616_Part1_conversation1.npy
-Elapsed time: 0.92s 6/10 done
-File 7/10Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_616_Part3_conversation1/bin_norm_2_NY676_616_Part3_conversation1.npy
-Elapsed time: 2.72s 7/10 done
-File 8/10Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_620_Part5-one_conversation2/bin_norm_2_NY676_620_Part5-one_conversation2.npy
-Elapsed time: 1.24s 8/10 done
-File 9/10Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_619_Part6_conversation2/bin_norm_2_NY676_619_Part6_conversation2.npy
-Elapsed time: 0.58s 9/10 done
-File 10/10Binning dataset partition.
-Normalized file and saved at /projects/HASSON/247/data/binned_conversations/676_bin_norm_2/bin_norm_2_NY676_617_Part1_conversation3/bin_norm_2_NY676_617_Part1_conversation3.npy
-Elapsed time: 1.08s 10/10 done
