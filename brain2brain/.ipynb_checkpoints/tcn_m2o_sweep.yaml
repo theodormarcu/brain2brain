@@ -1,0 +1,68 @@
+program: tcn_m2o_sweep.py
+name: "TCN M2O Sweep"
+description: "Hyperparameter tuning for TCN M2O using binned and normalized files."
+controller:
+  type: local
+method: bayes
+metric:
+  name: val_loss
+  goal: minimize
+parameters:
+  file_path:
+    values: ["/home/tmarcu/brain2brain/brain2brain/train_676_bin_norm_files_projects.txt",
+             /home/tmarcu/brain2brain/brain2brain/train_676_binned_files_projects.txt,
+             /home/tmarcu/brain2brain/brain2brain/train_676_norm_bin_files_projects.txt]
+  batch_size:
+    values: [256, 512, 768, 1024, 1536, 2048]
+  epochs:
+    value: 256
+  lookback_window:
+    values: [64, 128, 256]
+  length_pred:
+    value: 1
+  delay_pred:
+    value: 0
+  samples_per_second:
+    value: 1
+  electrode_selection:
+    value: [0, 1, 2, 3, 4]
+  electrode_out:
+    values: [0, 1, 2]
+  debug_mode:
+    value: false
+  num_feat:
+    value: 1
+  num_classes:
+    value: 1
+  nb_filters:
+    values: [16, 32, 64, 128]
+  kernel_size:
+    values: [2, 3, 4]
+  dilations:
+    value: [1, 2, 4, 8, 16]
+  nb_stacks:
+    distribution: int_uniform
+    min: 2
+    max: 4
+  output_len:
+    value: 1
+  padding:
+    value: "causal"
+  use_skip_connections:
+    value: true
+  return_sequences:
+    value: false
+  regression:
+    value: true
+  dropout_rate:
+    distribution: uniform
+    min: 0.005
+    max: 1
+  kernel_initializer:
+    value: "he_normal"
+  activation:
+    value: linear
+  opt:
+    value: "RMSprop"
+  loss:
+    value: "mae"

@@ -1,0 +1,3 @@
+wandb: Creating sweep from: gru_o2o_bin_norm_sweep.yaml
+wandb: Network error (ConnectionError), entering retry loop. See /home/tmarcu/brain2brain/brain2brain/wandb/debug.log for full traceback.
+slurmstepd: error: *** JOB 4638390 ON tiger-i25c1n19 CANCELLED AT 2020-04-20T02:14:27 ***

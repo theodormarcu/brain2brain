@@ -1,0 +1,114 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.8.31
+    code_path: code/brain2brain/__main__.py
+    framework: tensorflow
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.7.6
+activation:
+  desc: null
+  value: linear
+batch_size:
+  desc: null
+  value: 1024
+debug_mode:
+  desc: null
+  value: false
+delay_pred:
+  desc: null
+  value: 0
+dilations:
+  desc: null
+  value:
+  - 1
+  - 2
+  - 4
+  - 8
+  - 16
+dropout_rate:
+  desc: null
+  value: 0.1
+electrode_out:
+  desc: null
+  value: 2
+electrode_selection:
+  desc: null
+  value:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+epochs:
+  desc: null
+  value: 128
+experiment_description:
+  desc: null
+  value: Experiment M2O TCN 4 - Binned and Normalized Data
+experiment_name:
+  desc: null
+  value: tcn_m2o_bin_norm_noseq_4
+kernel_initializer:
+  desc: null
+  value: he_normal
+kernel_size:
+  desc: null
+  value: 3
+length_pred:
+  desc: null
+  value: 1
+lookback_window:
+  desc: null
+  value: 5
+loss:
+  desc: null
+  value: mae
+lr:
+  desc: null
+  value: 0.005
+name:
+  desc: null
+  value: tcn
+nb_filters:
+  desc: null
+  value: 5
+nb_stacks:
+  desc: null
+  value: 2
+num_classes:
+  desc: null
+  value: 1
+num_feat:
+  desc: null
+  value: 1
+opt:
+  desc: null
+  value: RMSprop
+output_len:
+  desc: null
+  value: 1
+padding:
+  desc: null
+  value: causal
+path:
+  desc: null
+  value: /home/tmarcu/brain2brain/brain2brain/train_676_bin_norm_files_projects.txt
+regression:
+  desc: null
+  value: true
+return_sequences:
+  desc: null
+  value: false
+samples_per_second:
+  desc: null
+  value: 1
+target_folder:
+  desc: null
+  value: tcn_m2o_bin_norm_noseq_4/
+use_skip_connections:
+  desc: null
+  value: true

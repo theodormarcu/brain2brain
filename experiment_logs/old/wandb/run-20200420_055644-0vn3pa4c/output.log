@@ -1,0 +1,7 @@
+(5429, 114)
+Traceback (most recent call last):
+  File "gru_o2o_bin_norm_sweep.py", line 129, in <module>
+    print(f"Train Generator Batch Shape:\n"
+  File "../brain2brain/generators.py", line 232, in __getitem__
+    y[curr_ix, ] = sample[sampled_indices_target, self.electrode_output_ix]
+IndexError: index 31 is out of bounds for axis 1 with size 1

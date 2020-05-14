@@ -1,0 +1,28 @@
+{
+    "root": "/home/tmarcu/brain2brain",
+    "program": "/home/tmarcu/brain2brain/brain2brain/__main__.py",
+    "git": {
+        "remote": "https://github.com/theodormarcu/brain2brain.git",
+        "commit": "1a1592b24fdd42b049720b887e2150fedba88ac4"
+    },
+    "email": "marcu.theodor@gmail.com",
+    "codePath": "brain2brain/__main__.py",
+    "startedAt": "2020-04-13T01:41:53.552397",
+    "host": "tiger-i26c2n23",
+    "username": "tmarcu",
+    "executable": "/home/tmarcu/.conda/envs/brain2brain_env/bin/python3",
+    "os": "Linux-3.10.0-1062.12.1.el7.x86_64-x86_64-with-redhat-7.7-Verona",
+    "python": "3.7.6",
+    "cpu_count": 40,
+    "args": [
+        "tcn_m2o_noseq",
+        "experiments/experiment_params/tcn_m2o_norm_noseq_2.json"
+    ],
+    "state": "running",
+    "jobType": null,
+    "mode": "dryrun",
+    "name": "tcn_m2o_norm_noseq_2",
+    "notes": "Experiment M2O TCN 2 - Normalized Data",
+    "project": "brain2brain",
+    "heartbeatAt": "2020-04-13T04:46:47.859959"
+}

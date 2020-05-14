@@ -34,11 +34,9 @@ def main():
     # Read YAML Experiment File
     with open(os.path.join(args.experiment_folder, params_file_name)) as f:
         experiment_params = yaml.load(f, Loader=yaml.SafeLoader)
-
-    print(experiment_params)
-
     model_full_path = os.path.join(args.experiment_folder, params_model_file_name)
 
+    # Load model from file
     spec = importlib.util.spec_from_file_location("model", model_full_path)
     model = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(model)
