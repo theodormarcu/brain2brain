@@ -1,0 +1,27 @@
+(36853, 114)
+Train Generator Batch Shape:
+Sample=(4096, 128, 5) Pred=(4096, 1, 1)
+Validation Generator Batch Shape:
+Sample=(4096, 128, 5) Pred=(4096, 1, 1)
+2020-04-02 11:21:06.356917: I tensorflow/stream_executor/platform/default/dso_loader.cc:44] Successfully opened dynamic library libcuda.so.1
+2020-04-02 11:21:06.385888: E tensorflow/stream_executor/cuda/cuda_driver.cc:318] failed call to cuInit: CUDA_ERROR_NO_DEVICE: no CUDA-capable device is detected
+2020-04-02 11:21:06.385952: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (tigercpu.princeton.edu): /proc/driver/nvidia/version does not exist
+2020-04-02 11:21:06.386707: I tensorflow/core/platform/cpu_feature_guard.cc:142] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX AVX2 AVX512F FMA
+2020-04-02 11:21:06.397041: I tensorflow/core/platform/profile_utils/cpu_utils.cc:94] CPU Frequency: 2400000000 Hz
+2020-04-02 11:21:06.398927: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x5601e0c57500 executing computations on platform Host. Devices:
+2020-04-02 11:21:06.398954: I tensorflow/compiler/xla/service/service.cc:175]   StreamExecutor device (0): Host, Default Version
+Model: "sequential"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+gru (GRU)                    (None, 32)                3744      
+_________________________________________________________________
+dense (Dense)                (None, 1)                 33        
+=================================================================
+Total params: 3,777
+Trainable params: 3,777
+Non-trainable params: 0
+_________________________________________________________________
+calling compile
+Epoch 1/128
+ 1/73 [..............................] - ETA: 4:21 - loss: 0.8896 2/73 [..............................] - ETA: 3:11 - loss: 0.8258 3/73 [>.............................] - ETA: 3:04 - loss: 0.8142 4/73 [>.............................] - ETA: 3:19 - loss: 0.7677

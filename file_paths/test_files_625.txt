@@ -1,0 +1,13 @@
+/projects/HASSON/247/data/625-conversations/NY625_418_Part6_conversation2/NY625_418_Part6_conversation2.npy
+/projects/HASSON/247/data/625-conversations/NY625_419_Part4_conversation4/NY625_419_Part4_conversation4.npy
+/projects/HASSON/247/data/625-conversations/NY625_420_Part4_conversation4/NY625_420_Part4_conversation4.npy
+/projects/HASSON/247/data/625-conversations/NY625_424_Part2_two_conversation1/NY625_424_Part2_two_conversation1.npy
+/projects/HASSON/247/data/625-conversations/NY625_420_Part7_one_conversation1/NY625_420_Part7_one_conversation1.npy
+/projects/HASSON/247/data/625-conversations/NY625_421_Part4_one_conversation2/NY625_421_Part4_one_conversation2.npy
+/projects/HASSON/247/data/625-conversations/NY625_419_Part3_conversation2/NY625_419_Part3_conversation2.npy
+/projects/HASSON/247/data/625-conversations/NY625_419_Part6_conversation4/NY625_419_Part6_conversation4.npy
+/projects/HASSON/247/data/625-conversations/NY625_420_Part5_conversation2/NY625_420_Part5_conversation2.npy
+/projects/HASSON/247/data/625-conversations/NY625_419_Part4_conversation3/NY625_419_Part4_conversation3.npy
+/projects/HASSON/247/data/625-conversations/NY625_418_Part4_conversation2/NY625_418_Part4_conversation2.npy
+/projects/HASSON/247/data/625-conversations/NY625_419_Part4_conversation1/NY625_419_Part4_conversation1.npy
+/projects/HASSON/247/data/625-conversations/NY625_421_Part4_one_conversation3/NY625_421_Part4_one_conversation3.npy
